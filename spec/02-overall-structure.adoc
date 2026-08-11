@@ -142,13 +142,9 @@ The `+<uses_event_posters>+` tag has one OPTIONAL attribute:
 
 The `+<has_model_view>+` tag notes whether the XMILE file contains one or more <`+view+`> sections containing a visual representation of one or more models. Note that any software which supports XMILE should be able to simulate all whole-models, even those without diagrams.
 
-The `+<uses_outputs>+` tag implies both time-series graphs and tables are included. It has three OPTIONAL attributes:
+The `+<uses_outputs>+` tag implies both time-series graphs and tables are included. It has one OPTIONAL attribute:
 
 * Has numeric display:  `+numeric_display="…"+` with true/false (default: false)
-
-* Has lamp:  `+lamp="…"+` with true/false (default: false)
-
-* Has gauge:  `+gauge="…"+` with true/false (default: false)
 
 The `+<uses_inputs>+` tag implies sliders are included.
 

@@ -211,14 +211,6 @@ To support the optional simulation output features of XMILE, an implementation:
 
 * If `+numeric_display+` is true in the `+<uses_outputs>+` tag, MUST support numeric displays (<<sec-numeric-displays>>)
 
-* If `+lamp+` is true in the `+<uses_outputs>+` tag, MUST support lamps and a list of zones with non-overlapping value ranges for the variable MUST be specified within the <`+zones+`> tag (<<sec-graphs>>)
-
-* If `+gauge+` is true in the `+<uses_outputs>+` tag, MUST support gauges and a list of zones with non-overlapping value ranges for the variable MUST be specified within the <`+zones+`> tag (<<sec-graphs>>)
-
-Additionally,
-
-* Each zone for a lamp or a gauge (in a `+<zone>+` tag) MUST specify values for <`+type+`>, <`+color+`>, <`+min+`>, and <`+max+`> (<<sec-graphs>>)
-
 [[sec-optional-inputs-conformance]]
 ==== Optional Inputs Conformance
 
