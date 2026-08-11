@@ -226,27 +226,11 @@ To support the optional user input features of XMILE, an implementation:
 
 * MUST include the `+<uses_inputs>+` tag in the `+<options>+` block (<<sec-xmile-options>>)
 
-* MUST support the <`+slider+`> and <`+knob+`> tags (<<sec-sliders>>)
-
-* MUST support the <`+switch+`> and <`+options+`> tags (Section 6.3.2)
-
-* If `+numeric_input+` is true in the `+<uses_inputs>+` tag, MUST support numeric inputs (Section 6.3.3)
-
-* If `+list+` is true in the `+<uses_inputs>+` tag, MUST support list inputs (Section 6.3.3)
-
-* If `+graphical_input+` is true in the `+<uses_inputs>+` tag, MUST support graphical inputs. If the graphical input contains a different graphical function than the controlled variable, the <`+entity+`> tag MUST include a <`+gf+`> tag to describe that graphical function (Section 6.3.4)
+* MUST support the <`+slider+`> tag (<<sec-sliders>>)
 
 Additionally,
 
-* The input range tags <`+min+`> and <`+max+`> MUST be specified for sliders and knobs (<<sec-sliders>>)
-
-* A switch’s <`+group+`> or <`+module+`> tag MUST specify a <`+name+`> and a <`+value+`> (Section 6.3.2)
-
-* Option groups MUST specify values for <`+layout+`>, <`+horizontal_spacing+`>, and <`+vertical_spacing+`> (Section 6.3.2)
-
-* A list input MUST specify a <`+name+`> and <`+column_width+`> (Section 6.3.3)
-
-* A graphical input MUST specify an <`+entity+`> tag (Section 6.3.4)
+* The input range tags <`+min+`> and <`+max+`> MUST be specified for sliders (<<sec-sliders>>)
 
 [[sec-optional-annotations-conformance]]
 ==== Optional Annotations Conformance
@@ -371,6 +355,4 @@ To support the optional event poster features of XMILE, an implementation:
 
 To support the optional user input features of XMILE, an implementation:
 
-* Knobs attached to stocks MUST only adjust the stock’s initial value (<<sec-sliders>>)
-
-* Option groups MUST NOT support `+reset_to+` (Section 6.3.2)
+* Sliders attached to stocks MUST only adjust the stock’s initial value (<<sec-sliders>>)

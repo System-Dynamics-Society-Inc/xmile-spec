@@ -150,13 +150,7 @@ The `+<uses_outputs>+` tag implies both time-series graphs and tables are includ
 
 * Has gauge:  `+gauge="…"+` with true/false (default: false)
 
-The `+<uses_inputs>+` tag implies sliders, knobs, switches, and option groups are included. It has three OPTIONAL attributes:
-
-* Has numeric input:  `+numeric_input="…"+` with true/false (default: false)
-
-* Has list input:  `+list="…"+` with true/false (default: false)
-
-* Has graphical input:  `+graphical_input="…"+` with true/false (default: false)
+The `+<uses_inputs>+` tag implies sliders are included.
 
 The `+<uses_annotation>+` tag implies text boxes, graphics frames, and buttons are included.
 

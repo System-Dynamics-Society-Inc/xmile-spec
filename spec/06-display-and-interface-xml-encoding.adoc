@@ -237,7 +237,7 @@ Sliders are used to change the value of a variable in the model from the interfa
 
 * OPTIONAL reset:  `+<reset_to>+` with the value to reset the entity to; it has one attribute that define when to reset the entity’s value:  `+after="…"+` with either `+one_time_unit+` or `+one_dt+`.
 
-Descriptions of all other display attributes of a slider or knob can be found in <<sec-stock-and-flow-diagram-objects>>.
+Descriptions of all other display attributes of a slider can be found in <<sec-stock-and-flow-diagram-objects>>.
 
 [[sec-output-objects]]
 === Output Objects
