@@ -7,6 +7,13 @@ to them. This file records what is inconsistent in the specification as tagged
 `v1.1`. Nothing here has been corrected in that tag: it reproduces the approved
 document. The corrections are a separate editorial decision for the TC.
 
+[IMPORTANT]
+====
+Every item below has a proposed fix on the `errata/v1.1-fixes` branch, as four
+commits each scoped to one withdrawn feature, so any of them can be reviewed or
+dropped on its own. They are proposed, not approved: see <<sec-what-was-done>>.
+====
+
 == How this happened
 
 In the Word original a reference such as "Section 6.4.2" was ordinary typed
@@ -94,13 +101,57 @@ specification no longer describes:
 * Section 6.3.1 still ends with "Descriptions of all other display attributes of
   a slider or knob can be found in Section 6.1"
 
-== Suggested resolution
+[[sec-what-was-done]]
+== What was done
 
-For each withdrawn feature the TC needs to choose between:
+For each withdrawn feature the choice was between completing the removal and
+restoring the section. The removals were deliberate, so the fixes complete them:
+the conformance clauses and capability flags for withdrawn features are gone,
+and the references that had drifted now point at the section they describe.
 
-. Removing the corresponding conformance clauses and option flags, making the
-  removal complete; or
-. Restoring the sections, if the removal was not intended to go this far.
+One case did not fit that rule. Chapter 4 requires `<image>`, `<video>`,
+`<sound>` and `<link>` for event poster messages, and those tags were defined
+only inside Graphics Frames and Buttons. Version 1.1 did not touch chapter 4, so
+removing the messages would go further than the TC evidently intended. Those
+four definitions were therefore moved into a new subsection under Annotations,
+carried over as written apart from wording that named buttons. The
+`<graphics_frame>` and `<button>` container tags remain withdrawn.
 
-Whichever is chosen, the fix belongs in commits after the `v1.1` tag so that the
-tag keeps reproducing the approved document.
+The four commits on `errata/v1.1-fixes`:
+
+[cols="2,3",options="header"]
+|===
+| Commit | Effect
+
+| Complete the withdrawal of the optional input devices
+| Drops the conformance clauses for knobs, switches, option groups, numeric
+  inputs, list inputs and graphical inputs, and the `<uses_inputs>` attributes
+  that selected them.
+
+| Complete the withdrawal of lamps and gauges
+| Drops the lamp, gauge and zone clauses and the `lamp=` / `gauge=` flags.
+
+| Correct the graph and table conformance cross-references
+| Repoints the four clauses whose section numbers had drifted.
+
+| Complete the withdrawal of graphics frames and buttons
+| Drops the `<graphics_frame>`, `<button>` and `<menu_action>` clauses; moves
+  the four message tag definitions to a new subsection. The only fix that adds
+  text.
+|===
+
+Afterwards nothing in the specification refers to a withdrawn feature, no
+reference is written as a literal section number, and the build resolves every
+cross-reference.
+
+== Open questions for the TC
+
+. Was removing the input devices, lamps, gauges, graphics frames and buttons
+  meant to be this thorough? Completing it drops conformance requirements that
+  implementations may currently claim.
+. Should event posters keep their image, video, sound and link messages? The
+  fix assumes yes. If not, drop the fourth commit and remove the four bullets
+  in Interactivity in Event Posters instead.
+. `<uses_inputs>` and `<uses_annotation>` now each imply a single object type
+  (sliders, text boxes). Whether they still earn their place is a design
+  question rather than an erratum.
