@@ -233,17 +233,9 @@ To support the optional model annotation features of XMILE, an implementation:
 
 * MUST support the <`+text_box+`> tag (<<sec-text-boxes>>)
 
-* MUST support the <`+graphics_frame+`> tag (Section 6.5.2)
-
-* MUST support the <`+button+`> tag (Section 6.5.3)
-
 Additionally,
 
-* When an image is embedded directly within the XMILE file, the type of encoding MUST be “`+base64+`” (Section 6.5.2)
-
-* Buttons that control the program MUST contain a `+<menu_action>+` tag
-
-* Menu actions <`+import_now+`>, <`+export_now+`>, and <`+save_data_now+`> MUST have the required attributes specified (Section 6.5.3)
+* When an image is embedded directly within the XMILE file, the type of encoding MUST be “`+base64+`” (<<sec-media-and-navigation-objects>>)
 
 [[sec-conformance-clause-2-xmile-simulator]]
 === Conformance Clause 2:  XMILE Simulator

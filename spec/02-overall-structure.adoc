@@ -148,7 +148,7 @@ The `+<uses_outputs>+` tag implies both time-series graphs and tables are includ
 
 The `+<uses_inputs>+` tag implies sliders are included.
 
-The `+<uses_annotation>+` tag implies text boxes, graphics frames, and buttons are included.
+The `+<uses_annotation>+` tag implies text boxes are included.
 
 A sample options block appears below:
 
