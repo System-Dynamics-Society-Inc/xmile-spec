@@ -1,0 +1,106 @@
+= Errata: XMILE Version 1.1
+:toc:
+:sectnums:
+
+Version 1.1 withdrew seven subsections but did not update the text that referred
+to them. This file records what is inconsistent in the specification as tagged
+`v1.1`. Nothing here has been corrected in that tag: it reproduces the approved
+document. The corrections are a separate editorial decision for the TC.
+
+== How this happened
+
+In the Word original a reference such as "Section 6.4.2" was ordinary typed
+text, not a field. Nothing linked it to the section it named, so deleting a
+section left its inbound references pointing nowhere, and deleting a section
+renumbered its siblings so that surviving references silently changed meaning.
+Neither failure produced any warning.
+
+Both classes are now caught automatically: references are real cross-references
+that Asciidoctor validates, and `tools/lint.py` rejects a reference typed as
+literal text. See the README.
+
+== Sections withdrawn in 1.1
+
+* 6.3.1 Sliders and Knobs — knobs removed, section renamed to Sliders
+* 6.3.2 Switches and Radio Buttons (Option Groups)
+* 6.3.3 Numeric Inputs and List Input Devices
+* 6.3.4 Graphical Inputs
+* 6.4.2 Lamps and Gauges
+* 6.5.2 Graphics Frames
+* 6.5.3 Buttons
+
+== References to sections that no longer exist
+
+Nineteen references point at withdrawn sections. Most are normative conformance
+clauses that still require support for the removed features, so they are
+contradictions in the specification, not merely broken links.
+
+[cols="2,1,4",options="header"]
+|===
+| Location | Target | Note
+
+| 4. Model Equation XML Encoding | 6.5.2 | Image message `<image>` "as described in" Graphics Frames
+| 4. Model Equation XML Encoding | 6.5.2 | Video message `<video>`
+| 4. Model Equation XML Encoding | 6.5.3 | Sound `<sound>` refers to Buttons
+| 4. Model Equation XML Encoding | 6.5.3 | Hyperlink `<link>` refers to Buttons
+| 7. Conformance (outputs) | 6.4.4 | Refers to the withdrawn Tables numbering
+| 7. Conformance (outputs) | 6.4.4 | As above
+| 7. Conformance (inputs) | 6.3.2 | MUST support `<switch>` and `<options>`
+| 7. Conformance (inputs) | 6.3.3 | MUST support numeric input devices
+| 7. Conformance (inputs) | 6.3.3 | As above
+| 7. Conformance (inputs) | 6.3.4 | MUST support graphical inputs
+| 7. Conformance (inputs) | 6.3.2 | Switch `<group>`/`<module>` requirements
+| 7. Conformance (inputs) | 6.3.2 | As above
+| 7. Conformance (inputs) | 6.3.3 | As above
+| 7. Conformance (inputs) | 6.3.4 | As above
+| 7. Conformance (annotation) | 6.5.2 | Graphics frame requirements
+| 7. Conformance (annotation) | 6.5.3 | Button requirements
+| 7. Conformance (annotation) | 6.5.2 | As above
+| 7. Conformance (annotation) | 6.5.3 | As above
+| 7. Conformance (inputs) | 6.3.2 | As above
+|===
+
+== References that now point at different content
+
+Removing a section renumbered the ones after it, so thirteen references still
+resolve but no longer name what the author meant. These are more dangerous than
+the broken ones: they read as correct.
+
+[cols="3,2,2",options="header"]
+|===
+| Reference as written | Meant in 1.0 | Now resolves to in 1.1
+
+| Section 6.4.2 (×3) | Lamps and Gauges | Graphs
+| Section 6.4.3 (×2) | Graphs | Tables
+| Section 6.3.1 (×3) | Sliders and Knobs | Sliders (knobs no longer defined)
+| Section 3.7.1.1 | Array Operations | Sub Ranges
+| Section 3.7.1.2 | Array Slicing | Array Operations
+| Section 3.7.1.3 (×3) | Array Built-in Functions | Array Slicing
+|===
+
+The array shifts are caused by the new Sub Ranges subsection, which was
+inserted ahead of the existing array subsections.
+
+== Feature flags still advertising withdrawn features
+
+The XMILE Options section continues to define capability flags for features the
+specification no longer describes:
+
+* `lamp="…"` and `gauge="…"` on `<uses_outputs>`
+* `<uses_inputs>` is documented as implying "sliders, knobs, switches, and
+  option groups"
+* `<uses_annotation>` is documented as implying "text boxes, graphics frames,
+  and buttons"
+* Section 6.3.1 still ends with "Descriptions of all other display attributes of
+  a slider or knob can be found in Section 6.1"
+
+== Suggested resolution
+
+For each withdrawn feature the TC needs to choose between:
+
+. Removing the corresponding conformance clauses and option flags, making the
+  removal complete; or
+. Restoring the sections, if the removal was not intended to go this far.
+
+Whichever is chosen, the fix belongs in commits after the `v1.1` tag so that the
+tag keeps reproducing the approved document.
