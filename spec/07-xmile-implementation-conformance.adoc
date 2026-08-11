@@ -234,7 +234,7 @@ To support the optional user input features of XMILE, an implementation:
 
 * If `+list+` is true in the `+<uses_inputs>+` tag, MUST support list inputs (Section 6.3.3)
 
-* If `+graphical_input+` is true in the `+<uses_inputs>+` tag, MUST support graphical inputs. If the graphical input contains a different graphical function than the controlled variable, the <`+entity+`> tag MUST include a <`+gf+`> tag to describe that graphical function (<<sec-graphical-inputs>>)
+* If `+graphical_input+` is true in the `+<uses_inputs>+` tag, MUST support graphical inputs. If the graphical input contains a different graphical function than the controlled variable, the <`+entity+`> tag MUST include a <`+gf+`> tag to describe that graphical function (Section 6.3.4)
 
 Additionally,
 
@@ -246,7 +246,7 @@ Additionally,
 
 * A list input MUST specify a <`+name+`> and <`+column_width+`> (Section 6.3.3)
 
-* A graphical input MUST specify an <`+entity+`> tag (<<sec-graphical-inputs>>)
+* A graphical input MUST specify an <`+entity+`> tag (Section 6.3.4)
 
 [[sec-optional-annotations-conformance]]
 ==== Optional Annotations Conformance
