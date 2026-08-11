@@ -1,0 +1,1097 @@
+[[sec-model-equation-structure]]
+== Model Equation Structure
+
+At their heart, system dynamics models are systems of integral (or differential) equations. We start from that perspective in defining the basic structure of the simulation language. Using this frame, a model is composed of stocks, flows, and other equations necessary to compute the flows or initialize the stocks which we will call inclusively auxiliaries. Stocks are also often called levels or states, and flows are often called rates or derivatives. All other computations can include constants, initialization computations, data constructs, and other items that will be distinguished by their defining equations - all will be referred to as auxiliaries. Stocks, flows, and auxiliaries will be collectively referred to as variables.
+
+We also base our computational definition on the assumption that a model starts from some well-defined initial condition and then computations progress forward in time. Other approaches, such as mixed initial and terminal conditions or simulating backwards in time, can be applied to the models specified in this document but will require extensions of the specification to accommodate these differences.
+
+We will refer to the computation used to determine the values of variables over time as "the simulation." In later sections, we will discuss solution techniques for integral equations, but for discussion purposes we will use the notion that time is broken up into finite intervals during this computation. We will call the time between these intervals DT, corresponding the denominator in the  notation often used in introductory calculus courses. DT is directly analogous to Δ__t__ in the Riemann sum. This discrete time terminology is often used for pedagogical purposes and is also important in defining computation, especially with some of the added constructs such as queues now common in many system dynamics models.
+
+As a final note, all variables in XMILE models are floating point numbers.  It is recommended that software supporting XMILE use double-precision floating point numbers as specified by IEEE 754.   At a minimum, such software should maintain at least single-precision floating point numbers.
+
+[[sec-basic-functionality]]
+=== Basic Functionality
+
+The following sections define the core system dynamics language that is REQUIRED to be XMILE-compliant.
+
+[[sec-stocks]]
+==== Stocks
+
+Stocks accumulate. To simulate, their value at the start of the simulation MUST be set as either a constant or with an initial equation. The initial equation is evaluated only once, at the beginning of the simulation.
+
+During the course of the simulation, the value of a stock is increased by its inflows and decreased by its outflows. Using the discrete time interval __dt__ and subscripted text to represent a value at given time, we can write
+
+__stockt__ = __stockt__ - __dt__ pass:c[+] __dt__(__inflowst__ - __dt__ – __outflowst__ - __dt__)
+
+The above computation is notional, though it is used in one of the specified integration techniques (Euler).
+
+In specifying a stock, we list its inflows and outflows separately as in:
+
+**stock**:  Population +
+**inflows**:   births, immigration +
+**outflows**: deaths, emigration +
+**eqn**:  100 +
+**units**: people
+
+[[sec-flows]]
+==== Flows
+
+Flows represent rates of change of the stocks. To simulate, they MUST be defined using any algebraic expression as described in <<sec-expressions>> or by using a graphical function as described in <<sec-graphical-functions>>.
+
+During the course of a simulation, a flow’s value is computed and used in the computation of levels as described. An example flow:
+
+**flow**:  births +
+**eqn**pass:c[: Population*birth_rate] +
+**units**: people/year
+
+[[sec-auxiliaries]]
+==== Auxiliaries
+
+Auxiliaries allow the isolation of any algebraic function that is used. They can both clarify a model and factor out important or repeated calculations. To simulate, they MUST be defined using any algebraic expression (including a constant value), optionally in conjunction with a graphical function.
+
+An example auxiliary:
+
+**aux**pass:c[:  birth_rate] +
+**eqn**pass:c[:   normal_birth_rate*food_availability_multiplier] +
+**units**: people/person/year
+
+Auxiliaries can also represent constants:
+
+**aux**pass:c[:  normal_birth_rate] +
+**eqn**:   0.04 +
+**units**: people/person/year
+
+[[sec-graphical-functions]]
+==== Graphical Functions
+
+Graphical functions are alternately called lookup functions and table functions. They are used to describe an arbitrary relationship between one input variable and one output variable. The domain of these functions is consistently referred to as __x__ and the range is consistently referred to as __y__.
+
+A graphical function MUST be defined either with an x-axis scale and a set of __y__-values (evenly spaced across the given __x__-axis scale) or with a set of __x__-__y__ pairs. An example of a graphical function using an __x__-axis scale with a set of __y__-values:
+
+pass:c[Graphical Function:  food_availability_multiplier_function] +
+__x__ scale:   0 to 1 +
+__y__ values: 0, 0.3, 0.55, 0.7, 0.83, 0.9, 0.95, 0.98, 0.99, 0.995, 1
+
+As there are 11 __y__ values, the __x__-axis also must be divided into 11 values from zero to one, leading to an __x__-axis interval of 0.1. The graph of this function appears below.
+
+0 image:figure-graphical-function-curve.png[]
+
+0 1
+
+Distinct __x__-__y__ pairs are intended for use when the function cannot be properly represented by using a fixed interval along the __x__-axis.  Although not desired for the above graphical function, it can be represented using a set of __x__-__y__ pairs as follows:
+
+pass:c[Graphical Function:  food_availability_multiplier_function] +
+__x__ values:   0, 0.1, 0.2,   0.3, 0.4,   0.5, 0.6,   0.7,   0.8,   0.9,     1 +
+__y__ values: 0, 0.3, 0.55, 0.7, 0.83, 0.9, 0.95, 0.98, 0.99, 0.995, 1
+
+The example graphical function above is continuous. There are three types of graphical functions supported, with these names, which define how intermediate and out-of-range values are calculated:
+
+Name Description
+
+__continuous__ Intermediate values are calculated with linear interpolation between the intermediate points. Out-of-range values are the same as the closest endpoint (i.e, no extrapolation is performed).
+
+__extrapolate__ Intermediate values are calculated with linear interpolation between the intermediate points. Out-of-range values are calculated with linear extrapolation from the last two values at either end.
+
+__discrete__ Intermediate values take on the value associated with the next lower __x__-coordinate (also called a step-wise function). The last two points of a discrete graphical function must have the same __y__ value. Out-of-range values are the same as the closest endpoint (i.e, no extrapolation is performed).
+
+Graphical functions can stand alone, as shown above, or be embedded within a flow or auxiliary. In the latter case, the graphical function name is OPTIONAL, for example:
+
+**aux**pass:c[:  food_availability_multiplier] +
+**eqn**:   Food
+
+**gf**: +
+**xscale**: 0.0-1.0 +
+**ypts**: 0, 0.3, 0.55, 0.7, 0.83, 0.9, 0.95, 0.98, 0.99, 0.995, 1
+
+[[sec-model-decomposition]]
+==== Model Decomposition
+
+Larger models are typically organized into smaller parts, often called, groups, sectors or views, in order to make them easier to understand. In XMILE, this can be accomplished by arranging or tagging variables for inclusion in groups, breaking up the displays for a model into different views, nesting models, or creating separate models that exchange inputs and outputs with one another.
+
+Groups represent the simplest of these organizational concepts. Groups allow related model variables to be collected in one physical place on the diagram. Any subset of groups MAY be independently simulated if the application software supports that, though no explicit restrictions on how such computational closure is obtained are required by the standard. Every group has a unique name and its own documentation.  The names of variables of IDs of drawing objects within that group are listed in the group:
+
+**group**: Fleet Size +
+**entities**pass:c[:   Fleet, buy_planes, sell_planes] +
+**display**: UID 7, UID 8
+
+Groups do not have any direct effect on computation, except when simulated independently. Groups can also be used to control the visual display of models as discussed in later sections on this specification and can be used by documentation and other tools to organize equations and variable definitions.
+
+Submodels are more formal than groups. These are extensions of the basic modeling language and so may not be supported by all implementations. They are described in a later section of this specification.
+
+[[sec-general-conventions]]
+=== General Conventions
+
+All statements and numeric constants follow US English conventions. Thus, built-in function names are in English, operators are based on the Roman character set, and numeric constants are expressed using US English delimiters (that is, a period is used for a decimal point).
+
+Variable names, model names, group names, unit names, comments, and embedded text MAY be localized.
+
+[[sec-numeric-constants]]
+==== Numeric Constants
+
+As mentioned, numeric constants MUST follow US English conventions and are expressed as floating point numbers in decimal. They begin with either a digit or a decimal point and contain any number of digits on either side of the OPTIONAL decimal point.  They MUST contain at least one digit, but a decimal point is OPTIONAL. The number can be OPTIONALLY followed by an “E” (or “e”) and a signed integer constant. The “E” is used as shorthand for scientific notation and represents “times ten to the power of”.
+
+In BNF,
+
+__number__ pass:c[::= { []__digit__pass:c[\]+[]**.**pass:c[[]__digit__pass:c[\]*\] | []__digit__pass:c[\]*]**.**pass:c[[]__digit__pass:c[\]+ }[{]**E** | **e**pass:c[} [{]**pass:c[+]** | **–**pass:c[}\] []__digit__pass:c[\]+\]]
+
+__digit__ pass:c[::= {] **0** | **1** | **2** | **3** | **4** | **5** | **6** | **7** | **8** | **9** pass:c[}]
+
+Note that negative numbers are entered using the unary minus sign which is included in expressions (<<sec-expressions>>).
+
+Sample numeric constants: 0 -1 .375 14. 6E5 +8.123e-10
+
+[[sec-identifiers]]
+==== Identifiers
+
+Identifiers are used throughout a model to give variables, namespaces, units, subscripts, groups, macros, and models names. Most of these identifiers will appear in equations, and as such need to follow certain rules to allow for well-formed expressions.
+
+The form of identifiers in XMILE is relatively restrictive, but arbitrary UTF8 strings MAY be included by surrounding the names in double quotes (") and appropriately escaping certain special characters. This will mean that some variable names may require quotes, even when they would not be required in their vendor-specific implementation.
+
+pass:c[Note the underscore (_) is often used in variables that appear in diagrammatic representations with a space. For example] __pass:c[birth_rate]__ might appear as simply __birth rate__ in the diagram. One consequence of this is that __pass:c[birth_rate]__, __pass:c["birth_rate"]__, and __"birth rate"__ are all considered to be the same name. Typically, only one of these forms (__pass:c[birth_rate]__) SHOULD be used.
+
+[[sec-identifier-form]]
+===== Identifier Form
+
+Identifiers are formed by a sequence of one or more characters that include roman letters (A-Z or a-z), underscore (_), dollar sign ($), digits (0-9), and Unicode characters above 127. Identifiers SHALL NOT begin with a digit or a dollar sign (with exceptions as noted for units of measure), and SHALL NOT begin or end with an underscore.
+
+Any identifier MAY be enclosed in quotation marks, which are not part of the identifier itself. An identifier MUST be enclosed within quotation marks if it violates any of the above rules. Within quotation marks, a few characters MUST be specified with an escape sequence that starts with a backslash. All other characters are taken literally. The only valid escape sequences appear below. No other character SHALL appear after a backslash. If any character other than those specified below appears after a backslash, the identifier is invalid.
+
+Escape sequence Character
+
+\" quotation mark (")
+
+\n newline
+
+\\ backslash
+
+Sample identifiers:
+
+Cash_Balance draining2 "wom multiplier" "revenue\ngap"
+
+Control characters (those below U+0020) SHOULD never appear in an identifier, even one surrounded by quotation marks but MAY be treated as a space if encountered when reading a file.
+
+[[sec-identifier-equivalences]]
+===== Identifier Equivalences
+
+Case-insensitive:  Identifiers MAY use any mixture of uppercase and lowercase letters, but identifiers that differ only by case will be considered the same. Thus, Cash_Balance, cash_balance, and CASH_BALANCE are all the same identifier. For Unicode characters, case-insensitivity SHALL be defined by the Unicode Collation Algorithm (UCA – http://www.unicode.org/unicode/reports/tr10/), which is compliant with ISO 14651. For C, C++, and Java, this algorithm is implemented in the International Components for Unicode (ICU – http://site.icu-project.org/).
+
+Whitespace:  Whitespace characters SHALL include the space ( ), non-breaking space (U+00A0),  newline (\n), and underscore (_). Within an identifier, whitespace characters SHALL be considered equivalent. Thus, wom_multiplier is the same identifier as "wom multiplier" and "wom\nmultiplier".
+
+Additionally, groups of whitespace characters SHALL always be treated as __one__ pass:c[whitespace character for the purposes of distinguishing between identifiers. Thus, wom_multiplier is the same identifier as wom______multiplier.]
+
+Unicode equivalences:  There are several Unicode spaces, e.g., the en-space (U+2002) and the em-space (U+2003). These SHALL not treated as whitespace within XMILE. If they are supposed to be treated as whitespace, be certain to map them to a valid XMILE whitespace character when entered by the user. Likewise, the roman characters, including letters, digits, and punctuation, are duplicated at full width from U+FF00 to U+FF5E.  These SHALL NOT be recognized in XMILE as valid operators, symbols, or digits, nor do the letters match with the normal roman letters.  It is strongly RECOMMENDED that these be mapped to the appropriate roman characters when entered by the user.
+
+[[sec-namespaces-3-2-2-3]]
+===== Namespaces
+
+To avoid conflicts between identifiers in different libraries of functions, each library, whether vendor-specific or user-defined, SHOULD exist within its own namespace.footnote:[Note that when the actual encoding of models in XML is done there will be additional identifiers (tags and descriptors) that are part of the XML specification. These are treated separately from the namespaces and identifiers that are part of a model, and follow the conventions of XML which are somewhat different (more restrictive identifiers, a colon instead of period for separators and so on).] Note that identifiers within macros and submodels, by definition, appear in their own local namespace (see <<sec-macros-implementing-functions>> and  <<sec-submodels>>). Array dimension names also receive special treatment as described below and in <<sec-arrays>>.
+
+A namespace SHALL be specified with an identifier. An identifier from a namespace other than the local one is only accessible by qualifying it with its namespace, a period (.), and the identifier itself, with no intervening spaces. For example, the identifier __find__ within the namespace __funcs__ would be accessed as __funcs.find__ (and not as __funcs . find__).  Such a compound identifier is known as a __qualified name__; those without the namespace are known as __unqualified__.
+
+Namespace identifiers MUST be unique across a whole-model and cannot conflict with any other identifier.  XMILE predefines its own namespace and a number of namespaces for vendors:
+
+Name Purpose
+
+std All XMILE statement and function identifiersfootnote:[Note that both units has its own separate, unnamed namespace. Unit names always appear separately from equations so there is never any overlap.]
+
+user User-defined function and macro names
+
+anylogic All Anylogic identifiers
+
+forio All Forio Simulations identifiers
+
+insightmaker All Insight Maker identifiers
+
+isee All isee systems identifiers
+
+powersim All Powersim Software identifiers
+
+simanticssd All Simantics System Dynamics Tool identifiers
+
+simile All Simulistics identifiers
+
+sysdea All Strategy Dynamics identifiers
+
+vensim All Ventana Systems identifiers
+
+It is RECOMMENDED that user defined functions and macros be included in a child namespace of the global `+user+` namespace.
+
+Namespaces MAY be nested within other namespaces. For example, `+isee.utils.find+` would refer to a function named `+find+` in the `+utils+` namespace of the `+isee+` namespace.
+
+Unqualified names are normally only resolved within the containing model (along with the implicit array namespace or, in a macro definition, strictly inside the macro), i.e., they are assumed local to their model. However, an entire XMILE file, or individual models within an XMILE file, can avoid the use of qualified names from other namespaces, especially for function names in equations, by specifying that the given file or model uses one or more namespaces. In this case, unqualified names MUST first be resolved locally, within the containing model. If no match is found, the specified namespaces MUST then be searched in order, from left to right as specified, until a match is found.  By obeying the specified namespace order, XMILE allows user to control how conflicting identifiers are resolved.  However, it is strongly RECOMMENDED that a warning be generated for such conflicts.  It is also RECOMMENDED that vendors provide an option to treat these as errors.
+
+Note this namespace resolution capability is only available for explicitly defined namespaces and not for the implicit namespaces of submodels (see <<sec-submodels>>). Any identifiers other than array dimensions that are accessed across models MUST be qualified.footnote:[As explained in <<sec-arrays>>, array dimensions must be visible and identical across an entire model.]
+
+By default, all XMILE files are in the `+std+` namespace, but this MAY be overridden by explicitly setting one or more namespaces. It is intended that most XMILE files SHALL specify that they use the `+std+` namespace, thus obviating the need to include `+std+`. in front of all XMILE identifiers.
+
+The same identifier can be used in different namespaces, but identifiers in the `+std+` namespace SHOULD be reserved to prevent confusion. Similarly, identifiers in any libraries of functions or macros (whether vendor-supplied or user-defined) SHOULD be avoided. It is strongly RECOMMENDED that implementations do not allow the addition of model variables that are the same as function or macro names and that when a new library is added to the whole-model, a check for conflicting symbols be performed.
+
+[[sec-identifier-conventions]]
+===== Identifier Conventions
+
+Identifiers defined by XMILE, including registered vendor namespaces (see <<sec-namespaces-3-2-2-3>>), should be chosen so that they do not require quotation marks. Note that the registered vendor names are all in lowercase; this is intentional.  It is also preferred that vendors choose the identifiers within their namespaces such that they do not require quotation marks.
+
+[[sec-reserved-identifiers]]
+===== Reserved Identifiers
+
+The operator names `+AND+`, `+OR+`, and `+NOT+`, the statement keywords `+IF+`, `+THEN+`, and `+ELSE+`, the names of all built-in functions, and the XMILE namespace `+std+`, are reserved identifiers. They cannot be used as vendor- or user-defined namespaces, macros, or functions. Any conflict with these names that is found when reading user- or vendor-supplied definitions SHOULD be flagged as an error to the end user.
+
+[[sec-data-types]]
+==== Data Types
+
+There is only one data type in XMILE:  real numbers. Although some parts of the language require integers, e.g., array indices, these are still represented as real numbers.
+
+[[sec-containers]]
+==== Containers
+
+All containers in XMILE are lists of numbers. As much as possible, the syntax and operation of these containers are consistent. Only one container is inherent to XMILE:  graphical functions. Three containers are optional in XMILE:  arrays, conveyors, and queues.
+
+Neither a graphical function nor an array SHALL change its size during a simulation. However, the size of a conveyor (its length) MAY change and the size of a queue changes as a matter of course during a simulation.
+
+Since all four containers are lists of numbers we may wish to operate on (for example, find their mean or examine an element), they are uniformly accessed with square bracket notation as defined in <<sec-arrays>>, Arrays. There are also a number of built-in functions that apply to all of them. These features are OPTIONAL and are only guaranteed to be present if arrays are supported.
+
+[[sec-expressions]]
+=== Expressions
+
+Equations are defined using expressions.  The simplest expression is simply a constant, e.g., 3.14.
+
+Expressions are infix (e.g., algebraic), following the general rules of algebraic precedence (parenthesis, exponents, multiplication and division, and addition and subtraction – in that order). Since our set of operators is much richer than basic algebra, we have to account for functions, unary operators, and relational operators. In general, the rules for precedence and associativity (the order of computation when operators have the same precedence) follow the established rules of the C-derived languages.
+
+Expressions in an XMILE document MUST follow the rules or assertions expressed in this section and sub-sections, even when these are not worded using RFC2119 keywords.
+
+[[sec-operators]]
+==== Operators
+
+The following table lists the supported operators in precedence order. All but exponentiation and the unary operators have left-to-right associativity (right-to-left is the only thing that makes sense for unary operators).
+
+Operators Precedence Group (in decreasing order)
+
+{empty}[ ] Subscripts
+
+( ) Parentheses
+
+^ Exponentiation (right to left)
+
+pass:c[+  –]  `+NOT+` Unary operators positive, negative, and logical not
+
+pass:c[*  /]  `+MOD+` Multiplication, division, modulo
+
++ – Addition, subtraction
+
+<  <= >  >= Relational operators
+
+{empty}=  <> Equality operatorsfootnote:[Although mathematics classifies <> as relational, computer languages typically lump it with equality.]
+
+`+AND+` Logical and
+
+`+OR+` Logical or
+
+Note the logical, relational, and equality operators are all defined to return zero (0) if the result is false and one (1) if the result is true.
+
+Modulo is defined to return the floored modulus proposed by Knuth.  In this form, the sign of the result always follows the sign of the divisor, as one would expect.footnote:[Note the standard C modulo operator uses the truncated modulus which gives a sign consistent with the dividend. The choice of modulus method affects integer division, which does not exist in XMILE, as well as the `+INT+` pass:c[function, which must return the floor of the number. By definition, a = INT(a/b)*b + a MOD b.]]
+
+Sample expressions: `+a*b+`  `+(x < 5) and (y >= 3)+`  `+(–3)^x+`
+
+[[sec-function-calls]]
+==== Function Calls
+
+Parentheses are also used to provide parameters to function calls, e.g., `+ABS(x)+`. In this case, they take precedence over all operators (as do the commas separating parameters). Note that functions that do not take parameters do not include parentheses when used in an equation, e.g., `+TIME+`. There are several cases where variable names MAY be (syntactically) used like a function in equations:
+
+* Named graphical function:  The graphical function is evaluated at the passed valued, e.g., given the graphical function named `+cost_f+`, `+cost_f(2003)+` evaluates the graphical function at __x__ = 2003.
+
+* Named model:  A model that has a name, defined submodel inputs, and one submodel output can be treated as a function in an equation, e.g., given the model named `+maximum+` with one submodel input and one submodel output that gives the maximum value of the input over this run, `+maximum(Balance)+` evaluates to the maximum value of `+Balance+` during this run. When there is more than one submodel input, the order of the parameters must be defined as they are for a macro definition. For more information, see <<sec-macros-implementing-functions>> (macros) and 3.7.4 (submodels).
+
+* Array name:  An array name can be passed the flat index (i.e., the linear row-major index) of an element to access that element. Since functions can only return one value, this can be useful when a function must identify an element across a multidimensional array (e.g., the `+RANK+` built-in). For example, given the three-dimensional array `+A+` with bounds `+[2, 3, 4]+`, `+A(10)+` refers to the tenth element in row-major order, i.e., element `+A[1, 3, 2]+`. See <<sec-arrays>> for more information about arrays.
+
+[[sec-structured-statements]]
+==== Structured Statements
+
+One control structure statement MUST be supported:
+
+`+IF+` __condition__ `+THEN+` __expression__ `+ELSE+` __expression__
+
+where __condition__ is an expression that evaluates to true or false. We follow the convention of C that all non-zero values are true, while zero is false. Generally, __condition__ is an expression involving the logical, relational, and equality operators.
+
+Note that some vendors implement this as a built-in function:
+
+`+if_then_else+`(__condition__, __then-expression__, __else-expression__)
+
+While the statement form is preferred, this OPTIONAL alterative, if used, should be implemented by the vendor using an XMILE macro (<<sec-extending-the-standard-language>>).
+
+[[sec-in-line-comments]]
+==== In-line Comments
+
+Comments are provided to include explanatory text that is ignored by the computer and MUST be supported. Comment are delimited by braces { } and MAY be included anywhere within an expression. This functionality allows the modeler to temporarily turn off parts of an equation or to comment the separate parts of a complex formulation.
+
+Sample comments:  `++a*b { take product of a and b } + c { then add c }++`
+
+[[sec-documentation]]
+==== Documentation
+
+Each variable OPTIONALLY has its own documentation, which is a block of unrestricted text unrelated to the equation. This MAY be stored in either plain text or in rich text (HTML).
+
+[[sec-units]]
+==== Units
+
+Each variable OPTIONALLY has its own units of measure, which are specified by combining other units defined in the `+units+` namespace as described below.
+
+Units of measure are specified with XMILE expressions, called the __unit equation__pass:c[, restricted to the operators ^ (exponentiation), - or * (multiplication), and / (division) with parentheses as needed to group units in the numerator or denominator. Exponents MUST be integers. When there are no named units in the numerator (e.g., units of “per second”), the integer one (1), or one of its aliases as described below, MUST be used as a placeholder for the numerator (e.g., 1/seconds). The integer one (1) MAY be used at any time to represent the identity element for units and both Dimensionless and Dmnl are RECOMMENDED as built-in aliases for this.]
+
+Units appearing in the __unit equation__ pass:c[MAY also be defined in terms of other units. For example, Square Miles would have the equation Miles^2. When a unit is defined in this way, any use of it is the equivalent of using its defining equation. Units with no defining equation are called primary units. Every] __unit equation__ can be reduced to an expression involving only primary units by the process of substitution.
+
+Unit aliases allow multiple names to have the same meaning. For example, People, Person, and Persons could all be considered to be the same. When a unit has an alias, that unit's name or any of its aliases MAY be used interchangeably for the purpose of specifying the __units equation__. Aliases are actually a special case of units being defined by other units, but allowing multiple aliases simplifies the way that information about units is kept. Unit aliases may be chained by specifying the name of an existing unit (or one of its aliases) as the equation. This allows the addition of user-defined aliases for built-in units in a straightforward manner.
+
+A unit is thus specified by a name, an equation, and a sequence of aliases. The name and equation are standard XMILE identifiers except that $ is allowed as the first (and often only) character in the name of a unit without surrounding quotes. Also, the single digit 1 is used as the unit identity. Like variables names, unit names are stored with underscores (_) but generally presented to users with spaces. A unit with no equation is a primary unit. A unit with an equation SHOULD, when possible, be presented to the user with its name rather than its equation
+
+There is a separate unnamed namespace for units. All units, regardless of which model they are contained in, are resolved against that single namespace.
+
+The following baseline unit definitions are RECOMMENDED. 1 is REQUIRED.
+
+Name Equation   Aliases
+
+`+1     Dimensionless, Unitless, Dmnl+`
+
+`+nanoseconds     ns, nanosecond+`
+
+`+microseconds     us, microsecond+`
+
+`+milliseconds     ms, milliseconds+`
+
+`+seconds     s, second+`
+
+`+per_second 1/seconds+`
+
+`+minutes     min, minute+`
+
+`+per_minute 1/minutes+`
+
+`+hours     hr, hour+`
+
+`+per_hour 1/hours+`
+
+`+days     day+`
+
+`+per_day 1/days+`
+
+`+weeks     wk, week+`
+
+`+per_week 1/weeks+`
+
+`+months     mo, month+`
+
+`+per_month 1/months+`
+
+`+quarters     qtr, quarter+`
+
+`+per_quarter 1/quarters+`
+
+`+years     yr, year+`
+
+`+per_year 1/years+`
+
+Each model SHOULD contain a list of unit definitions that are used by that model to resolve __unit equations__ for the purpose of checking units. While, when defining a unit, both the equation and the aliases are optional, a unit that has neither SHOULD NOT be separately defined, as such units MUST be recognized implicitly when the __unit equation__ is parsed. Since an XMILE file may reference other files with Unit Definitions, there MAY be repetition within these. Repetition MUST be ignored.
+
+Because unit definitions can involve equations, they have the potential to be circular. The unit definitions specified in a whole-model MUST NOT have any circularity either through their equations or aliases. This also means that no alias SHALL appear more than once, or as a name. If a circular definition, name repetition, or alias repetition occurs as a result of combining the specified units with an implementation's built-in units, the implementation SHOULD respect the unit definitions for the model when it is possible to do so. To make that resolution persist, it is also possible to mark unit names, and by implication their associated equation and aliases, as “disabled” in the XMILE file. Disabled definitions MAY be ignored in implementations where the name does not exist in the built-in unit definitions.
+
+[[sec-simulation-specifications]]
+=== Simulation Specifications
+
+Every XMILE model MUST specify the start time and the stop time of the simulation. If DT is not specified, it defaults to one (1). For DT <= 1, DT MAY be specified as an integer reciprocal (e.g., 16 for DT = 1/16). Units of time MUST be specified, usually with XMILE predefined time units (<<sec-units>>).
+
+The language also supports an OPTIONAL pause interval. By default, a model runs to completion (from STARTTIME to STOPTIME). However, if the pause interval is specified, the model pauses at all times that match STARTTIME + interval*N; N > 0. Software packages are free to ignore this specification if they do not support this mode of operation.
+
+The simulation specifications MAY also specify whether to only run selected groups (each selected group is marked), only run selected submodels (each selected submodel is marked), or run the whole-model (default).
+
+[[sec-integration-methods]]
+==== Integration Methods
+
+By default, the integration method is Euler’s, but other methods are supported as follows:
+
+XMILE Name Integration Method
+
+`+euler+` Euler’s method (default)
+
+`+rk4+` Runge-Kutta 4
+
+`+rk2+` Runge-Kutta 2 (OPTIONAL – falls back to RK4)
+
+`+rk45+` Runge-Kutta mixed 4th- 5th-order (OPTIONAL)
+
+`+gear+` Gear algorithm (OPTIONAL)
+
+The last three integration methods are OPTIONAL. In these cases, a supported fallback method SHOULD also be provided, for example, “`+gear+`, `+rk4+`”. This means that Gear should be used if the product supports it. Otherwise, use rk4.
+
+Some vendors do not offer RK2, as it is less useful than it once was when computing power was expensive. XMILE defines RK4 to always be the fallback for RK2, i.e., RK2 implies “`+rk2, rk4+`.”
+
+[[sec-simulation-events]]
+==== Simulation Events
+
+Events based on entity values MAY be triggered while the model is being simulated. Any implementation that does not support simulation events is free to ignore them.
+
+Within the simulation, these events are limited to pausing or stopping the simulation. Events are specified as a series of threshold values that, when exceeded, trigger the specified action:
+
+XMILE Name Action
+
+`+pause+` Pause the simulation (default)
+
+`+stop+` Stop the simulation
+
+`+message+` Issue a message such as a warning but allow the simulation to continue
+
+For each value, thresholds can be exceeded in either of two directions (only):
+
+XMILE Name Action occurs when entity value becomes:
+
+`+increasing+` Larger than the threshold (default)
+
+`+decreasing+` Smaller than the threshold
+
+The number of times the event occurs during the simulation (its frequency) can also be controlled:
+
+XMILE Name Event occurs:
+
+`+each+` Each time the threshold is exceeded (default)
+
+`+once+` Only the first time the threshold is exceeded each run
+
+`+once_ever+` Only the first time the threshold is exceeded this session
+
+When the frequency is set to `+each+`, an OPTIONAL repetition interval can also be specified which causes the event to be triggered again every so many unit times (at the specified interval) that the variable remains above the threshold.
+
+Each unique threshold value and direction MAY be given more than one event. In this case, the events are triggered in order based on which instance the threshold has been exceeded since the start of the run. For example, if there are three events assigned to a threshold of 5 (increasing), the first event will be triggered the first time the variable goes above 5, the second event will be triggered the second time it goes above 5, and the third will be triggered the third time it goes above 5. If the variable goes above 5 after that, no further events will be triggered.  When multiple events are assigned in this way, the frequency can only be `+once+` or `+once_ever+` (i.e., it cannot be `+each+`).
+
+A range (minimum and maximum) that contains all events MAY also be specified to more readily allow the user to edit the thresholds in context. By default, this range should be initialized to the variable’s known range at the time the events are first created (the user then has to modify them if they are no longer appropriate; they do not readjust if the variable’s range changes).
+
+[[sec-built-in-functions]]
+=== Built-in Functions
+
+Certain built-in functions must be relied upon across all systems. This section strives to define the minimum set of built-in functions that MUST be supported, along with their parameters. The mechanism for defining vendor-specific built-ins is described in <<sec-extending-the-standard-language>>.
+
+[[sec-mathematical-functions]]
+==== Mathematical Functions
+
+{empty}ABS:  absolute value (magnitude) of a number
+
+Parameters: 1:  the number to take the absolute value of
+
+Range:  [0, )
+
+Example: ABS(Balance)
+
+{empty}ARCCOS: arccosine of a number
+
+Parameters: 1:  the number to take the arccosine of
+
+Range:  (0, )
+
+Example: ARCCOS(x)
+
+{empty}ARCSIN: arcsine of a number
+
+Parameters: 1:  the number to take the arcsine of
+
+Range:  (-/2, /2)
+
+Example: ARCSIN(x)
+
+{empty}ARCTAN: arctangent of a number
+
+Parameters: 1:  the number to take the arctangent of
+
+Range:  (-/2, /2)
+
+Example: ARCTAN(x)
+
+{empty}COS:  cosine of an angle in radians
+
+Parameters: 1:  the number to take the cosine of
+
+Range:  [-1, 1]
+
+Example: COS(angle)
+
+{empty}EXP:  value of __e__ raised to the given power
+
+Parameters: 1:  the power on __e__
+
+Range:  (-, )
+
+Example: EXP(x)
+
+{empty}INF:  value of infinity
+
+Parameters: none
+
+Example: INF
+
+{empty}INT:  next integer less than or equal to the given number
+
+Parameters: 1:  the number to find next lowest integer of
+
+Range:  (-, ); note negative fractional numbers increase in magnitude
+
+Example: INT(x)
+
+{empty}LN:  natural (base-__e__) logarithm of the given number
+
+Parameters: 1:  the number to find the natural logarithm of
+
+Range:  [0, ); note domain is (0, )
+
+Example: LN(x)
+
+LOG10:  base-10 logarithm of the given number
+
+Parameters: 1:  the number to find the base-10 logarithm of
+
+Range:  [0, ); note domain is (0, )
+
+Example: LOG10(x)
+
+{empty}MAX:  larger of two numbers
+
+Parameters: 2:  the numbers to compare
+
+Example: MAX(x, y)
+
+{empty}MIN:  smaller of two numbers
+
+Parameters: 2:  the numbers to compare
+
+Example: MIN(x, y)
+
+{empty}PI:  value of , the ratio of a circle’s circumference to its diameter
+
+Parameters: none
+
+Example: PI
+
+{empty}SIN:  sine of an angle in radians
+
+Parameters: 1:  the number to take the sine of
+
+Range:  [-1, 1]
+
+Example: SIN(angle)
+
+{empty}SQRT:  square root of a positive number
+
+Parameters: 1:  the number to take the square root of
+
+Range:  [0, ); note domain is the same
+
+Example: SQRT(x)
+
+{empty}TAN:  tangent of an angle in radians
+
+Parameters: 1:  the number to take the tangent of
+
+undefined for odd multiples of /2
+
+Range:  (-, )
+
+Example: TAN(angle)
+
+[[sec-statistical-functions]]
+==== Statistical Functions
+
+{empty}EXPRND: Sample a value from an Exponential distribution
+
+Parameters: 1 or 2:  (__mean__pass:c[[,] __seed__pass:c[\]); 0 ≤] __seed__ < 232
+
+If __seed__ is provided, the sequence of numbers will always be identical
+
+Example: EXPRND(8) samples from an exponential distribution with mean 8
+
+{empty}LOGNORMAL:  Sample a value from a log-normal distribution
+
+Parameters: 2 or 3:  (__mean__, __standard deviation__pass:c[[,] __seed__pass:c[\]); 0 ≤] __seed__ < 232
+
+If __seed__ is provided, the sequence of numbers will always be identical
+
+Example: LOGNORMAL(10, 1) samples from a lognormal distribution with mean 10 and standard deviation 1
+
+{empty}NORMAL: Sample a value from a Normal distribution
+
+Parameters: 2 or 3:  (__mean__, __standard deviation__pass:c[[,] __seed__pass:c[\]); 0 ≤] __seed__ < 232
+
+If __seed__ is provided, the sequence of numbers will always be identical
+
+Example: NORMAL(100, 5) samples from __N__(100, 5)
+
+{empty}POISSON: Sample a value from a Poisson distribution
+
+Parameters: 2 or 3:  (__mean__pass:c[[,] __seed__pass:c[\]); 0 ≤] __seed__ < 232
+
+If __seed__ is provided, the sequence of numbers will always be identical
+
+Example: POISSON(3) samples from a Poisson distribution with a mean arrival rate of 3 arrivals per unit time
+
+{empty}RANDOM: Sample a value from a uniform distribution
+
+Parameters: 2 or 3:  (__minimum__, __maximum__pass:c[[,] __seed__pass:c[\]); 0 ≤] __seed__ < 232
+
+If __seed__ is provided, the sequence of numbers will always be identical
+
+Example: RANDOM(1, 100) picks a random number between 1 and 100
+
+[[sec-delay-functions]]
+==== Delay Functions
+
+{empty}DELAY:  infinite-order material delay of the input for the requested fixed time
+
+Parameters: 2 or 3:  (__input__, __delay time__pass:c[[,] __initial value__pass:c[\])]
+
+If __initial value__ is not provided, the initial value of __input__ will be used
+
+Example: DELAY(orders, ship_time)
+
+DELAY1: first-order material delay of the input for the requested fixed time
+
+Parameters: 2 or 3:  (__input__, __delay time__pass:c[[,] __initial value__pass:c[\])]
+
+If __initial value__ is not provided, the initial value of __input__ will be used
+
+Example: DELAY1(orders, ship_time)
+
+DELAY3: third-order material delay of the input for the requested fixed time
+
+Parameters: 2 or 3:  (__input__, __delay time__pass:c[[,] __initial value__pass:c[\])]
+
+If __initial value__ is not provided, the initial value of __input__ will be used
+
+Example: DELAY3(orders, ship_time)
+
+{empty}DELAYN: __N__th-order material delay of the input for the requested fixed time
+
+Parameters: 3 or 4:  (__input__, __delay time, n__pass:c[[,] __initial value__pass:c[\])]
+
+If __initial value__ is not provided, the initial value of __input__ will be used
+
+Example: DELAYN(orders, ship_time, 10) delays orders using a 10th order material delay
+
+{empty}FORCST: Perform a trend extrapolation over a time horizon
+
+Parameters: 3 or 4:  (__input__, __averaging time__, __horizon__pass:c[, [,] __initial trend__pass:c[\])]
+
+If __initial trend__ is not provided, zero will be used
+
+Example: FORCST(Quality, 5, 10) calculates value of quality 10 time units in the future
+
+SMTH1: first-order exponential smooth of the input for the requested time
+
+Parameters: 2 or 3:  (__input__, __averaging time__pass:c[[,] __initial value__pass:c[\])]
+
+If __initial value__ is not provided, the initial value of __input__ will be used
+
+Example: SMTH1(Quality, perception_time)
+
+SMTH3: third-order exponential smooth of the input for the requested time
+
+Parameters: 2 or 3:  (__input__, __averaging time__pass:c[[,] __initial value__pass:c[\])]
+
+If __initial value__ is not provided, the initial value of __input__ will be used
+
+Example: SMTH3(Quality, perception_time)
+
+{empty}SMTHN: __N__th-order exponential smooth of the input for the requested time
+
+Parameters: 3 or 4:  (__input__, __averaging time__, __n__pass:c[[,] __initial value__pass:c[\])]
+
+If __initial value__ is not provided, the initial value of __input__ will be used
+
+Example: SMTHN(Quality, perception_time, 10) performs a 10th order smooth
+
+{empty}TREND: Find trend in input over a given time frame
+
+Parameters: 2 or 3:  (__input__, __averaging time__pass:c[, [,] __initial value__pass:c[\])]
+
+If __initial value__ is not provided, zero will be used
+
+Example: TREND(Quality, 5) calculates the fractional change in Quality per unit time
+
+[[sec-test-input-functions]]
+==== Test Input Functions
+
+{empty}PULSE:  Generate a one-DT wide pulse at the given time
+
+Parameters: 2 or 3:  (__magnitude__, __first time__pass:c[[,] __interval__pass:c[\])]
+
+Without __interval__ or when __interval__ = 0, the PULSE is generated only once
+
+Example: PULSE(20, 12, 5) generates a pulse value of 20/DT at time 12, 17, 22, etc.
+
+{empty}RAMP:  Generate a linearly increasing value over time with the given slope
+
+Parameters: 2:  (__slope__, __start time__); begin in-/de-creasing at __start time__
+
+Example: RAMP(2, 5) generates a ramp of slope 2 beginning at time 5
+
+{empty}STEP:  Generate a step increase (or decrease) at the given time
+
+Parameters: 2:  (__height__, __start time__); step up/down at __start time__
+
+Example: STEP(6, 3) steps from 0 to 6 at time 3 (and stays there)
+
+[[sec-time-functions]]
+==== Time Functions
+
+{empty}DT:  value of DT, the integration step
+
+Parameters: none
+
+Example: DT
+
+{empty}STARTTIME: starting time of the simulation
+
+Parameters: none
+
+Example: STARTTIME
+
+{empty}STOPTIME: ending time of the simulation
+
+Parameters: none
+
+Example: STOPTIME
+
+{empty}TIME:  current time of the simulation
+
+Parameters: none
+
+Example: TIME
+
+[[sec-miscellaneous-functions]]
+==== Miscellaneous Functions
+
+{empty}INIT:  initial value (i.e., value at STARTTIME) of a variable
+
+Parameters: 1:  the variable to get the initial value of
+
+Example: INIT(Balance)
+
+{empty}PREVIOUS: previous value of a variable
+
+Parameters: 2: variable and initial value expression, i.e., (__variable__, __initial value__)
+
+Example: PREVIOUS(price, 0) returns the value of __price__ in the last DT, or zero in the first DT
+
+{empty}SELF: refers to variable the equation defines. Only valid within the PREVIOUS function and the SIZE function defined in the section on Arrays below.
+
+Parameters: none
+
+Examples: PREVIOUS(SELF, 0) retains our previous value in the next DT
+
+[[sec-extending-the-standard-language]]
+=== Extending the Standard Language
+
+XMILE OPTIONALLY provides a way for vendors to specify the operation of both their own functions and the functions of other vendors that their users wish to use. In the latter case, these can map to either their own functions (if available) or to the XMILE functions. As described in <<sec-namespaces-3-2-2-3>>, vendor-specific function names SHOULD appear in their own namespace, and thus be prefixed by a vendor identifier to avoid conflicting names between both different vendors and XMILE, e.g., `+isee.HISTORY+`.
+
+As a simple example, let us say that vendor A does not have a `+LOG10+` built-in, but has a general (any base) `+LOG+` built-in. That vendor should then be able to map any `+LOG10(x)+` function to `+LOG(x, 10)+` when the file is read in. Conversely, if the vendor wishes to use their general `+LOG+` function within XMILE, they should be able to provide a translation that maps `+LOG(x, y)+` to `+LN(x)/LN(y)+`.footnote:[Change of base formula – `+LOG10+` works just as well as `+LN+`.]
+
+The first kind of translation, from XMILE functions to the vendor’s functions, could be handled either by the vendor as the file is read in, or through an XSLT translator. The macro functionality described below could also handle this (by creating a macro for the XMILE function).
+
+The second kind of translation, mapping unsupported functions in the file to XMILE, is the main focus of this section. Every unsupported built-in that a vendor wants to appear within an XMILE file needs to be defined in an XMILE macro. The macros may appear in the same file as the model or in a separate file, perhaps on the Internet. Each vendor is encourages to provide their file of macros to use with their models and to provide that file at a canonical URL.
+
+The exact format used for defining macros is described in Chapter 4.
+
+[[sec-macros-implementing-functions]]
+==== Macros Implementing Functions
+
+Macro support in XMILE implementations is OPTIONAL. However, if an implementation does not support them, it cannot simulate models that use vendor-specific functions. Macros can use all of the syntax of XMILE to achieve their result. The simplest kind of macro is a single expression using existing functions and operators. In this regard, its value is specified in the same way as an auxiliary. The change of base formula above is a good example:
+
+[source,xml]
+----
+LOG(x, y):
+LN(x)/LN(y)
+----
+
+Macros can be recursive, so a slightly more complicate macro would call itself:
+
+[source,xml]
+----
+FACT(x):
+IF x <= 1 THEN 1 ELSE x*FACT(x – 1)
+----
+
+More complicated macros can use stocks, flows, and auxiliaries to define their behavior. This would be the approach, for example, to implement a smooth function if one did not already exist:
+
+[source,xml]
+----
+SMOOTH1(input, averaging_time) returns Smooth_of_Input:
+----
+
+**stock**pass:c[:  Smooth_of_Input] +
+**inflows**pass:c[:   change_in_smooth] +
+**initial eqn**:  input
+
+**flow**pass:c[:  change_in_smooth] +
+**eqn**pass:c[: (input – Smooth_of_Input)/averaging_time]
+
+Macros can also run with their own simulation specifications, which can be calculated from the passed parameters. Such macros are, in fact, independent models that run to completion each time they are invoked. The factorial function, defined recursively above, can also be defined using stocks and flows, provided the simulation specifications are given to run from 1 to __x__ with the default DT of one:
+
+[source,xml]
+----
+FACT(x) returns Current_Factorial:
+----
+
+**stock**pass:c[:  Current_Factorial] +
+**inflows**pass:c[:   change_in_factorial] +
+**initial eqn**:  1
+
+**flow**pass:c[:  change_in_factorial] +
+**eqn**pass:c[: Current_Factorial*TIME]
+
+In equations, the macro name is used as a function. Variable numbers of arguments are not supported, but the same macro MAY be defined multiple times with a different number of arguments. Finally, the names of any variables (including parameter identifiers) defined within a macro are local to that macro alone and will not conflict with any names within either the whole-model or other macros.
+
+Macros OPTIONALLY include text describing their usage format and text describing their purpose, both of which are helpful documentation for the user of the function. They MAY also include display information to allow for graphical editing as described in Chapter 4.
+
+[[sec-macros-extending-building-block-behavior]]
+==== Macros Extending Building Block Behavior
+
+XMILE defines a small subset of building block options that are NOT REQUIRED to be supported (vendors are free to add their own), e.g., non-negativity. These options are included as both documentation and to provide a hook outside the standard to implement them when desired.
+
+One possible way to handle these would be to define built-in macros that are used to envelope an object’s equation. Non-negative flows (aka uniflows), for example, could have their equations wrapped in a built-in macro that implements `+MAX+`(<flow value>, 0). Ideally, though, macros would support these options without having to change any equations. For simple cases, such as non-negative flows, the format can mimic the built-in macros. However, more complicated options require greater support. For example, non-negative stocks implement the non-negative logic in the stock’s __outflows__, not in the stock itself. Furthermore, each outflow needs not only its own value, but the stock’s value, and the sum of the values of every higher-priority flow (which the stock could find for it).
+
+XMILE therefore supports building block options with macro __filters__, also called __option filters__. The filters run after the object’s value has been computed and allow the object’s value to be altered (filtered) based on the option setting. If several filters are needed, they SHALL run in the order they appear in the object’s list of options. A basic filter would only affect the given object, and so is passed just the object itself and the value of the option setting. More complicated filters affect inflows or outflows of the object and need to be invoked for those inflows or outflows and not for the object. They then need to be passed the affected flow, the given stock, and the sum of the inflows or outflows already evaluated. This is summarized in the table below.
+
+[cols="3*",options="header"]
+|===
+|filter type
+|applied to
+|Parameters
+
+|stock, flow, aux
+|itself
+|object value, option value
+
+|stock
+|its inflows
+|flow value, option value, stock value, inflow sum
+
+|stock
+|its outflows
+|flow value, option value, stock value, outflow sum
+
+|flow
+|upstream stock
+|stock value, option value, flow value
+
+|flow
+|downstream stock
+|stock value, option value, flow value
+
+|===
+
+Option filters give software packages and modelers tremendous control over the behavior of the basic building blocks, including the ability to arbitrarily change the value of stock. However, in general, the stock equation in 3.1.1 SHOULD NOT be violated. If you must violate this equation, it is strongly RECOMMENDED that you visually indicate that to the model user (e.g., by using a different symbol for the stock that does not behave as an XMILE stock is defined to behave).
+
+[[sec-optional-language-extensions]]
+=== Optional Language Extensions
+
+Compliant products MUST implement the language described in <<sec-basic-functionality>>-<<sec-built-in-functions>> in its entirety.
+
+Macros, described in <<sec-extending-the-standard-language>>, are OPTIONAL. Vendors may choose to only support a basic macro compatibility, which does not permit macros to refer to other macros (or do recursive calls), and does not support option filters. Models containing macros that refer to other macros, or use option filters should indicate such requirements in the `+<uses_macros>+` tag under `+<options>+`.  See <<sec-xmile-options>> for more information.
+
+There are also a number of OPTIONAL language extensions, described in this section, which are left to each vendor’s discretion as to whether or not to support. These are not intended to be vendor-specific features, but common features that lighter packages may either not support, or support in part. These features include enhanced arrays, conveyors, queues, and submodels.
+
+[[sec-arrays]]
+==== Arrays
+
+Arrays add depth to a model in up to __N__ dimensions. Products that support arrays are free to offer different values of __N__.
+
+Arrays are defined using dimension names. Each subscript indices of each named dimension SHALL be specified with either a name (an XMILE identifier) or with consecutive numbers that MUST start at one. For example, a two-dimensional array of location vs. product could have a dimension called `+Location+` with three indices `+Boston+`, `+Chicago+`, and `+LA+`, and another dimension called `+Product+` with two indices `+dresses+` and `+skirts+`. If we are looking at sales, we might have a variable `+sales[Location, Product]+` which has elements `+sales[Boston, dresses]+`, `+sales[Boston, skirts]+`, `+sales[Chicago, dresses]+`, `+sales[Chicago, skirts]+`, `+sales[LA, dresses]+`, and `+sales[LA, skirts]+`.
+
+Dimension names only ever appear as unqualified identifiers. Because of this, they need to be unique and accessible across a whole-model (including submodels). In addition, they must be distinct from model variables names within the whole-model. Subscript index names, on the other hand, are unique within each dimension name as they typically only appear as a subscript into an array that is defined with that dimension name. Within equations, subscripts are XMILE expressions that appear within square brackets with each index separated by a comma.
+
+Subscript index names MAY be used unambiguously as part of a subscript (i.e., inside the square brackets)footnote:[Note, however, that equations can specify subscripts using equations. In these cases, if a variable name is the same as an element name, the element name prevails (i.e., the variable name is hidden within that subscript).] once the dimensions assigned to the variable have been specified. To use subscript index names in other parts of equations, they MUST be prefixed with the dimension name as in `+Location.Boston+`. Such usage will evaluate to the position of the subscript index name in its definition (e.g., 1.0 for `+Location.Boston+`, 2.0 for `+Location.Chicago+`, and so on).
+
+If a subscript expression results in an invalid subscript index (i.e., it is out of range), a zero (0) MUST be returnedfootnote:[Note this can be NaN if so specified in the `+<uses_arrays>+` tag of the header options block.] and, optionally, a warning SHOULD be given to the user. The user SHOULD be allowed to treat all subscript indices – even named ones – as numbers, specifically integers. Arrays are assumed to be stored in row-major order, which is important for initialization, in data sets, and when using flat indices (as described in <<sec-function-calls>>).
+
+There are two ways to define equations for arrays in XMILE:
+
+* One equation for the entire array (called __Apply-to-All__ arrays):  One equation is given for the array and MAY include dimension names. No element equations appear. Graphical functions MUST use this option to define a single equation, but there MAY still be separate graphical functions defined for each element.
+
+* One equation for each element of the array (called __non-Apply-to-All__ arrays):  Each element of the array appears with its own equation. No equation appears for the entire array.
+
+Within the equations of Apply-to-All arrays only, dimension names MAY be used in subscripts. A dimension name is a placeholder for the subscript index used by the element in which the equation appears. For example, an array `+profit[Location, Product]+` could have the single equation:
+
+[source,xml]
+----
+revenue[Location, Product] – sales[Location, Product]
+----
+
+However, when all indices are dimension names, they can be omitted as usually found in languages that support matrix arithmetic.  The following equation is identical to the above equation and is preferred:
+
+[source,xml]
+----
+revenue – sales
+----
+
+When dimension names are used (or omitted when allowed), the equation for each element of the array SHALL have the dimension name bound to (replaced by) their index in that dimension. For example, when the equation for __profit__pass:c[[]__Boston__, __blouses__pass:c[\] is evaluated, it gets bound to the above equation as follows:]
+
+[source,xml]
+----
+revenue[Boston, blouses] – sales[Boston, blouses]
+----
+
+Clearly, for dimension names to be used in this way, the array containing the equation MUST itself be sized using those dimension names, though not necessarily in the same order (e.g., the same equation could be used for profit defined with dimensions in the opposite order as in `+profit[Product, Location]+`).
+
+[[sec-array-operations]]
+===== Array Operations
+
+As much as possible, arithmetic operators should behave in the expected linear algebra ways. Operations with a scalars fall out using the dimension name syntax. Addition and subtraction of same-sized arrays fall out in the same way. However, for historical reasons, the XMILE operators for multiplication, division, and exponentiation also perform element-by-element operations instead of their linear-algebra analogs (i.e., matrix, or tensor, multiplication and inversion).footnote:[Note that the linear-algebra analogs are not supported by XMILE 1.0.]
+
+There are three ways to transpose arrays:
+
+* Transposition operator:  If reversing the dimensions is sufficient (i.e., turning a 1  __M__ array into an __M__  1 array, transposing a square matrix, or turning an __M__  __N__  __P__ array into a __P__  __N__  __M__ array), the transposition operator, ' (apostrophe), can be used after the array, e.g., `+A'+` or `+A[M, 1, N]'+`. This unary operator has the highest arithmetic precedence (just above exponentiation) and right-to-left associativity.
+
+* Dimension names:  If the dimension names being transposed are unique, the dimension names can be used directly. For example, if array `+A+` has dimensions Dim__M__  Dim__N__  Dim__P__ and array `+B+` has dimensions Dim__P__  Dim__M__, a slice of `+A+` can be assigned to `+B+` with the equation (in `+B+`):  `+A[DimM, 2, DimP]+`. If all the dimensions match, but are in a different order, just the variable name is needed, e.g., to assign an Dim__M__  Dim__N__  Dim__P__ array `+C+` to a Dim__N__  Dim__P__  Dim__M__ array `+D+`, just set `+D+`’s equation to:  `+C+`.
+
+* Dimension positions:  When dimension names are not unique and the desired order is not an exact reversal, neither of the two methods above will work. In this case, the dimension position operator, @ (at-sign), must be used with an absolute dimension position of the dimension in the entity that contains the equation. Given an array `+A+` with dimensions Dim__M__  Dim__N__  Dim__N__ that we wish to assign to an Dim__N__  Dim__N__  Dim__M__ array `+B+` with the first Dim__N__ in `+A+` corresponding to the first Dim__N__ in `+B+`, the equation for `+B+` will be:  `+A[DimM, @1, @2]+`. Note that `+@1+` resolves to the first dimension in `+B+` (i.e., the first Dim__N__) while `+@2+` resolves to the second dimension in `+B+` (i.e., the second Dim__N__). Note that the equation `+A[DimM, @2, @1]+` (or the more obscure but equivalent `+A[@3, @2, @1]+`) is the same as `+A'+`, i.e., it just reverses the dimensions.
+
+[[sec-array-slicing]]
+===== Array Slicing
+
+pass:c[Within an array built-in function, an array MAY be sliced by using the wildcard * (asterisk) for a dimension name. For example,] `+A[1, *]+` extracts the first row of matrix __A__ while `+A[*, 3]+` extracts the third column.
+
+More complex slicing can be done using ranges with the start and ending indices separated by `+:+` (colon). For example, `+A[1:3]+` extracts the first three elements of __A__ (even if that dimension has named indices) and `+SUM(A[1:3])+` finds the sum of those elements. Ranges can be used outside of array built-in functions, but when the specified range does not match the given array in an Apply-to-All equation, they will be truncated or extended (potentially with zeroes) as necessary. Extension is non-standard with the implementation free to handle it by either filling with zeroes or additional elements from the same array. A warning SHOULD be generated whenever a range is truncated or extended.
+
+[[sec-array-built-in-functions]]
+===== Array Built-in Functions
+
+Arrays both extend the functionality of existing built-in functions and add new built-in functions:
+
+{empty}MAX:  largest value in an array (or array slice) – __extends MAX(x, y)__
+
+Parameters: 1: the array to examine
+
+2: any mix of arrays and scalars
+
+Examples: MAX(A) finds the maximum value in array A +
+MAX(A, 0) finds the maximum value of all the values in array A and zero (i.e., if all values in A are negative, the result is zero)
+
+{empty}MEAN:  average of values in an array (or array slice) (i.e., SUM(A)/SIZE(A))
+
+Parameters: 1: the array of values to average
+
+Example: MEAN(A) find the average value of all elements in array A
+
+{empty}MIN:  smallest value in an array (or array slice) – __extends MIN(x, y)__
+
+Parameters: 1: the array to examine
+
+2: any mix of arrays and scalars
+
+Examples: MIN(A) finds the minimum value in array A +
+MIN(A, 0) finds the minimum value of all the values in array A and zero (i.e., if all values in A are positive, the result is zero)
+
+{empty}RANK:  index of element of given rank in 1D array sorted in ascending order
+
+__OR__ flat index of element of given rank in __N__-D array in ascending order
+
+Parameters: 2 or 3: (__array__, __rank number__pass:c[[,] __secondary sort array__pass:c[\]); breaks ties using second array]
+
+Examples: RANK(A, 1) gives index of MIN value in array A (i.e., first ranked, ascending order) +
+RANK(A, SIZE) gives index of MAX value in array A (i.e., final ranked, ascending order) +
+RANK(A, 3, B) gives index of third smallest value in array A, breaking any ties between same-valued elements in A by comparing the corresponding elements in array B
+
+{empty}SIZE:  size of array (or array slice)
+
+Parameters: 1: the array
+
+Example: SIZE(A[1, *]) gives the size of one row of A (i.e., the size of the first dimension)
+
+SIZE(SELF[1, \*]) gives the size of one row of ourselves +
+Note the subscript [1, \*] refers to row one (1), all columns (\*), so it is an entire row.
+
+{empty}STDDEV: standard deviation of values in an array (or array slice)
+
+Parameters: 1: the array of values to find the standard deviation of
+
+Example: STDDEV(A) find the standard deviation of all elements in array A
+
+{empty}SUM:  sum of values in an array (or array slice)
+
+Parameters: 1: the array of values to sum
+
+Example: SUM(A[M, *]) sums all rows of A, placing each row sum into a separate element of the 1D array of size M that includes this equation
+
+All of these functions MUST work on all container objects. For example, `+MIN+` should be able to be applied to a graphical function to find the minimum __y__pass:c[-value, to a queue to find the minimum value in the queue, or to a conveyor to find the minimum value in the conveyor. Additionally, the [\] notation used to access array elements MUST also work on all containers. Thus,] `+var[3]+` returns the __y__-value of the third data point in a graphical function or the third element (from the front) of a queue or a conveyor. If any of these objects is arrayed, two sets of subscripts are used, the first for the container’s array dimensions and the second for the element within that container. For example, if the array __A__ of size __M__ x __N__ is a queue, `+A[2, 3][1]+` accesses the front element of queue `+A[2, 3]+`.
+
+[[sec-conveyors]]
+==== Conveyors
+
+A conveyor conceptually works like a physical conveyor. Objects get on at one end and some time later (the length of the conveyor), they fall off. Some things can leak out (fall off) of a conveyor partway, so one or more leakage flows MAY also be defined. In addition, the conveyor has a variable speed control, so you can change the length of time something stays on it.
+
+Since the outflows have different purposes, it is necessary to be specific about which outflow does what. While leakage flows can be explicitly marked, it is NOT REQUIRED. When they are not marked, by convention, if there is only one outflow, it SHALL be the stuff coming off the end of the conveyor. If there are two or more outflows, the first SHALL always be the conveyor’s output, while the remaining outflows SHALL be the conveyor’s leakages.
+
+In addition to the REQUIRED length of a conveyor (in time units), a conveyor has the following OPTIONAL parameters (the first four are defined with XMILE expressions):
+
+* Capacity:  Maximum contents of a conveyor (default:  `+INF+`)
+
+* Inflow limit:  Maximum amount of material that can flow into the conveyor in each unit time (default:  `+INF+`)
+
+* Sample:  When provided, the transit time changes only when this expression is true.  (default:  1, i.e., the transit time is updated every DT)
+
+* Arrest:  When provided, the conveyor shuts down (stops moving, leaking, etc.) whenever this expression is true.  (default:  0, i.e., the conveyor never arrests)
+
+* pass:c[Discrete:  Whether the conveyor is discrete (moving batches of material) or continuous (moving a constant stream, e.g., sand and gravel). When discrete, the initial value is applied to the start of each unit time within the conveyor (rather than evenly distributed) and the inflow limit, while still per unit time, can be fulfilled within one DT (in the continuous case, the per DT limit is DT*inflow limit). This is only meaningful when there is] __not__ a queue immediately upstream of the conveyor (when there is a queue, the conveyor must be discrete).  (default: false)
+
+* Batch integrity:  Whether batches from an upstream queue can be split into smaller units to meet the limits on the conveyor (they cannot when this is true). This is only meaningful when there is a queue immediately upstream of the conveyor.  (default: false)
+
+* Number of batches:  How many batches can be taken from the front of the upstream queue to meet the conveyor limits:  restricted to one or as many as possible. This is only meaningful when there is a queue immediately upstream of the conveyor (otherwise, it always takes as much as possible).  (default:  one)
+
+* Exponential leakage:  True if the leakage should be an exponential decay across the conveyor (false if the leakage is linear, expressed as fraction of the inflowing amount to leak by the time it exits the conveyor). This is only meaningful if the conveyor has one or more leakage outflows.  (default: false)
+
+Each leakage outflow of the conveyor SHOULD be marked as such and has the following options:
+
+* Leakage zone start:  Fraction, in [0, 1], of conveyor length that marks the start of the leakage zone (from the inflowing side), i.e., the fractional length that does not leak on the inflowing side (default:  0)
+
+* Leakage zone end:  Fraction, in [0, 1], of conveyor length that marks the end of the leakage zone  (from the inflowing side); note (1 – leakage zone end) is the fractional length that does not leak on the outflowing side (default:  1)
+
+* Leak integers:  True to leak only integers (default: false)
+
+[[sec-queues]]
+==== Queues
+
+Queues are first-in, first-out objects that track individual batches that enter them (otherwise, they’d just be stocks). The first batch to enter is the first batch to leave. Queues are important when it is necessary to track batches or when there are input constraints downstream that force the queue outflow to zero (e.g., a capacity limit on a conveyor).
+
+The value of a queue outflow is determined by the queue’s inflow, the queue’s contents, and what is downstream of the queue. A conveyor, in particular, can limit the outflow of a queue based on its inflow and capacity limits. Queues flowing to regular stocks and clouds are not limited in any way, so their outflows will always empty the queue.
+
+Queues MAY have multiple outflows and some of these (other than the first one) MAY be designated overflows, i.e., flows that take excess capacity from the front of a queue only when a higher priority queue outflow has been blocked due to capacity constraints, inflow limit constraints, or the downstream conveyor being arrested. These are the only conditions that redirect queue contents to an overflow. If a queue outflow is blocked for any other reason, e.g., an isee systems oven is cooking, the overflow SHALL not remove anything from the queue. Note that since queue outflows to clouds or regular stocks drain the entire contents of the queue, a queue overflow to a cloud or regular stock will do the same (rather than only removing the front element).
+
+[[sec-submodels]]
+==== Submodels
+
+The features explained here are general enough for hierarchical models or models made up of separate unrelated pieces. This section supports the idea of independent model pieces interacting with each other in some way (i.e., sharing model inputs and outputs). These pieces MAY have separate (and different) simulation specifications, though having them usually only makes sense when the pieces are arranged hierarchically.
+
+The most relevant issue for XMILE is how these disparate model pieces communicate with each other. Each submodel MUST be uniquely named across the whole-odel and its name must be unique from all variable names within the model where it is defined (i.e., within that model, its name is treated just like variable names). This allows the model name to be used as the local namespace so that objects can be referred to across model boundaries using qualified names. For example, the variable named `+expenditures+` in the submodel `+marketing+` can be referenced from any other model as `+marketing.expenditures+`. Note this single qualifying level forces submodel names to be unique across a whole-model. The top level of a model has no name, so the variable `+cost+` at the top level is simply `+.cost+`.footnote:[Note that display IDs, described in Chapter 5, must also be qualified when referenced across models (particularly in interface objects), e.g., `+.12+` or `+marketing.4+`.]
+
+Submodels appear in a distinct container object created by and visible to the user (called a __module__). The XMILE format includes modules for this purpose. Modules are NOT REQUIRED to appear in any view but MUST be defined in the model’s variables to be used. The module MUST have the same name as the model it contains except in the case where the module is loaded from an external resource. In that case, the module MAY have the same name as its loaded model, but if the external resource does not contain a model with the same name as the module, the module will then represent the single unnamed (root) model in the external resource.footnote:[Note that using an unnamed (root) model in an external file is extremely useful for team development as it enables separate submodel files to be developed and tested independently from the entire model.] However, if the module has been created and named, but not yet assigned a model, it can (and will) have a name that does not correspond to any model.
+
+A module can also have an icon or picture assigned to it. Depending on the package, this will be shown inside the existing icon, or will replace the module icon.
+
+The scope of variables within a submodel is local to that model; variables in a model are not normally visible from outside the model.footnote:[If the scope of variables in a model should be global, the correct mechanism is a __group__, not a submodel.] It is therefore REQUIRED to explicitly specify the variables that are accessible outside the model, i.e., the __outputs__ of the model. Specific variables MUST also be set aside for __inputs__ to the model – i.e., to pick up the outputs from other models.
+
+The variables that are used for this cross-model communication, the inputs and outputs, are given an additional __access__ attribute. The access is restricted to the following values:
+
+XMILE Name Access Level
+
+`+input+` placeholder for input value (acts like an alias)
+
+`+output+` public access output (restricted by upward connections)
+
+There is a third access level that is not explicitly represented:  an output can have restricted access, available only within the next lower module. These act like function parameters and are typically represented by connections from that entity to the module that represents the model they are being passed to. An entity with input access MAY also have this restricted local (implicit) output access, to act as a pass-through from one module up into the containing model and then down again into the other module (which is only necessary if the variable is also used in the model containing those two modules).
+
+Note there is no option for an input that is also a global output. This requires an intermediate auxiliary. As placeholders, inputs do not have to be assigned to an output from another module. When assigned, an input is also referred to as a cross-level ghost (or alias).
+
+By default, a submodel inherits the simulation specifications of the whole-model. However, each submodel can specify its own simulation specs. In such cases, there are two modes of operation:
+
+XMILE Name Run mode
+
+`+normal+` use the same time base as the whole-model, but a different DT
+
+`+independent+` do a complete run for every DT in the containing model
+
+In the first mode (normal), the whole-model’s DT must be an integer multiple of the submodel’s DT. Note the submodel’s start and end are forced to be the same as the whole-model.
+
+In the second mode (independent), the length of the simulation specifies how many times to iterate before returning a value. This performs a simple loop.

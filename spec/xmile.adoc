@@ -1,0 +1,38 @@
+= XML Interchange Language for System Dynamics (XMILE) Version 1.0
+:revnumber: 1.0
+:revdate: 29 July 2015
+:doctype: book
+:toc: left
+:toclevels: 3
+:sectnums:
+:sectnumlevels: 4
+:sectanchors:
+:xrefstyle: short
+:chapter-refsig: Section
+:section-refsig: Section
+:icons: font
+:source-highlighter: highlight.js
+:imagesdir: images
+
+// Generated from the Word source by tools/docx2adoc.py.
+// Subsequent edits are made here, in AsciiDoc, not in Word.
+
+include::00-front-matter.adoc[]
+
+include::01-introduction.adoc[]
+
+include::02-overall-structure.adoc[]
+
+include::03-model-equation-structure.adoc[]
+
+include::04-model-equation-xml-encoding.adoc[]
+
+include::05-diagram-and-visual-components-structure.adoc[]
+
+include::06-display-and-interface-xml-encoding.adoc[]
+
+include::07-xmile-implementation-conformance.adoc[]
+
+include::08-acknowledgments.adoc[]
+
+include::09-revision-history.adoc[]

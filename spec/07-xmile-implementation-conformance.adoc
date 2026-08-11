@@ -1,0 +1,376 @@
+[[sec-xmile-implementation-conformance]]
+== XMILE Implementation Conformance
+
+[[sec-conformancetargets]]
+=== ConformanceTargets
+
+XMILE has two conformance targets:
+
+* XMILE file
+
+* XMILE simulator
+
+Within each of these targets, XMILE has a base level of conformance with several optional features that create higher levels of conformance in different combinations. In addition, within each conformance level, some features are optional.
+
+[[sec-conformance-clause-1-xmile-file]]
+=== Conformance Clause 1:  XMILE File
+
+A file conforms to this specification as an XMILE file if it meets the requirements in the following subsections.
+
+[[sec-base-level-conformance]]
+==== Base-Level Conformance
+
+To conform to the XMILE base level, an implementation:
+
+* MUST include an `+<xmile>+` tag that contains both the version  of XMILE used and the XMILE XML namespace (<<sec-overall-structure>>)
+
+* MUST include a `+<header>+` tag (<<sec-overall-structure>>) with sub-tags `+<vendor>+` and `+<product>+` with its version number (<<sec-header-section>>)
+
+* MUST include at least one `+<model>+` tag (<<sec-overall-structure>>)
+
+* MUST name models beyond the root model (<<sec-model-equation-xml-encoding>>)
+
+* MUST, on read, resolve inconsistencies between multiple files (<<sec-overall-structure>>)
+
+* MUST obey the namespace rules (<<sec-namespaces>> and <<sec-xmile-options>>)
+
+* MUST include, when using optional features, the <options> tag with those features specified (<<sec-xmile-options>>)
+
+* MUST contain at least one set of simulation specifications (<<sec-model-simulation-specification-section>>)
+
+* MUST support model behaviors (<<sec-behavior-section>>)
+
+* MUST support include files (<<sec-includes>>)
+
+* MUST support all base functionality objects (<<sec-basic-functionality>> and all subsections)
+
+* MUST obey the grammar for numbers, variables, and expressions (<<sec-general-conventions>> and <<sec-expressions>>, and all subsections except <<sec-documentation>> and <<sec-units>>)
+
+* MUST support the REQUIRED common variable properties, specifically the name and for arrays, dimensions and, when not apply-to-all, elements (<<sec-common-variable-properties>>)
+
+[[sec-optional-conveyor-conformance]]
+==== Optional Conveyor Conformance
+
+To support the optional conveyor features of XMILE, an implementation:
+
+* MUST include the `+<uses_conveyor>+` tag in the `+<options>+` block (<<sec-xmile-options>>)
+
+* MUST support the `+<conveyor>+` block with all of its options (<<sec-stocks-4-2>> and <<sec-conveyor-options>>)
+
+* MUST support conveyor leakage and its properties (<<sec-flows-4-3>>)
+
+[[sec-optional-queue-conformance]]
+==== Optional Queue Conformance
+
+To support the optional queue features of XMILE, an implementation:
+
+* MUST include the `+<uses_queue>+` tag in the `+<options>+` block (<<sec-xmile-options>>)
+
+* MUST support the `+<queue/>+` tag in the stock (<<sec-normative-references>>)
+
+* MUST support the queue overflow (<<sec-flows-4-3>>)
+
+[[sec-optional-array-conformance]]
+==== Optional Array Conformance
+
+To support the optional array features of XMILE, an implementation:
+
+* MUST include the `+<uses_array>+` tag in the `+<options>+` block with the correct number of dimensions (<<sec-xmile-options>>)
+
+* MUST include a `+<dimensions>+` tag (<<sec-dimensions-section>>)
+
+* MUST support arrays and their syntax (<<sec-arrays>> and all subsections)
+
+* MUST support the three different types of arrays (<<sec-arrays-4-1-4>> and <<sec-arrays-4-5>>)
+
+[[sec-optional-submodel-conformance]]
+==== Optional Submodel Conformance
+
+To support the optional submodel features of XMILE, an implementation:
+
+* MUST include the `+<uses_submodels>+` tag in the `+<options>+` block (<<sec-xmile-options>>)
+
+* MUST support features of modules, including submodel inputs, submodel outputs, and qualified entity names (<<sec-submodels>>)
+
+* MUST support module entities (<<sec-modules>>)
+
+* MUST include all connections between modules within the proper module entity (<<sec-modules>>)
+
+* MUST properly mark module inputs and outputs and obey access rules (<<sec-submodel-inputs>> and <<sec-submodel-outputs>>)
+
+[[sec-optional-macro-conformance]]
+==== Optional Macro Conformance
+
+Macros include a base level, a recursive level, and an options filter level.
+
+[[sec-base-macro-conformance]]
+===== Base Macro Conformance
+
+To support the optional macro features of XMILE, an implementation:
+
+* MUST include the `+<uses_macros>+` tag in the `+<options>+` block and MUST specify whether recursive macros and/or option filters are also supported (<<sec-xmile-options>>)
+
+* MUST support the `+<macro>+` tag (<<sec-macros>>)
+
+[[sec-recursive-macro-conformance]]
+===== Recursive Macro Conformance
+
+To support the optional recursive macro features of XMILE, an implementation:
+
+* MUST, in the `+<uses_macros>+` tag of the `+<options>+` block, specify that recursive macros are supported (<<sec-xmile-options>>)
+
+[[sec-option-filter-macro-conformance]]
+===== Option Filter Macro Conformance
+
+To support the optional option-filter macro features of XMILE, an implementation:
+
+* MUST, the `+<uses_macros>+` tag of the `+<options>+` block, specify that option filters are supported (<<sec-xmile-options>>)
+
+* MUST support option filter macros (<<sec-macros-extending-building-block-behavior>> and <<sec-modifying-stock-and-flow-behavior>>)
+
+[[sec-optional-event-poster-conformance]]
+==== Optional Event-Poster Conformance
+
+To support the optional event poster features of XMILE, an implementation:
+
+* MUST include the `+<uses_event_posters>+` tag in the `+<options>+` block (<<sec-xmile-options>>)
+
+* MUST support simulation events and their options (<<sec-simulation-events>> and <<sec-event-posters>>)
+
+[[sec-optional-model-view-conformance]]
+==== Optional Model-View Conformance
+
+To support the optional features of XMILE to represent a model view, an implementation:
+
+* MUST include the `+<has_model_view>+` tag in the `+<options>+` block (<<sec-xmile-options>>)
+
+* MUST support styles (<<sec-style-section>>)
+
+* MUST have one <`+views+`> tag and at least one <view> tag (<<sec-diagram-and-visual-components-structure>>, <<sec-introduction-to-the-xmile-view>>, and subsections of 5.1)
+
+* MUST support the <`+stock+`> tag (<<sec-stock>>)
+
+* MUST support the <`+flow+`> tag. Anchor points for the flow MUST be specified (<<sec-flow>>)
+
+* MUST support the <`+aux+`> tag (<<sec-aux>>)
+
+* MUST support the <`+connector+`> tag. <`+from+`>, <`+to+`>, <`+pts+`>, and <`+angle+`> attributes for the connector tag  MUST be specified (<<sec-connector>>)
+
+* MUST support the <`+alias+`> tag. If they exist, alias objects MUST represent only stock, flow, and aux objects. Alias objects MUST NOT have connectors pointing to them. <`+uid+`>, <`+x+`>, <`+y+`>, and <`+of+`>  attributes for each alias MUST be specified for an alias object (<<sec-alias>>)
+
+* MUST support the <`+graph+`> tag. <`+type+`> and <`+comparative+`> attributes MUST be specified for each graph .One <`+plot+`> tag MUST appear for each variable being plotted. Each <`+plot+`> tag MUST specify a value for the <`+index+`>, <`+title+`>,  and <`+entity+`> attributes (<<sec-graphs>>)
+
+* MUST support a <`+table+`> tag. <`+orientation+`>, <`+column_width+`>, <`+interval+`>, and <`+comparative+`>   attributes for the table MUST be specified .One <`+item+`> tag MUST appear for each variable being displayed. Each <`+item+`> tag MUST specify a value for the <`+type+`>  and <`+entity+`> attributes (<<sec-tables>>)
+
+Additionally,
+
+* Each `+<stock|flow|aux|module|group>+` tag in a view MUST specify a <`+name+`> attribute (<<sec-referencing-variable-objects-in-an-xmile-view>>)
+
+* A model variable object MUST be defined somewhere other than in a view of type “interface”, i.e., a view of type “interface” may not contain the canonical representation of a model variable object (<<sec-introduction-to-the-xmile-view>>)
+
+* All views MUST be rectangular and MUST specify a <`+width+`> and a <`+height+`> (<<sec-introduction-to-the-xmile-view>>)
+
+* To print a view, the view MUST specify its paging as described in <<sec-introduction-to-the-xmile-view>>
+
+* All views MUST specify a <`+home_page+`> and a <`+home_view+`> attribute. There MUST be only one <`+home_view+`> specified (<<sec-introduction-to-the-xmile-view>>)
+
+* A `+<stock|flow|aux|module>+` (note: not <`+group>+`) tag representing a model variable MUST NOT appear more than once in a single `+<view>+` tag (<<sec-referencing-variable-objects-in-an-xmile-view>>)
+
+* All display objects contained within an XMILE model MUST specify the <`+x+`> and <`+y+`> position attributes (<<sec-xmile-view-assumptions-and-attributes>>)
+
+* All display objects contained within an XMILE model MUST specify the <`+width+`> and <`+height+`> attributes EXCEPT when the following objects contain a <`+shape+`> tag: <`+stock+`>, <`+aux+`>, <`+module+`>, or <`+alias+`> (<<sec-xmile-view-assumptions-and-attributes>>)
+
+* A stock MUST NOT be represented using a circle (<<sec-xmile-view-assumptions-and-attributes>>)
+
+* An auxiliary or a flow MUST NOT be represented using a rectangle except if the equation contains a function or macro which contains a stock (<<sec-xmile-view-assumptions-and-attributes>>)
+
+* Display objects containing a <`+shape+`> tag MUST specify a <`+type+`> attribute with one of the following values: “`+rectangle+`”, “`+circle+`”, or “`+name_only+`” (<<sec-xmile-view-assumptions-and-attributes>>)
+
+* Display objects of type `+rectangle+` MUST specify a <`+width+`> and a <`+height+`> (<<sec-xmile-view-assumptions-and-attributes>>)
+
+* Display objects of type circle MUST specify a <`+radius+`> (<<sec-xmile-view-assumptions-and-attributes>>)
+
+* All values for <`+x+`>, <`+y+`>, <`+width+`>, and <`+height+`> MUST be double precision numbers (<<sec-xmile-view-assumptions-and-attributes>>)
+
+* All display objects that are referred to anywhere other than a display view MUST provide a <`+uid+`> attribute and the value of each <`+uid+`> MUST be unique within the model (<<sec-referring-to-specific-xmile-display-objects>>)
+
+* When a color is specified for a display object using a CSS style hex code, it MUST be prefixed by a # followed by up to 6 hexadecimal digits from 0 to F (<<sec-specification-of-color>>)
+
+* Stacked containers, if supported, MUST have values for  <`+x+`>, <`+y+`>, <`+height+`>, <`+width+`>, <`+uid+`>, and <`+visible_index+`> (and only those) attributes specified (<<sec-stacked-containers>>)
+
+[[sec-optional-outputs-conformance]]
+==== Optional Outputs Conformance
+
+To support the optional simulation output features of XMILE, an implementation:
+
+* MUST include the `+<uses_outputs>+` tag in the `+<options>+` block (<<sec-xmile-options>>)
+
+* MUST support the <`+graph+`> tag. <`+type+`> and <`+comparative+`> attributes MUST be specified for each graph .One <`+plot+`> tag MUST appear for each variable being plotted. Each <`+plot+`> tag MUST specify a value for the <`+index+`>, <`+title+`>,  and <`+entity+`> attributes (<<sec-graphs>>)
+
+* MUST support the <`+table+`> tag. <`+orientation+`>, <`+column_width+`>, <`+interval+`>, and <`+comparative+`>   attributes for the table MUST be specified .One <`+item+`> tag MUST appear for each variable being displayed. Each <`+item+`> tag MUST specify a value for the <`+type+`>  and <`+entity+`> attributes (<<sec-tables>>)
+
+* If `+numeric_display+` is true in the `+<uses_outputs>+` tag, MUST support numeric displays (<<sec-numeric-displays>>)
+
+* If `+lamp+` is true in the `+<uses_outputs>+` tag, MUST support lamps and a list of zones with non-overlapping value ranges for the variable MUST be specified within the <`+zones+`> tag (<<sec-lamps-and-gauges>>)
+
+* If `+gauge+` is true in the `+<uses_outputs>+` tag, MUST support gauges and a list of zones with non-overlapping value ranges for the variable MUST be specified within the <`+zones+`> tag (<<sec-lamps-and-gauges>>)
+
+Additionally,
+
+* Each zone for a lamp or a gauge (in a `+<zone>+` tag) MUST specify values for <`+type+`>, <`+color+`>, <`+min+`>, and <`+max+`> (<<sec-lamps-and-gauges>>)
+
+[[sec-optional-inputs-conformance]]
+==== Optional Inputs Conformance
+
+To support the optional user input features of XMILE, an implementation:
+
+* MUST include the `+<uses_inputs>+` tag in the `+<options>+` block (<<sec-xmile-options>>)
+
+* MUST support the <`+slider+`> and <`+knob+`> tags (<<sec-sliders-and-knobs>>)
+
+* MUST support the <`+switch+`> and <`+options+`> tags (<<sec-switches-and-radio-buttons-option-groups>>)
+
+* If `+numeric_input+` is true in the `+<uses_inputs>+` tag, MUST support numeric inputs (<<sec-numeric-inputs-and-list-input-devices>>)
+
+* If `+list+` is true in the `+<uses_inputs>+` tag, MUST support list inputs (<<sec-numeric-inputs-and-list-input-devices>>)
+
+* If `+graphical_input+` is true in the `+<uses_inputs>+` tag, MUST support graphical inputs. If the graphical input contains a different graphical function than the controlled variable, the <`+entity+`> tag MUST include a <`+gf+`> tag to describe that graphical function (<<sec-graphical-inputs>>)
+
+Additionally,
+
+* The input range tags <`+min+`> and <`+max+`> MUST be specified for sliders and knobs (<<sec-sliders-and-knobs>>)
+
+* A switch’s <`+group+`> or <`+module+`> tag MUST specify a <`+name+`> and a <`+value+`> (<<sec-switches-and-radio-buttons-option-groups>>)
+
+* Option groups MUST specify values for <`+layout+`>, <`+horizontal_spacing+`>, and <`+vertical_spacing+`> (<<sec-switches-and-radio-buttons-option-groups>>)
+
+* A list input MUST specify a <`+name+`> and <`+column_width+`> (<<sec-numeric-inputs-and-list-input-devices>>)
+
+* A graphical input MUST specify an <`+entity+`> tag (<<sec-graphical-inputs>>)
+
+[[sec-optional-annotations-conformance]]
+==== Optional Annotations Conformance
+
+To support the optional model annotation features of XMILE, an implementation:
+
+* MUST include the `+<uses_annotations>+` tag in the `+<options>+` block (<<sec-xmile-options>>)
+
+* MUST support the <`+text_box+`> tag (<<sec-text-boxes>>)
+
+* MUST support the <`+graphics_frame+`> tag (<<sec-graphics-frames>>)
+
+* MUST support the <`+button+`> tag (<<sec-buttons>>)
+
+Additionally,
+
+* When an image is embedded directly within the XMILE file, the type of encoding MUST be “`+base64+`” (<<sec-graphics-frames>>)
+
+* Buttons that control the program MUST contain a `+<menu_action>+` tag
+
+* Menu actions <`+import_now+`>, <`+export_now+`>, and <`+save_data_now+`> MUST have the required attributes specified (<<sec-buttons>>)
+
+[[sec-conformance-clause-2-xmile-simulator]]
+=== Conformance Clause 2:  XMILE Simulator
+
+An implementation conforms to this specification as an XMILE simulator if it meets the requirements in the following subsections.
+
+[[sec-base-level-conformance-7-3-1]]
+==== Base-Level Conformance
+
+To conform to the XMILE base level, an implementation:
+
+* MUST adhere to the model assumptions (<<sec-model-equation-structure>>)
+
+* MUST support the simulation rules of each base functionality object (<<sec-basic-functionality>> and all subsections)
+
+* MUST support Euler’s method and Runge-Kutta 4 (<<sec-integration-methods>>)
+
+* MUST support the full range of built-in functions (<<sec-built-in-functions>> and all subsections)
+
+[[sec-optional-conveyor-conformance-7-3-2]]
+==== Optional Conveyor Conformance
+
+To support the optional conveyor features of XMILE, an implementation:
+
+* MUST implement conveyors as described (<<sec-conveyors>>)
+
+* MUST support the full list of array built-in functions for conveyors, including the [] operator to access conveyor elements (<<sec-array-built-in-functions>>)
+
+* MUST implement all conveyor and leakage properties (<<sec-stocks-4-2>>, <<sec-conveyor-options>>, and 4.3)
+
+[[sec-optional-queue-conformance-7-3-3]]
+==== Optional Queue Conformance
+
+To support the optional queue features of XMILE, an implementation:
+
+* MUST implement queues as described (<<sec-queues>>)
+
+* MUST support the full list of array built-in functions for queues, including the [] operator to access queue elements (<<sec-array-built-in-functions>>)
+
+* MUST implement the queue overflow (<<sec-flows-4-3>>)
+
+[[sec-optional-array-conformance-7-3-4]]
+==== Optional Array Conformance
+
+To support the optional array features of XMILE, an implementation:
+
+* MUST support dimensions (<<sec-dimensions-section>>)
+
+* MUST generate one value for each array element (<<sec-arrays>>)
+
+* MUST support subscripts and subscript expressions (<<sec-arrays>>)
+
+* MUST support array operators (<<sec-array-operations>>)
+
+* MUST support array slicing (<<sec-array-slicing>>)
+
+* MUST support the full list of array built-in functions (<<sec-array-built-in-functions>>)
+
+[[sec-optional-submodel-conformance-7-3-5]]
+==== Optional Submodel Conformance
+
+To support the optional submodel features of XMILE, an implementation:
+
+* MUST support the basic run behavior, i.e., use the same simulation specifications as the whole-model (<<sec-submodels>>).
+
+[[sec-optional-macro-conformance-7-3-6]]
+==== Optional Macro Conformance
+
+Macros include three levels: a base level, a recursive level, and an options-filter level.
+
+[[sec-base-macro-conformance-7-3-6-1]]
+===== Base Macro Conformance
+
+To support the optional macro features of XMILE, an implementation:
+
+* MUST support all macro features but recursive macros and option filters (<<sec-macros-implementing-functions>> and <<sec-macros-without-variables>>-<<sec-macros-with-variables-and-simulation-specs>>)
+
+[[sec-recursive-macro-conformance-7-3-6-2]]
+===== Recursive Macro Conformance
+
+To support the optional recursive macro features of XMILE, an implementation:
+
+* MUST implement recursive macros (<<sec-macros-implementing-functions>> and <<sec-macros-without-variables>>-<<sec-macros-with-variables-and-simulation-specs>>)
+
+[[sec-option-filter-macro-conformance-7-3-6-3]]
+===== Option-Filter Macro Conformance
+
+To support the optional option-filter macro features of XMILE, an implementation:
+
+* MUST implement option filter macros (<<sec-macros-extending-building-block-behavior>> and <<sec-modifying-stock-and-flow-behavior>>)
+
+[[sec-optional-event-poster-conformance-7-3-7]]
+==== Optional Event-Poster Conformance
+
+To support the optional event poster features of XMILE, an implementation:
+
+* MUST implement simulation events and their options (<<sec-simulation-events>> and <<sec-event-posters>>)
+
+[[sec-optional-inputs-conformance-7-3-8]]
+==== Optional Inputs Conformance
+
+To support the optional user input features of XMILE, an implementation:
+
+* Knobs attached to stocks MUST only adjust the stock’s initial value (<<sec-sliders-and-knobs>>)
+
+* Option groups MUST NOT support `+reset_to+` (<<sec-switches-and-radio-buttons-option-groups>>)

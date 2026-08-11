@@ -1,0 +1,451 @@
+[[sec-overall-structure]]
+== Overall Structure
+
+A XMILE file contains information about a whole-model, with a well-specified structure. The file MUST be encoded in UTF-8. The entire XMILE file is enclosed within a `+<xmile>+` tag as follows:
+
+[source,xml]
+----
+<xmile version="1.0" 
+      xmlns="http://docs.oasis-open.org/xmile/ns/XMILE/v1.0">
+...
+</xmile>
+----
+
+The version number MUST refer to the version of XMILE used (presently 1.0). The XML namespace refers to tags and attributes used in this specification. Both of these attributes are REQUIRED. Inside of the <xmile> tag are a number of top-level tags, listed below. These tags are marked req (a single instance is REQUIRED), opt (a single instance is OPTIONAL), * (zero or more tags MAY occur) and + (one or more tags MAY occur). Top level tags MAY occur in any order, but are RECOMMENDED to occur in the following order:
+
+* `+<header>+` (req) - information about the origin of the file and required capabilities.
+
+* `+<sim_specs>+` (opt) - default simulation specifications for this file.
+
+* `+<model_units>+` (opt) - definitions of model units used in this file.
+
+* `+<dimensions>+` (opt) - definitions of array dimensions specific to this file.
+
+* `+<behavior>+` (opt) - simulation style definitions that are inherited/cascaded through all models defined in this XMILE file.
+
+* `+<style>+` (opt) - display style definitions that are inherited/cascaded through all views defined in this XMILE file.
+
+* `+<data>+` (opt) - definitions of persistent data import/export connections..
+
+* `++<model>+++` - definition of model equations and (optionally) diagrams.
+
+* `+<macro>*+` - definition of macros that can be used in model equations.
+
+These tags are specified in the subsequent sections of this chapter, after XMILE namespaces are discussed.
+
+When an XMILE file includes references to models contained in separate files or at a specific URL, each such file may contain overlapping information, most commonly in sim_specs, model_units and dimensions. When such overlap is consistent, combining parts is done by taking the union of the different component files. When an inconsistency is found, (for example, a dimension with two distinct definitions) software reading the files MUST resolve the inconsistency and SHOULD provide user feedback in doing so. Some inconsistencies, such as conflicting Macro or Model names MUST be resolved as detailed in <<sec-merging-included-files>>.
+
+[[sec-namespaces]]
+=== Namespaces
+
+There are four categories of namespaces in play in a XMILE whole-model - XML tag namespaces, Variable namespace, Function namespace and Unit namespaces. XML tag namespaces and Unit namespaces are independent, but Variable and Function namespaces interact.
+
+XML tag namespaces are global. Unadorned tags are described in detail in the various sections of this document and provision for vendor specific additions are also detailed.
+
+Each XMILE whole-model has a single Unit namespace against which all Unit Definitions and Equation Units are resolved. The Unit namespace is separate from any other namespaces and this means that the variables of units and variable or function names can overlap (for example someone might use Ounce/Min and define Min as an alias of Minute even though MIN is a reserved function name). Because this namespace crosses models Unit Definitions contained in separate files must be combined into this namespace.
+
+The Function namespace combines global definitions (all functions defined here along with vendor specified functions) with whole-model specific definitions through Macros. In every case, however, the names MUST be uniquely resolvable within a whole-file independent of the file in which they appear. It is not possible, for example, to give the same macro name two different definitions in separate files. Dimension names, though conceptually part of the Variable namespace, behave the same way and MUST be unique across a whole-model.
+
+Variable names are resolved within models, but in the same context as functions and therefore can't overlap. It is not, for example, possible to have a variable named MIN as this is a reserved function name. Similarly, if the  macro BIGGEST has been defined, no variable may be given the name BIGGEST. It is, however, possible, to have the same variable name appear in different models.  For example if you have a project with one model MyCompany and another model Competitors, both could contain the variable profit (with MyCompany.profit and Competitors.profit the way to refer to that variable from different models).
+
+One final subtlety in namespaces is that Dimension names, in turn, define their own Element namespace. Thus, even though Array Dimension names must be unique, they can have overlapping Element names and the Element names can be the same as Variable names. Element names are resolved by context when they appear inside square brackets of a variable and can be used in context by prefixing them with the array dimension name (as in Location.Boston, where Location is a Dimension name with element Boston).
+
+[[sec-header-section]]
+=== Header Section
+
+The XML tag for the file header is `+<header>+`. The REQUIRED sub-tags are:
+
+* Vendor name:  `+<vendor>+` w/company name
+
+* Product name:  `+<product version="…" lang="…">+` w/product name – the product version number is REQUIRED. The language code is optional (default: English) and describes the language used for variable names and comments. Language codes are described by ISO 639-1 unless the language is not there, in which case the ISO 639-2 code should be used (e.g., for Hawaiian).
+
+OPTIONAL sub-tags include:
+
+* XMILE options: `+<options>+` (defined below)
+
+* Model name: `+<name>+` w/name
+
+* Model version:  `+<version>+` w/version information
+
+* Model caption:  `+<caption>+` w/caption
+
+* Picture of the model in JPG, GIF, TIF, or PNG format:  `+<image resource=””>.+` The `+resource+` attribute is optional and may specify a relative file path, an absolute file path, or an URL`+.+`  The picture data may also be embedded inside the <`+image+`> tag in Data URI format, using base64 encoding.
+
+* Author name:  `+<author>+` w/author name
+
+* Company name:  `+<affiliation>+` w/company name
+
+* Client name:  `+<client>+` w/client name
+
+* Copyright notice:  `+<copyright>+` w/copyright information
+
+* Contact information (e-mail, phone, mailing address, web site): +
+`+<contact>+` block w/contact information broken into `+<address>+`, +
+`+<phone>+`, `+<fax>+`, `+<email>+`, and `+<website>+`, all optional
+
+* Date created:  `+<created>+` whose contents MUST be in ISO 8601 format, e.g. “ 2014-08-10”.
+
+* Date modified:  `+<modified>+`  whose contents MUST be in ISO 8601 format, as well
+
+* Model universally unique ID:  `+<uuid>+` where the ID MUST be in IETF RFC4122 format (84-4-4-12 hex digits with the dashes)
+
+* Includes: `+<includes>+` section with a list of included files or URLs. This is specified in more detail in <<sec-includes>>.
+
+[[sec-xmile-options]]
+==== XMILE Options
+
+The XMILE options appear under the tag `+<options>+`. This is a list of functionality that is used in the file that may not be included in all implementations. If a file makes use of any of the following functionalityfootnote:[In the case of included macro files, only the features from macros actually used is required. The intent is that vendors will provide library files containing macros for all of their specific functions. If a file does not use a macro built on optional features, it SHOULD NOT be restricted to simulators that support those optional features.], it MUST be listed under the `+<options>+` tag. The available options are:
+
+[source,xml]
+----
+<uses_conveyor/>
+<uses_queue/>
+<uses_arrays/>
+<uses_submodels/>
+<uses_macros/>
+<uses_event_posters/>
+<has_model_view/>
+<uses_outputs/>
+<uses_inputs/>
+<uses_annotation/>
+----
+
+There is one OPTIONAL attribute for the `+<options>+` tag:
+
+* Namespace:  `+namespace="…"+` with XMILE namespaces, separated by commas. For example, `+namespace="std, isee"+` means try to resolve unrecognized identifiers against the `+std+` namespace first, and then against the `+isee+` namespace. (default: `+std+`)
+
+The `+<uses_arrays>+` tag has one REQUIRED attribute and OPTIONAL attribute:
+
+* Required: Specify the maximum dimensions used by any variable in the whole-model: `+maximum_dimensions+`.
+
+* Optional: Specify the value returned when an index is invalid:  `+invalid_index_value="…"+` with NaN/0 (default: 0)
+
+The `+<uses_macros>+` tag has two REQUIRED attributes:
+
+* Has macros which are recursive (directly or indirectly):  `+recursive_macros="…"+` with true/false.
+
+* Defines option filters:  `+option_filters="…"+` with true/false.
+
+The `+<uses_conveyor>+` tag has two OPTIONAL attributes:
+
+* Has conveyors that arrest:  `+arrest="…"+` with true/false (default: false)
+
+* Has conveyor leakages:  `+leak="…"+` with true/false (default: false)
+
+The `+<uses_queue>+` tag has one OPTIONAL attribute:
+
+* Has queue overflows:  `+overflow="…"+` with true/false (default: false)
+
+The `+<uses_event_posters>+` tag has one OPTIONAL attribute:
+
+* Has messages:  `+messages="…"+` with true/false (default: false)
+
+The `+<has_model_view>+` tag notes whether the XMILE file contains one or more <`+view+`> sections containing a visual representation of one or more models. Note that any software which supports XMILE should be able to simulate all whole-models, even those without diagrams.
+
+The `+<uses_outputs>+` tag implies both time-series graphs and tables are included. It has three OPTIONAL attributes:
+
+* Has numeric display:  `+numeric_display="…"+` with true/false (default: false)
+
+* Has lamp:  `+lamp="…"+` with true/false (default: false)
+
+* Has gauge:  `+gauge="…"+` with true/false (default: false)
+
+The `+<uses_inputs>+` tag implies sliders, knobs, switches, and option groups are included. It has three OPTIONAL attributes:
+
+* Has numeric input:  `+numeric_input="…"+` with true/false (default: false)
+
+* Has list input:  `+list="…"+` with true/false (default: false)
+
+* Has graphical input:  `+graphical_input="…"+` with true/false (default: false)
+
+The `+<uses_annotation>+` tag implies text boxes, graphics frames, and buttons are included.
+
+A sample options block appears below:
+
+[source,xml]
+----
+<options namespace="std, isee">
+<uses_conveyors leak="true"/>  <!-- has conveyors, some leak -->
+<uses_arrays maximum_dimensions=”2”/>   <!-- has 2D arrays -->
+<has_model_view/>    <!-- has diagram of model -->
+</options>
+----
+
+[[sec-model-simulation-specification-section]]
+=== Model Simulation Specification Section
+
+Every XMILE file MUST contain at least one set of simulation specifications, either as a top-level tag under `+<xmile>+` or as a child of the root model. Note that simulation specifications can recur in each Model section to override specific global defaults. Great care should be taken in these situations to avoid nonsensical results.
+
+The simulation specifications block is defined with the tag `+<sim_specs>+`.  The following properties are REQUIRED:
+
+* Start time:  `+<start>+` w/time
+
+* Stop time:  `+<stop>+` w/time (after start time)
+
+There are several additional OPTIONAL attributes and properties with appropriate defaults:
+
+* Step size:  `+<dt>+` w/value (default: 1) +
+Optionally specified as the integer reciprocal of DT (for DT <= 1 only) with an attribute of `+<dt>+`:  `+reciprocal="…"+` with true/false (default: false)
+
+* Integration method:  `+method="…"+` w/XMILE name (default: `+euler+`)
+
+* Unit of time:  `+time_units="…"+` w/Name (empty default)
+
+* Pause interval:  `+pause="…"+` w/interval (default: infinity – can be ignored)
+
+* Run selected groups or modules:  `+<run by="…">+` with run type either:  `+all+`, `+group+`, or `+module+` (default: all, i.e., run whole-model).  Which groups or modules to run are identified by `+run+` attributes on the group or model.
+
+[[sec-model-units-section]]
+=== Model Units Section
+
+All user-specified model unit definitions are specified in the `+<model_units>+` tag as shown below:
+
+[source,xml]
+----
+<model_units>
+<unit name="models_per_person_per_year">
+<eqn>models/person/year</eqn> <!-- name, equation -->
+</unit>
+<unit name="Rabbits">
+<alias>Rabbit</alias> <!-- name, alias -->
+</unit>
+<unit name="models_per_year">
+<eqn>models/year</eqn>  <!-- name, eqn, alias -->
+<alias>model_per_year</alias>
+<alias>mpy</alias>
+</unit>
+<unit name="Joules" disabled="true"> <!-- disabled unit -->
+<alias>J</alias>
+</unit>
+</model_units>
+----
+
+All unit definitions MUST contain a name, possibly an equation, and 0 or more aliases (Including a unit definition with only a name is valid but discouraged). Unit equations (`+<eqn>+` tag) are defined with XMILE unit expressions. One `+<alias>+` tag with the name of the alias appears for each distinct unit alias. A unit with the attribute disabled set to true MUST NOT be included in the unit substitution process. It is included to override a Unit Definition that may be built into the software or specified as a preference by the user.
+
+Vendor-provided unit definitions not used in a model are NOT REQUIRED to appear in the file, but SHOULD be made available in this same format in a vendor-specific library.
+
+[[sec-dimensions-section]]
+=== Dimensions Section
+
+When the `+<uses_arrays>+` XMILE option is set, a list of dimension names is REQUIRED. These dimension names must be consistent across the whole-model. The set of dimension names appear within a `+<dimensions>+` block as shown in the example below.
+
+[source,xml]
+----
+<dimensions>
+<dim name="N" size="5"/> <!-- numbered indices -->
+<dim name="Location">  <!-- named indices -->
+<elem name="Boston"/> <!-- name of 1st index -->
+<elem name="Chicago"/> <!-- name of 2nd index -->
+<elem name="LA"/>  <!-- name of 3rd index -->
+</dim>
+</dimensions>
+----
+
+Each dimension name is identified with a `+<dim>+` tag and a REQUIRED name. If the elements are not named, a size attribute greater or equal to one MUST be given. If the elements have names, they appear in order in `+<elem>+` nodes. The dimension size MUST NOT appear when elements have names as the number of element names always determines the size of such dimensions.
+
+[[sec-behavior-section]]
+=== Behavior Section
+
+Every XMILE file MAY include behavior information to set default options that affect the simulation of model entities. Support for behaviors is REQUIRED. This is usually used in combination with macros to change some aspect of a given type of entity’s performance, for example, setting all stocks to be non-negative.
+
+The behavior information cascades across four levels from the entity outwards, with the actual entity behavior defined by the first occurrence of a behavior definition for that behavior property:
+
+* Behaviors for a given entity
+
+* Behaviors for all entities in a model (affects only that Model section)
+
+* Behaviors for all entities in all models in the file (affects all Model sections)
+
+* Default XMILE-defined behaviors when a default appears in this specification
+
+The behavior block begins with the `+<behavior>+` tag. Within this block, any known object can have its attributes set globally (but overridden locally) using its own modifier tags. Global settings that apply to everything are specified directly on the `+<behavior>+` tag or in nodes below it. This is true for `+<behavior>+` tags that appear within the `+<model>+` tag as well. For example, all entities (particularly stocks and flows) can be set to be non-negative by default:
+
+[source,xml]
+----
+<behavior>
+<non_negative/>
+</behavior>
+----
+
+Only stocks or only flows can also be set to non-negative by default (flows in this example):
+
+[source,xml]
+----
+<behavior>
+<flow>
+<non_negative/>
+</flow>
+</behavior>
+----
+
+[[sec-style-section]]
+=== Style Section
+
+Every XMILE file MAY include style information to set default options for display objects. When `+<has_model_view>+` is set in the `+<options>+` block, support for styles is REQUIRED. Being style information, this mostly belongs to the Presentation section (5.3), which describes the display and layout of XMILE files.
+
+The style information is cascading across five levels from the entity outwards, with the actual entity style defined by the first occurrence of a style definition for that style property:
+
+* Styles for the given entity
+
+* Styles for all entities in a specific view
+
+* Styles for all entities in a collection of views
+
+* Styles for all entities in the XMILE file
+
+* Default XMILE-defined styles when a default appears in this specification
+
+The style information usually includes program defaults when they differ from the standard, though it can also be used for file-specific file-wide settings. Whenever possible, style information uses standard CSS syntax and keywords recast into XML attributes and nodes.
+
+The style block begins with the `+<style>+` tag. Within this block, any known object can have its attributes set globally (but overridden locally) using its own modifier tags. Global settings that apply to everything are specified directly on the `+<style>+` tag or in nodes below it; this is true for `+<style>+` tags that appear within the `+<views>+` tag as well. For example, the following sets the color of objects within all views in the file to blue and the background to white:
+
+[source,xml]
+----
+<style color="blue" background="white"/>
+----
+
+Unless otherwise indicated or specified, style information appears in XML attributes. For example, `+font_family+` would be an attribute.
+
+These changes can also be applied directly to objects (again as a child to a `+<style>+` tag), e.g.,
+
+[source,xml]
+----
+<style color="blue" background="white">
+<connector color="magenta">
+</style>
+----
+
+Note that when style information applies to a specific object, that style cannot be overridden at a lower level (e.g., within a view) by a change to the overall style (i.e., by the options on the `+<style>+` tag). Using the example above, to override the color of connectors at a lower level (e.g., the Display), the `+<connector>+` tag must explicitly appear in that level’s style block. If it does not appear there, connectors will be magenta at that level by default, even if the style block at that level sets the default color of all objects to green. In other words, object-specific styles at any level above an object take precedence over an overall style defined at any lower level.
+
+[[sec-data-section]]
+=== Data Section
+
+Persistent data import/export connections are defined within the OPTIONAL `+<data>+` tag, which contains one `+<import>+` tag for each data import connection and one `+<export>+` tag for each data export connection. Both tags include the following properties (the first four are optional):
+
+* Type:  `+type="…"+` with “CSV”, “Excel”, or “XML” (default: CSV)
+
+* Enabled state:  `+enabled="…"+` with true/false (default: true)
+
+* How often:  `+frequency="…"+` pass:c[with either “on_demand” or “automatic” (default: automatic, i.e., whenever the data changes)]
+
+* Data orientation:  `+orientation="…"+` with either “horizontal” or “vertical” (default: vertical)
+
+* Source (import) or destination (export) location:  `+resource="…"+`.  A resource can be a relative file path, an absolute file path, or an URL.
+
+* For Excel only, worksheet name:  `+worksheet="…"+` with worksheet name
+
+The `+<export>+` also specifies both the optional export interval and one of two sources of the data:
+
+* Export interval:  `+interval="…"+` specifying how often, in model time, to export values during the simulation; use `+"DT"+` to export every DT (default: 0, meaning only once)
+
+* `+<all/>+` to export all variables in the whole-model or `+<table uid="…"/>+` to just export the variables named in the table (note that any array element in the table will export the entire array when interval is set to zero). The `+<table>+` tag has an optional attribute `+use_settings="…"+` with a true/false value (default: false), which when true causes the table settings for orientation, interval, and number formatting to be used (thus, when it is set, neither orientation nor interval are meaningful, so should not appear). The uid used for the table must be qualified by the name of the module in which the table appears.  If in the root a ‘.’ is prefixed to the name, same as module qualified variable names.
+
+[[sec-model-section]]
+=== Model Section
+
+Model tags define models that can either be simulated directly, or instantiated inside of other models as a module. Chapter 4 contains the specification for `+<model>+` tags.
+
+[[sec-macro-section]]
+=== Macro Section
+
+Macro tags define macros that can be used in model entity equations. Chapter 4 contains the specification for `+<macro>+` tags.
+
+[[sec-includes]]
+=== Includes
+
+XMILE files MAY link to other XMILE files by using includes. Support for includes is REQUIRED. This serves the following use cases:
+
+[source,xml]
+----
+A whole-model can be split across multiple files, allowing submodels and other components to be individually edited or versioned.
+A modeler may create a common library of submodels or macros and use them for multiple whole-models.
+A modeler may create a common style for models and include a common file for such style in different whole-models.
+A vendor may create a common library of macros with specific functionality used by all whole-models produced by that vendor's software.
+----
+
+Included files are specified with an `+<includes>+` tag which goes inside of <header>
+
+[source,xml]
+----
+<header>
+...
+<includes>
+<include resource="http://systemdynamics.org/xmile/macros/standard-1.0.xml" />
+<include resource="http://systemdynamics.org/xmile/macros/extra-1.0.xml" />
+</includes>
+</header>
+----
+
+The included resource can be specified in multiple ways. Specifically, the resource attribute can be specified with:
+
+[source,xml]
+----
+URLs. By convention, a file retrieved from a URL is assumed to be an unchanging resource and may be cached. The file may also be provided automatically by the simulation software.
+----
+
+Example:
+
+[source,xml]
+----
+<include resource="http://systemdynamics.org/xmile/macros/standard-1.0.xml" />
+Relative file paths. Search relative to the location of the XMILE file. This allows modelers to distribute their whole-models as a folder of related files. This is a machine-independent path specification using "/" to separate directories. The "*" indicates a wildcard. Files are not cached.
+<include resource="my-macro-library.xml" />
+<include resource="macros/my-macro-library.xml" />
+<include resource="macros/*" />
+<include resource="macros/supplychain-*.xml" />
+Absolute file paths. Similar to relative file paths except that the resource starts with "/" or "file://". In such cases, the file path is loaded from an absolute location on the local machine. Application programs may choose to limit file access or base the root directory in a particular location (e.g. a home directory) for security reasons. A platform-specific volume name (e.g. "D:") may not be specified.
+<include resource="/library/my-macro-library.xml" />
+<include resource="file://library/my-macro-library.xml" />
+----
+
+If an absolute file path does not resolve to a file, as a fallback, the final filename in the path should be stripped off and that name used for a search relative to the XMILE file itself.
+
+[[sec-versioning]]
+==== Versioning
+
+By convention, files included from URLs are assumed to be standard libraries provided by a vendor, organization or modeler, and MUST never change once public. Such files should be versioned in the form LIBRARY-MAJOR.MINOR.xml, e.g. "standard-1.0.xml". Changes to the content of such libraries will require the major or minor version number to be incremented. The full URL, e.g. “http://systemdynamics.org/xmile/macros/standard-1.0.xml” represents a unique identifier for the content of this file. Consequently, software packages MAY cache such libraries or come pre-bundled with libraries for particular vendors or organizations. Downloading the libraries each time the file is discouraged.
+
+As a contrast, files specified with a file path (particularly a relative file path) are assumed to be part of the whole-model distribution and SHOULD be reloaded each time the file is loaded. Version numbers in the file name are allowed but not required.
+
+[[sec-format-of-included-files]]
+==== Format of Included Files
+
+The format of the included files is a simplified version of the format of the full XMILE file.  The `+<header>+` tag is OPTIONAL, and if included can omit required header attributes. The `+<options>+` tag is optional.
+
+[source,xml]
+----
+<xmile version="1.0" 
+ xmlns=" http://docs.oasis-open.org/xmile/ns/XMILE/v1.0">
+<header>
+</header>
+<macro name="LOG">
+...
+</macro>
+<macro name="LOG10">
+...
+</macro>
+</xmile>
+
+<xmile version="1.0" level="2"  xmlns="http://www.systemdynamics.org/XMILE">
+<style>
+...
+</style>
+</xmile>
+
+<xmile version="1.0" level="2"  xmlns="http://www.systemdynamics.org/XMILE">
+<model>
+...
+</model>
+</xmile>
+----
+
+[[sec-merging-included-files]]
+==== Merging Included Files
+
+Software packages MUST process included files before simulation is started, and the content of included files MUST be merged into the whole-model environment before simulation. Specifically:
+
+* The `+<options>+` tag options will be merged with the `+<options>+` from the primary model. This means that if an included file specifies an option such as `+<uses_conveyor/>+`, then the simulation SHOULD assume the whole-model has the `+<uses_conveyor/>+` option specified. When merging XMILE `+<options>+` the most specific of each option will take priority.
+
+* When an included file only contains `+<behavior>+` and/or `+<style>+` optionsfootnote:[This separation is necessary because an included file can contain behavior and style options specific to the models and macros in that file – and which should not override or be merged with those in the file that includes those models and macros, as they’re unrelated. Furthermore, the intent of including behavior and style information is so that vendors can create, and include in all their models, a file with all of their defaults when they differ from the XMILE defaults.], those `+<behavior>+` and `+<style>+` options in the included file will be merged into the default styles of the file including them. This allows behaviors and styles to be included from other files. When merging `+<behavior>+` and `+<style>+` options, any behaviors and styles specified in the file that included them will take priority. (This allows the file that included them to override styles specified in the included file).
+
+* `+<model>+` and `+<macro>+` tags in the included file will be merged into the file that includes them at the start of that file, in the order in which they appear in the list of included files. If there are name conflicts between `+<model>+` and `+<macro>+` tags in the included file and the primary model, the primary model will take priority. (This allows the primary model to overwrite submodels or macros specified in the included file).

@@ -1,0 +1,57 @@
+[[sec-introduction]]
+== Introduction
+
+This document defines a specification for both a core system dynamics (SD) language and its representation in XML and thus provides a common structure for describing SD models.
+
+In the Spring 2003 System Dynamics Society newsletter, Jim Hines proposed that there be a common interchange format for system dynamics models.  Magne Myrtveit originally proposed such an idea at the 1995 International System Dynamics Conference (ISDC), but Jim hoped to revive interest in the idea and chose the name SMILE (Simulation Model Interchange LanguagE) to keep people lighthearted.  The benefits Jim proposed at the time were:
+
+* Sharing of models can lead to greater increases of knowledge and sharing of ideas.
+
+* On-line repositories could be built to facilitate learning.
+
+* Open standards lead to better acceptance in larger corporations as it minimizes their risk with specific vendors.
+
+* It spurs innovation by allowing non-vendors to develop add-ons.
+
+To this formidable list, the following can be added:
+
+* It allows the creation of a historical record of important works that everyone has access to.
+
+* It allows vendors to expand their market base because suddenly their unique features (and let’s be honest – each of the three major players has unique competencies) are available to all system dynamics modelers.
+
+Vedat Diker and Robert Allen later presented a poster at the 2005 ISDC that proposed a working group be formed and that XML be the working language for the standard, leading to the name XMILE (XML Modeling Interchange LanguagE).  During the first meeting of the Information Systems Special Interest Group (SIG) at the 2006 ISDC, Karim Chichakly volunteered to develop the draft XMILE specification, which he presented at the 2007 ISDC.  Several drafts later, the OASIS XMILE Technical Committee (TC) was formed in June 2013 to standardize the specification across all industries.  This document is the result of that TC’s work.
+
+This specification defines the XMILE specification version 1.0.
+
+[[sec-terminology]]
+=== Terminology
+
+The key words “MUST”, “MUST NOT”, “REQUIRED”, “SHALL”, “SHALL NOT”, “SHOULD”, “SHOULD NOT”, “RECOMMENDED”, “MAY”, and “OPTIONAL” in this document are to be interpreted as described in [RFC2119].
+
+[[sec-definitions]]
+==== Definitions
+
+**File** or **XMILE File**
+
+An XML file that is conforms to this specification.
+
+**Model** or **XMILE Model**
+
+The model section of a XMILE file.
+
+**Root Model**
+
+The top-level model of a whole-model.  This is the unnamed model within the XMILE file.
+
+**Simulator** or **XMILE Simulator**
+
+An implementation that simulates XMILE whole-models per this specification.
+
+**Whole-model** or **XMILE Whole-model**
+
+An XML file that conforms to this specification plus all XMILE files included through either the includes section of the header or through the resource attribute of a XMILE model or a module.
+
+[[sec-normative-references]]
+=== Normative References
+
+{empty}[RFC2119] Bradner, S., “Key words for use in RFCs to Indicate Requirement Levels”, BCP 14, RFC 2119, March 1997. http://www.ietf.org/rfc/rfc2119.txt.

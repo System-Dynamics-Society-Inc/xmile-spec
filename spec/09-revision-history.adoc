@@ -1,0 +1,26 @@
+[[sec-revision-history]]
+== Revision History
+
+[cols="4*",options="header"]
+|===
+|**Revision**
+|**Date**
+|**Editor**
+|**Changes Made**
+
+|1.0wd01
+|9/23/13
+|Karim Chichakly
+|Created from input documents
+
+|1.0wd02
+|8/26/14
+|Karim Chichakly
+|Combined edits from TC editors
+
+|1.0wd03
+|10/21/14
+|Karim Chichakly and Gary Baxter
+|Edited in response to public comments by Karim Chichakly, Gary Baxter, and William Schoenberg
+
+|===

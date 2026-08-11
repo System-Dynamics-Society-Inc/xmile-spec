@@ -1,0 +1,1118 @@
+[[sec-model-equation-xml-encoding]]
+== Model Equation XML Encoding
+
+This chapter describes the specific structure of XMILE tags appearing within the `+<model>+` tag of an XMILE file. Tags specific to displaying the model or creating interfaces to models are restricted to the `+<views>+` tag within the model. These are detailed in Chapters 5 and 6.
+
+The overall structure of a `+<model>+` tag appears below (sub-tags MUST appear in this order):
+
+[source,xml]
+----
+<model>
+<sim_specs>   <!-- OPTIONAL – see Chapter 2 -->
+...
+</sim_specs>
+<behavior>   <!-- OPTIONAL – see Chapter 2 -->
+...
+</behavior>
+<variables>   <!-- REQUIRED -->
+...
+</variables>
+<views>    <!-- OPTIONAL – see Chapters 5 & 6 -->
+...
+</views>
+</model>
+----
+
+An XMILE file MAY define many models, each in its own `+<model>+` tagfootnote:[When multiple models are defined in an XMILE file, the `+<uses_submodels>+` option MUST be set in the XMILE options (see Chapter 2).]. The primary, or root, model has no name, but all remaining models MUST be named; they represent submodels of the root model. The `+<model>+` tag has the following OPTIONAL attributes:
+
+* Name:  `+name="…"+` with the model name (a valid XMILE identifier). This is REQUIRED for all but the root model (which SHALL be unnamed).
+
+* Run enabled:  `+run="…"+` with true/false (default: false). This is only in effect when running the model by module.
+
+* Namespace:  `+namespace="…"+` with XMILE namespaces, separated by commas. For example, `+namespace="std, isee"+` means resolve unrecognized identifiers against the `+std+` namespace first, and then against the `+isee+` namespace. If this setting appears, it overrides the file-level namespace setting in the XMILE options block.  (default: same as the file-level namespace)
+
+* Optional reference to a separate model file for the model contents:  `+resource="…"+`. A resource can be a relative file path, an absolute file path, or an URL. Since the `+<module>+` tag can also specify a separate model file resource, this is only needed for models that do not use modules. However, when the same module is shared in multiple parts of the file, it is better to create one URL reference in a model block, rather than specifying it in the module block.
+
+The model section can OPTIONALLY include `+<sim_specs>+` and `+<behavior>+` tags, as described in Chapter 2, to override specific settings. The rest of this chapter focuses on the specific tags that appear within the `+<variables>+` tag, which are all entities that either simulate or affect the simulation.
+
+Any individual model with an XMILE file can OPTIONALLY be encrypted. Encrypted models are stored in such a way that the contents of the model are unknown unless the proper password is provided to decrypt the model content. In this first version of XMILE, there is only a single supported encryption scheme as described below.
+
+Models that have been encrypted are first emitted in plain-text form (typically in memory). Then the generated UTF-8 string representing the entirety of the model tag is encrypted using the cipher block chaining mode (CBC) of an AES-128 block cipher.
+
+A SHA-256 keyed hash message authentication code (HMAC) is generated to allow implementations to verify whether decryption was successful or not. Because a CBC mode cipher is used, an initialization vector (IV) is required to initialize the cipher and it too MUST be provided to decode the encrypted model (cipher text).
+
+In the encrypted XMILE file, a `+<model>+` tag is written with the following four REQUIRED attributes allowing it to be decoded in place into a normal `+<model>+` tag:
+
+* Encryption scheme: `+encryption-scheme="…"+` with a comma-separated list of the block cipher, the block mode, and the HMAC. The only currently supported value is `+AES-128,CBC,SHA256+`. The currently supported encryption scheme uses a CBC AES-128 block cipher with a SHA-256 HMAC for verification of the decrypted cipher text.
+
+* {empty}IV: `+iv="…"+` The initialization vector as a base64 encoded string. The decoded (from base64) string is used to initialize the CBC AES-128 block cipher.
+
+* {empty}HMAC: `+hmac="…"+`  The HMAC as a base64 encoded string. The decoded (from base64) string is used to verify the decrypted cipher text.
+
+* Cipher text: (contents of the tag). The cipher text as a base64 encoded string. The decoded (from base64) string is the output of the cipher.
+
+The password entered by the user is hashed using the SHA-256 algorithm to generate the encryption key for the cipher allowing the cipher text to be decrypted or the plain-text to be encrypted.
+
+When encrypting a model, the software must first prompt for the password, which it then SHA-256 hashes to generate the encryption key. Then a 128-bit IV needs to be generated to initialize and start the CBC. The cipher can then encrypt the unencrypted model tag. Finally, after encryption is complete, the HMAC is calculated using the same encryption key, the concatenated IV, and unencrypted text as inputs to the HMAC-SHA256 algorithm.
+
+When decrypting a model, the software must first prompt for the password, which it then SHA-256 hashes to generate the encryption key. The IV is then used to initialize the CBC cipher, which then decrypts the cipher text using the generated encryption key. After decryption, the IV (decoded from base64) is concatenated with the decrypted plain-text and the result is used to generate an HMAC using the same process as when encrypted. The new HMAC is then compared to the HMAC from the file (decoded from base64) to verify a successful decryption.
+
+[[sec-common-variable-properties]]
+=== Common Variable Properties
+
+All variables have the following REQUIRED property:
+
+* Name:  `+name="…"+` attribute w/valid XMILE identifier
+
+All variables that are dimensioned have the following REQUIRED property:
+
+* Dimensions:  `+<dimensions>+` w/`+<dim name="…">+` for each dim in order (see Arrays in <<sec-arrays-4-1-4>>) (default: none)
+
+All non-apply-to-all arrayed variables, including non-apply-to-all graphical functions, have the following REQUIRED property:
+
+* Element:  `+<element>+` with a valid subscript attribute (default: none). The `+subscript="…"+` attribute lists comma-separated indices in dimension order for the array element. This attribute is only valid on the variable type tag for array elements of non-apply-to-all arrays (see Arrays in <<sec-arrays-4-5>>). There MUST be one `+<element>+` tag for each array entry and each MUST encapsulate either an `+<eqn>+` tag (non-graphical functions) or a `+<gf>+` tag (graphical functions).
+
+All variables have the following OPTIONAL properties:
+
+* Access:  `+access="…"+` attribute w/valid XMILE access name – see Submodels in Chapter 3 and in <<sec-submodels-4-7>> (default: none)
+
+* Access automatically set to output:  `+autoexport="…"+` attribute with true/false – see Submodels in <<sec-submodels-4-7>> (default: false)
+
+* Equation:  `+<eqn>+` w/valid XMILE expression, in a CDATA section if needed
+
+* MathML equation:  <mathml> block containing content-based MathML representation of the equationfootnote:[This is optional for a number of reasons, most notably the size of the representation.  All vendors, however, should strive to offer MathML output as a user-option.]
+
+* Units:  `+<units>+` w/valid XMILE units (default: none)
+
+* Documentation:  `+<doc>+` w/block of text, optionally in HTML format (default: none)
+
+* Message Poster:  `+<event_poster>+` as described in <<sec-event-posters>> (default: none)
+
+* Input range:  `+<range>+` as described in <<sec-ranges-scales-number-formats>> (default: unspecified)
+
+* Output scale:  `+<scale>+` as described in <<sec-ranges-scales-number-formats>> (default: unscaled)
+
+* Number format:  `+<format>+` as described in <<sec-ranges-scales-number-formats>> (default: unspecified)
+
+Of these, the name is REQUIRED for all variables and must be unique across all variables in the containing model. If the intent is to simulate the model, the equation is also required. For a stock, the equation contains the stock’s initial value, rather than the stock’s integration equation.
+
+The documentation can be plain text or can be HTML. If in plain text, it must use XMILE identifier escape sequences for non-printable characters (i.e., \n for newline, \t for tab, and, necessarily, \\ for backslash), rather than a hexadecimal code such as &#x0A. If in HTML, it must include the proper HTML header. Note this is true for all documentation and user-specified text fields in a XMILE file (i.e., including those in display objects defined in Chapters 5 and 6).
+
+[[sec-ranges-scales-number-formats]]
+==== Ranges, Scales, Number Formats
+
+All XMILE objects MAY have explicit ranges and scales that are used by default in input and output devices, respectively. These same properties can appear within the input and output devices to override the entity’s setting for that device.
+
+The `+<range>+` tag is used to specify the default input range for an input device.  Without it, any reasonable guess can be used (typically tied to the variable’s scale). The `+<scale>+` tag is used to specify the global scale of a variable. Without it, the scale of variable matches the (output) range of its values.  Both tags have two attributes:
+
+* Range/scale minimum:  `+min="…"+` with the minimum value for the range/scale
+
+* Range/scale maximum:  `+max="…"+` with the maximum value for the range/scale
+
+Note that it is REQUIRED that `+min+` <= `+max+`. For the `+<scale>+` tag only, two OPTIONAL attributes exist that can only be used when the `+<scale>+` tag appears within the definition of an output device (typically graphs):
+
+* Autoscale:  `+auto="…"+` with true/false to override the global scale within that output device; this is mutually exclusive with `+min+`, `+max+`, and `+group+` (default: false)
+
+* Autoscale group:  `+group="…"+` with a unique number identifying the group in that output device; note this implies `+auto="true"+` and is therefore mutually exclusive with `+min+`, `+max+`, and `+auto+` (default: not in a group)
+
+Groups require more than one variable in them and are specifically used to autoscale a group of variables to the same scale starting at the minimum value of all variables in the group and ending at the maximum value of all variables in the group. This is the default scaling for all variables in a comparative plot, so does not need to appear in that case.
+
+The `+<format>+` tag allows default formatting to be set for values of each variable.  Without it, the default settings for each attribute below takes effect:
+
+* Precision:  `+precision="…"+` with value indicating precision of least significant digit, e.g., “0.01” to round to the hundredths place or “0.5” to round to the nearest half (default: best guess based on the scale of the variable)
+
+* Magnitude scale:  `+scale_by="…"+` with the factor to scale all values by before displaying, e.g., “1000” to display thousands (default: no scaling, i.e., 1); note the `+precision+` applies to the scaled number
+
+* Special symbols:  `+display_as="…"+` with “number”, “currency”, or “percent” (default: `+number+`)
+
+* Include thousands separator:  `+delimit_000s="…"+` with true/false (default: false)
+
+These can also be overridden, using the same attribute names, in variable definitions of individual input or output devices.
+
+[[sec-event-posters]]
+==== Event Posters
+
+Events based on entity values can be triggered while the model is being simulated. At the simulation level, these events are limited to pausing the simulation (default) or stopping the simulation. The model user can be informed of these events in various ways, as described in Chapter 6.
+
+All events appear in an `+event_poster+` block with `+min+` and `+max+` attributes specifying the lower and upper bounds for all posters (this is a user setting to help them decide where to place events). A series of `+threshold+` blocks then define the event triggers:
+
+[source,xml]
+----
+<event_poster min="0" max="10">
+<threshold value="5">
+<event>
+...
+</event>
+...
+</threshold>
+</event_poster>
+----
+
+The threshold has these additional OPTIONAL attributes:
+
+* Direction:  `+direction="…"+` w/valid XMILE event direction name – see Chapter 3 +
+(default: `+increasing+`)
+
+* Frequency:  `+repeat="…"+` w/valid XMILE event frequency name – see Chapter 3 (default: `+each+`)
+
+* Repetition interval:  `+interval="…"+` w/number of unit times (default: disabled; only enabled if present)
+
+Each threshold block MUST have a unique value and direction (so there can be two threshold blocks at 5 as long as one is increasing and the other is decreasing). Within each threshold block, the actual events are defined, which MAY be either a single event that is used every time the threshold is exceeded (frequency of `+each+` REQUIRES there be only one event) or a sequence of events that are used one at a time in their specified order each time the threshold is exceeded (i.e., the first event is used the first time the threshold is exceeded, the second is used the second time, etc.). Events appear in an `+<event>+` tag which has one OPTIONAL attribute:
+
+* Action:  `+sim_action="…"+` w/valid XMILE event action name – see Chapter 3 (default: `+pause+`)
+
+[[sec-interactivity-in-event-posters]]
+===== Interactivity in Event Posters
+
+Posters can also include OPTIONALLY visual and aural components that tell the user what happened. These are defined within the `+<event>+` tag using the following tags:
+
+* Text message:  `+<text_box>+` with text as described in <<sec-text-boxes>>
+
+* Image message:  `+<image>+` as described in <<sec-graphics-frames>>
+
+* Video message:  `+<video>+` as described in <<sec-graphics-frames>>
+
+* Sound attached to message:  `+<sound>+` as described in <<sec-buttons>>
+
+* Hyperlink to a place to navigate to:  `+<link>+`, as described in <<sec-buttons>>.
+
+Note that only one visual type message (text, image, video) SHALL be allowed per event. While event poster interactivity is an optional part of the standard, it is strongly recommended that all implementations of event posters support text messages.
+
+The following example shows a poster that puts up a text message when 10 is exceeded, but then, when 19 is exceeded, plays a sound and a movie while navigating to an interface:
+
+[source,xml]
+----
+<event_poster min="1" max="20">
+<threshold value="10">
+<event>
+<text_box>Careful!</text_box>
+</event>
+</threshold>
+<threshold value="19">
+<event>
+<sound>bicycle_bell.wav</sound>
+<link target="view" view_type="interface" x="0" y="0"/>
+<video>c:/Movies/uh-oh.mov</video>
+</event>
+</threshold>
+</event_poster>
+----
+
+[[sec-graphical-functions-4-1-3]]
+==== Graphical Functions
+
+Graphical functions are defined within a `+<gf>+` tag. A graphical function definition MAY stand alone, providing it is named, or it can be embedded within a flow or an auxiliary. As provided in XMILE expressions, named graphical functions MAY also be invoked like built-in functions.
+
+The graphical functions has several properties, as described below. Note that it is REQUIRED to include exactly one of x-axis scale and x-axis points (either, but not both).
+
+* Name:  `+name="…"+` w/valid XMILE identifier (default: anonymous). The name is REQUIRED if a graphical function is defined outside other variables (flows or auxiliaries). It is OPTIONAL when it is defined inside a variable.
+
+* Type:  `+type="…"+` w/valid XMILE graphical function type name – see Chapter 3 (default: `+continuous+`) OPTIONAL
+
+* __x__-axis scale:  `+<xscale min="…" max="…"/>+` defines the scale of the __x__-axis (default: smallest and largest values in `+<xpts>+`). REQUIRED when no x-axis points.
+
+* __y__-axis scale:  `+<yscale min="…" max="…"/>+` defines the scale of the __y__-axis (default: smallest and largest values in `+<ypts>+`). This only affects the scale of the graph as shown in a user interface; it has no impact on the behavior or interpretation of the graphical function. In general, include it only if the user-desired scale differs from the minimum and maximum __y__-values in `+<ypts>+`. OPTIONAL
+
+* __x__-axis points:  `+<xpts>…</xpts>+` specifies the exact __x__-values corresponding to the __y__-values given in the `+<ypts>+` (default: the __x__-axis scale, `+<xscale>+`, evenly divided into the number of points in `+<ypts>+` creating a (fixed) increment along the __x__-axis). Note that when this is specified, the number of points given MUST exactly match the number of points in `+<ypts>+`, one __x__-value for each and every __y__-value, corresponding positionally, and the values must be sorted in ascending order (from smallest to largest). By default, these values are comma-separated. REQUIRED when no x-axis scale.
+
+* __y__-axis points:  `+<ypts>…</ypts>+` specifies the __y__-values for the graphical function, starting with the __y__-value for the smallest __x__-value and continuing as __x__ increases until ending with the __y__-value corresponding to the largest __x__-value. By default, these values are comma-separated. REQUIRED
+
+The `+<xpts>+` and the `+<ypts>+` tags have one OPTIONAL attribute to specify the separator between values:
+
+* Value separator:  `+sep="…"+` w/the single character used as the separator (default: `+","+` – comma)
+
+Only `+<ypts>+` are always REQUIRED, but since the default values for other properties depend on properties other than `+<ypts>+`, `+<ypts>+` alone is never sufficient. In particular, `+<xpts>+` defaults to values from `+<xscale>+` and `+<xscale>+` defaults to values from `+<xpts>+`, so one or the other is always REQUIRED.
+
+The smallest possible (named) graphical function definition is therefore:
+
+[source,xml]
+----
+<gf name="rising">
+<xscale min="0" max="1"/>
+<ypts>0,0.1,0.5,0.9,1</ypts>
+</gf>
+----
+
+This definition implies a corresponding set of __x__-values of (0, 0.25, 0.5, 0.75, 1) and a __y__-scale from 0 to 1.
+
+A named graphical function (whether defined stand alone or within a variable) can then be directly referred to in a variable:
+
+[source,xml]
+----
+<gf name="rising"/>
+----
+
+or in a XMILE expression:
+
+[source,xml]
+----
+<eqn>rising(star)</eqn> <!-- evaluate gf "rising" at star -->
+----
+
+The set of defaults given above are specifically designed to avoid redundancies in the definitions that lead to contradictions. Property defaults must be used to reduce the graphical function to its smallest form. For example, the following overspecified graphical function, even though it is self-consistent, is not valid (since it includes both the x-axis scale and the x-axis points):
+
+[source,xml]
+----
+<gf name="overspecified">
+<xscale min="0" max="0.5"/>
+<yscale min="0" max="1"/>
+<xpts>0,0.1,0.2,0.3,0.4,0.5</xpts>
+<ypts>0.05,0.1,0.2,0.25,0.3,0.33</ypts>
+</gf>
+----
+
+Likewise, the following invalid graphical function shows how overspecification leads to inconsistencies:
+
+[source,xml]
+----
+<gf name="inconsistent">
+<xscale min="0" max="0.5"/>
+<yscale min="0" max="1"/>
+<xpts>0,1,2,3,4,5</xpts>
+<ypts>0.05,0.1,0.2,0.25,0.3,0.33</ypts>
+</gf>
+----
+
+Even removing overspecified fields will not prevent errors. When `+<xpts>+` are included, the __x__-values MUST be in ascending order and the number of __x__-values MUST match the number of __y__-values. The following graphical function, although not overspecified, violates both of these rules:
+
+[source,xml]
+----
+<gf name="invalid">
+<yscale min="0" max="1"/>
+<xpts>2,1,3,0</xpts>
+<ypts>0.05,0.1,0.2,0.25,0.3,0.33</ypts>
+</gf>
+----
+
+Flows and auxiliaries (only) can be defined as graphical functions. This is done using a `+<gf>+` block within the variable, as shown below.
+
+[source,xml]
+----
+<gf>
+<xscale min="0" max="0.5"/>
+<yscale min="0" max="1"/>
+<ypts>0.05,0.1,0.2,0.25,0.3,0.33</ypts>
+</gf>
+----
+
+If the x-axis points are evenly spaced, as above, it is strongly RECOMMENDED you use the x-axis scale to define the graphical function. Thus, the above graphical function is preferable to the equivalent valid (but not recommended) definition that uses `+<xpts>+` instead of `+<xscale>+`:
+
+[source,xml]
+----
+<gf>
+<yscale min="0" max="1"/>
+<xpts>0,0.1,0.2,0.3,0.4,0.5</xpts>
+<ypts>0.05,0.1,0.2,0.25,0.3,0.33</ypts>
+</gf>
+----
+
+[[sec-arrays-4-1-4]]
+==== Arrays
+
+Any variable MAY be arrayed (the `+<uses_arrays>+` option must also be set in the XMILE header). All arrayed variables MUST include exactly one `+<dimensions>+` tag that specifies the array dimensions of the variable. Like its cousin at the top of each XMILE file, this tag includes `+<dim>+` tags that define which dimensions are used and in which order. Only the name attribute is used on each `+<dim>+` tag. For example, the following definition states that the variable is a two-dimensional array with dimensions X by Y:
+
+[source,xml]
+----
+<dimensions>
+<dim name="X"/>
+<dim name="Y"/>
+</dimensions>
+----
+
+There are three different kinds of XMILE arrays:
+
+* Apply-to-all arrays, where one variable, the array owner, acts as a surrogate for all array elements
+
+* Non-apply-to-all arrays, where one variable, the array owner, acts as a container for many different array elements (this container necessarily shares some things across all elements, e.g., units)
+
+* Apply-to-all arrays with non-apply-to-all graphical functions, where one variable, the array owner, acts as the surrogate for all properties of the array elements except the graphical function used for each element (which differs by element)
+
+Apply-to-all arrays are the simplest:  They are just variables that include a `+<dimensions>+` tag. However, unlike non-arrays and arrays that are not apply-to-all, they can use dimension names in their equations.
+
+The remaining two arrays types, which are at least partially non-apply-to-all, use the `+<element>+` tag to define the individual characteristics of each array element. For these types, the variable tag (e.g., `+<stock>+` for stocks) acts as a container for both the array elements and the shared properties of all elements. Examples are given (in <<sec-arrays-4-5>>) after the three basic variable types are introduced below.
+
+[[sec-stocks-4-2]]
+=== Stocks
+
+All stocks REQUIRE a name. To simulate, a stock also needs an initial value, specified with the `+<eqn>+` tag. If the stock’s value is to change during the simulation, at least one flow is necessary. Rather than write the stock’s equation, XMILE mandates that we classify the flows that affect the stock as either inflows or outflowsfootnote:[The classification is based on the direction of flow when the flow rate is positive. Negative inflows flow outward while negative outflows flow inward.]. The basic stock definition is shown below with sample values.
+
+[source,xml]
+----
+<stock name="Motivation">
+<eqn>100</eqn>
+<inflow>increasing</inflow>
+<outflow>decreasing</outflow>
+</stock>
+----
+
+Note again that the equation is for the stock’s initial value only. If the equation is not constant, the initial values of the included variables will be used to calculate the stock’s initial value.
+
+The set of inflows and/or outflows is NOT REQUIRED. If there are multiple inflows, they appear with multiple tags in inflow-priority order (if the order of inflow to the stock is important). For example, if `+in1+` must be treated before `+in2+`, the inflows must appear within the `+<stock>+` block in this order:
+
+[source,xml]
+----
+<inflow>in1</inflow>
+<inflow>in2</inflow>
+----
+
+Multiple outflows appear in a similar fashion, i.e., in separate tags. The order in which they appear is their outflow priority, if that is important. I.e., material from the stock is first given to the first outflow listed. If there is still something in the stock, the second outflow gets some of it. Inflow priority is only important for queues and capacity-constrained conveyors. Outflow priority is only important for non-negative stocks (for example, Inventory), queues, and conveyors with multiple leakages.
+
+The stock has three mutually exclusive OPTIONS, all properties, that affect the behavior of the stock when simulated:
+
+* Conveyor:  `+<conveyor>…</conveyor>+` causes the stock to behave as a conveyor with the given conveyor parameters (see Chapter 3)
+
+* Queue:  `+<queue/>+` causes the stock to behave as a queue (see Chapter 3)
+
+* Non-negative:  `+<non_negative/>+` invokes an optional macro that prevents the stock from going negative.
+
+Note that non-negative is not directly supported by XMILE. The option exists partly for documentation, partly to allow a vendor to invoke a macro to implement the functionality. If this property has been set at a higher level (in a `+<behavior>+` tag), it can be turned off locally with:
+
+[source,xml]
+----
+<non_negative>false</non_negative>
+----
+
+The conveyor options are described in the next section.
+
+Queues do not have any options. However, their outflows have a priority order and MAY have the `+<overflow/>+` option set on all but the first outflow (see <<sec-flows-4-3>>).
+
+[[sec-conveyor-options]]
+==== Conveyor Options
+
+To simulate a conveyor, the conveyor MUST have at least one outflow. Since the conveyor can have both its normal outflow (i.e., where the material exits from the conveyor) and any number of leakage outflows (i.e., where material prematurely falls off the conveyor), to simulate a conveyor, at least one of its outflows MUST be its normal outflow. By convention, the first outflow in the conveyor’s list of outflows SHALL be the normal outflow and all subsequent outflows are leakage outflows. However, this behavior MAY be explicitly overridden by tagging each leakage flow with the `+<leak/>+` property (see <<sec-flows-4-3>>).
+
+The following conveyor properties are REQUIRED:
+
+* Transit time:  `+<len>…</len>+` specifies the XMILE expression for the length of the conveyor (in time units), i.e., how much time elapses between when material enters the conveyor and when it exits. When it varies, every batch that entered the conveyor stays on the conveyor for the transit time of the conveyor when it entered (i.e., the speed of the conveyor does not change). Thus, the conveyor is extended to accommodate a larger length, but not immediately shortened for smaller lengths (unless no batches exist in the part that would be truncated).
+
+The following conveyor properties and attributes are OPTIONAL:
+
+* Capacity:  `+<capacity>…</capacity>+` specifies the XMILE expression for the maximum amount of material that can be on the conveyor at any given moment (default: INF). When it varies and becomes smaller than the material that is presently on the conveyor, the conveyor’s capacity will be exceeded only until enough material exits to bring the conveyor’s contents down to the new capacity limit.
+
+* Inflow limit:  `+<in_limit>…</in_limit>+` specifies the XMILE expression for the maximum amount of material that can enter the conveyor each time unit (default: INF). For conveyors that are not discrete, this is converted to a per DT limit by multiplying by DT. For discrete conveyors, the full amount allowed each time unit is allowed to enter in a single DT.
+
+* Sample transit time:  `+<sample>…</sample>+` specifies the XMILE conditional expression used to decide when to sample and update the conveyor’s transit time (default: DT). When the specified equation evaluates to true (non-zero), the conveyor’s transit time is updated with the transit time equation’s value.
+
+* Arrest conveyor:  `+<arrest>…</arrest>+` turns on the ability to arrest the conveyor and specifies the XMILE conditional expression used to decide when to arrest the conveyor (default: conveyor does not arrest). When the specified equation evaluates to true (non-zero), all inflows and outflows to the conveyor stop flowing (are forced to zero) and the conveyor stops moving (i.e., time suspends for all material on the conveyor). The conveyor will not start again until the equation evaluates to false (zero).
+
+* Discrete:  `+discrete="…"+` with true/false (default: false); true if a discrete conveyor (the conveyor MUST be discrete if there is a queue directly upstream)
+
+* Batch integrity:  `+batch_integrity="…"+` with true/false (default: false); true if only entire batches can be taken from the (REQUIRED) upstream queue and false if partial batches are allowed
+
+* Number of batches:  `+one_at_a_time="…"+` with true/false (default: true); true if only the front batch from the (REQUIRED) upstream queue can be taken each DT and false if as many batches as will fit (subject to capacity and inflow limits) can be taken
+
+* Exponential leakage:  `+exponential_leak="…"+` with true/false (default: false); if true, leakage is an exponential decay across the conveyor (rather than linear) – for __all__ leakages
+
+For example, a conveyor with a transit time of 4 and a capacity of 1200:
+
+[source,xml]
+----
+<stock name="Students">
+<eqn>1000</eqn>
+<inflow>matriculating</inflow>
+<outflow>graduating</outflow>
+<conveyor>
+<len>4</len>
+<capacity>1200</capacity>
+</conveyor>
+</stock>
+----
+
+[[sec-flows-4-3]]
+=== Flows
+
+All flows REQUIRE a name. To simulate, most flows also require an equation. The only exceptions to requiring an equation for simulation are queue and conveyor outflows, which MUST NOT have an equation as their attached conveyor or queue drives them. The basic flow definition is shown below with sample values.
+
+[source,xml]
+----
+<flow name="increasing">
+<eqn>rewards*reward_multiplier</eqn>
+</flow>
+----
+
+One OPTIONAL property is available to all flows:
+
+* Unit conversion multiplier:  `+<multiplier>…</multiplier>+` pass:c[specifies the XMILE expression to be used to convert the units of the flow on the downstream side of the flow. This is used to convert units between stocks in a main chain. For example, if the unit conversion multiplier is 3 and the flow’s value is 4, 4 units of material will be taken from the upstream stock and 3*4 = 12 units of material will be given to the downstream stock. This does not violate conservation when the units change correctly. Note that when a unit-converted flow appears between two stocks, the downstream stock SHOULD have different units than the upstream stock; the flow units are based on the upstream stock.]
+
+Three OPTIONAL flow properties are mutually exclusive and affect the behavior of the flow when simulated:
+
+* Non-negative:  `+<non_negative/>+` invokes an optional macro that prevents the flow from going negative (also called a unidirectional flow, or uniflow – a flow without this property is a bidirectional flow, or biflow, i.e., material can flow in either direction depending on whether the flow value is positive or negative). Note that queue and conveyor inflows MUST be non-negative. In addition, queue outflows and normal, non-leakage conveyor outflows are non-negative by definition so this property MUST NOT appear for them.
+
+* Queue overflow:  `+<overflow/>+` makes a queue outflow an overflow, i.e., if a higher priority queue outflow has been blocked due to capacity restrictions or an arrested conveyor, the overflow becomes active (note that it too might get blocked, allowing a lower priority overflow to become active). This property can only appear in a queue outflow.
+
+* Conveyor leakage fraction:  `+<leak>+` with a valid XMILE expression that defines the leakage fraction for this conveyor outflow, or `+<leak/>+` to explicitly mark a partially defined conveyor outflow as a leakage outflow (before a leakage fraction is specified). The latter is critical for when the user is editing the model and may have temporarily disconnected or deleted the normal conveyor outflow. This property can only appear in a conveyor outflow.
+
+Note that non-negative is not directly supported by XMILE. The option exists partly for documentation, partly to allow a vendor to invoke a macro to implement the functionality. If this property has been set at a higher level (in a `+<behavior>+` tag), it can be turned off locally with:
+
+[source,xml]
+----
+<non_negative>false</non_negative>
+----
+
+If a flow is a conveyor leakage, it can have these additional OPTIONAL properties and attributes:
+
+* Leak integers:  `+<leak_integers/>+` forces a leakage flow to only leak whole numbers (default: leak fractions)
+
+* Leak zone start:  `+leak_start="…"+` with the fractional starting position of the leakage zone within the conveyor (from the inflowing side of the conveyor) (default: 0)
+
+* Leak zone end:  `+leak_end="…"+` with the fractional ending position of the leakage zone within the conveyor (from the inflowing side of the conveyor) (default: 1)
+
+An example conveyor leakage that does not yet simulate:
+
+[source,xml]
+----
+<flow name="shrinking">
+<leak/>       <!-- RECOMMENDED -->
+</flow>
+----
+
+An example conveyor leakage that simulates:
+
+[source,xml]
+----
+<flow name="attriting" leak_end="0.25"> <!-- freshman year only -->
+<leak>0.1</leak>     <!-- leakage fraction -->
+</flow>
+----
+
+An example uniflow that simulates:
+
+[source,xml]
+----
+<flow name="increasing">
+<eqn>rewards*reward_multiplier</eqn>
+<non_negative/>
+</flow>
+----
+
+[[sec-auxiliaries-4-4]]
+=== Auxiliaries
+
+Auxiliaries, like flows, also REQUIRE a name. To be simulated they must also have an equation. The basic auxiliary definition is shown below with sample values.
+
+[source,xml]
+----
+<aux name="reward_multiplier">
+<eqn>0.15</eqn>
+</aux>
+----
+
+This particular auxiliary is a constant, i.e., it depends on no other variables and its value does not change.
+
+Auxiliaries have one OPTIONAL attribute:
+
+* Flow concept:  `+flow_concept="…"+` with true/false, which is true if the auxiliary represents a flow concept (default: false). Besides documenting that the variable is conceptually a flow, this affects how values are reported under certain integration methods and in tables.
+
+[[sec-arrays-4-5]]
+=== Arrays
+
+As discussed on <<sec-arrays-4-1-4>>, there are three types of arrays. This section gives an example of each, in each case making an array of auxiliaries.
+
+[[sec-apply-to-all-array]]
+==== Apply-to-All Array
+
+A two-dimensional (2D) array with dimensions X by Y:
+
+[source,xml]
+----
+<aux name="distance">
+<dimensions>
+<dim name="X"/>
+<dim name="Y"/>
+</dimensions>
+<eqn>SQRT(X^2 + Y^2)</eqn>
+<units>kilometers</units>
+</aux>
+----
+
+The value of each element of the auxiliary is of the distance on the Cartesian plane from the origin (0, 0) to that (__x__, __y__pass:c[) coordinate. For example, distance[3, 4\] = SQRT(3^2 + 4^2) = 5, the distance from the origin to (3, 4).]
+
+[[sec-non-apply-to-all-array]]
+==== Non-Apply-to-All Array
+
+Non-apply-to-all arrays are embedded in the tag associated with the type of variable (e.g., `+<stock>+` for stocks and `+<flow>+` for flows). Each array element is represented using the `+<element>+` tag with only the `+subscript+` attribute allowed. Each element MAY define its own equation and other simulation attributes (such as event poster and transit time) that are allowed to vary between elements. The documentation, the units, and any variable-type-specific setting (e.g., non-negative, conveyor, or leak) are part of the array block, and MUST be shared for all elements. The event poster MAY also be shared.
+
+A 2D non-apply-to-all array with dimensions X by X, where X is size 2:
+
+[source,xml]
+----
+<aux name="not_apply_to_all">
+<dimensions>
+<dim name="X"/>
+<dim name="X"/>
+</dimensions>
+<element subscript="1,1">
+<eqn>TIME</eqn>
+</element>
+<element subscript="1,2">
+<eqn>2*TIME</eqn>
+</element>
+<element subscript="2,1">
+<eqn>5*TIME</eqn>
+</element>
+<element subscript="2,2">
+<eqn>11*TIME</eqn>
+</element>
+<units>months</units>
+</aux>
+----
+
+Note that each element has its own equation unrelated to its subscript index.
+
+[[sec-apply-to-all-arrays-with-non-apply-to-all-graphical-functions]]
+==== Apply-to-All Arrays with Non-Apply-to-All Graphical Functions
+
+Arrayed graphical functions are REQUIRED to have one equation, so are technically apply-to-all arrays. Thus, they typically appear in the same way as apply-to-all arrays. However, it is also possible to specify a different graphical function for each array element. In these cases, arrayed graphical functions use an `+<element>+` tag, just like a non-apply-to-all array. The only information that SHALL appear in each array element is a `+<gf>+` tag describing the graphical function for that element. All other attributes are associated with the array owner.
+
+A 1D apply-to-all arrayed auxiliary with dimension X, where X is size 2, and non-apply-to-all graphical functions.
+
+[source,xml]
+----
+<aux name="graphical_not_apply_to_all">
+<dimensions>
+<dim name="X"/>
+</dimensions>
+<element subscript="1">
+<gf>
+<xscale min="1" max="9"/>
+<ypts>0,50,25</ypts>  <!-- implied y scale from 0-50 -->
+</gf>
+</element>
+<element subscript="2">
+<gf>
+<xscale min="1" max="9"/>
+<yscale min="0" max="100"/>
+<ypts>90,10,50</ypts>
+</gf>
+</element>
+<eqn>TIME</eqn>
+<units>buildings</units>
+</aux>
+----
+
+Each graphical function is evaluated using the same equation, TIME.
+
+[[sec-groups]]
+=== Groups
+
+Groups, aka sectors, collect related model structure together. Groups REQUIRE a name and MAY have documentation. The group includes the names of all entities in that group using the `+<entity>+` tag with a `+name+` attribute.  View-only objects within the group appear in their own `+<group>+` under the `+<view>+` tag (see Chapter 6).
+
+Groups have the following unique OPTIONAL properties and attributes:
+
+* Entity reference:  `+<entity name="…"/>+` with the name of the entity that is in the group.
+
+* Run enabled:  `+run="…"+` with true/false (default: false). This is only in effect when running the model by group.
+
+A sample group from the `+<variables>+` section of the model:
+
+[source,xml]
+----
+<group name="Financial Sector">
+<doc>
+The operation of the Finance department is modeled in
+  this sector.
+</doc>
+<entity name="Cumulative Revenue"/>
+<entity name="revenue"/>
+...
+</group>
+----
+
+[[sec-submodels-4-7]]
+=== Submodels
+
+Submodels appear within their own `+<model>+` tag. Within the same file as the root model or other submodels, that tag MUST include the `+name+` attribute. When the submodel appears alone in its own file, the `+name+` generally SHOULD NOT be provided, allowing the submodel to be developed and tested as a stand-alone model.
+
+To be used by any other model, including the root model, submodels MUST be directly represented with an explicit module in the variables section of the model directly above them. This is because the connections between submodels are defined in modules.
+
+[[sec-modules]]
+==== Modules
+
+Modules are placeholders in the variables section, and in the stock-flow diagram, for submodels. If present, this must appear in every model that references that submodel. A module appears in a `+<module>+` block with two possible attributes and one property:
+
+* Name:  `+name="…"+` attribute w/valid XMILE identifier. If the optional `+resource+` is not specified, the name is required to match the `+name+` attribute of the submodel. If the optional `+resource+` is specified, the name will be used to try to match the `+name+` attribute of any model in the submodel file. If no match is found, the name is required to be ignored for the purposes of locating the submodel and the and the module will then represent the unnamed (root) model in the referenced file.  REQUIRED
+
+* OPTIONAL location:  `+resource="…"+` with a reference to the submodel’s file. A resource can be a relative file path, an absolute file path, or an URL. This is REQUIRED if the submodel is not in the same file as the model. Likewise, this should not appear if there is a `+<model>+` block for the submodel that already includes the `+resource+` attribute (see the beginning of Chapter 4).
+
+* Submodel input assignment:  `+<connect to="…" from="…"/>+` where `+to+` contains the name of the module input within this submodel or one its submodels (in which case, it is qualified with the submodel’s name) that is assigned and `+from+` contains the qualified name of the submodel output that is being assigned to that submodel input. To support arbitrary re-use of submodelsfootnote:[By “re-use”, we specifically mean either the re-use of independently developed modules within different models, or the re-use of the same module, stored in a separate file, within the same model. The latter works because nothing precludes separate modules, all with different names, referring to the same model file. Note that within the same model file, each model (and therefore associated module) must have a unique name. However, when using separate files, a separate unnamed (root) model can appear in each file. Each of these separate models do not have a name until they are assigned to named modules in the larger model, allowing multiple modules to refer to the same model [file].], the inputs of a submodel within a submodel must be allowed to appear here as the connections must be specified at the lowest common ancestor (LCA) of the submodel hierarchy (keep in mind also that the module itself always appears one level above the submodel it refers to).  OPTIONAL
+
+When a module does exist, connectors from entities to that module automatically denote that those entities are submodel outputs into just that module, so no additional designation is used. Likewise, connectors from the module to entities automatically turn those entities into submodel inputs (inputs are always marked as such in the XMILE).
+
+Below is an example showing the inclusion of a module sharing data with the root model when saved within the same XMILE file:
+
+[source,xml]
+----
+<?xml version="1.0" encoding="utf-8" ?>
+<xmile version="1.0" xmlns="http://docs.oasis-open.org/xmile/ns/XMILE/v1.0">
+<header>
+<product version=”1.0”>Product</product>
+<vendor>sample</vendor>
+<options>
+<uses_submodels/>
+</options>
+</header>
+<sim_specs method="Euler" time_units="Months">
+<start>1</start>
+<stop>13</stop>
+<dt>0.25</dt>
+</sim_specs>
+<model>
+<variables>
+<module name="Sub_Model">
+<connect to="Input" from=".Root_Model_Output"/>
+<connect to=".Root_Model_Input" from="Sub_Model.Output"/>
+</module>
+<aux name="Root_Model_Output" access="output"/>
+<aux name="Root_Model_Input" access="input"/>
+</variables>
+</model>
+<model name="Sub_Model">
+<variables>
+<aux name="Input" access="input"/>
+<aux name="Output" access="output"/>
+</variables>
+</model>
+</xmile>
+----
+
+If saved in separate files this same model would look like this:
+
+[source,xml]
+----
+<?xml version="1.0" encoding="utf-8" ?>
+<xmile version="1.0" xmlns="http://docs.oasis-open.org/xmile/ns/XMILE/v1.0">
+<header>
+<product version=”1.0”>Product</product>
+<vendor>sample</vendor>
+<options>
+<uses_submodels/>
+</options>
+</header>
+<sim_specs method="Euler" time_units="Months">
+<start>1</start>
+<stop>13</stop>
+<dt>0.25</dt>
+</sim_specs>
+<model>
+<variables>
+<module name="Sub_Model" resource=”module.xml”>
+<connect to="Input" from=".Root_Model_Output"/>
+<connect to=".Root_Model_Input" from="Sub_Model.Output"/>
+</module>
+<aux name="Root_Model_Output" access="output"/>
+<aux name="Root_Model_Input" access="input"/>
+</variables>
+</model>
+</xmile>
+----
+
+And in file “module.xml”:
+
+[source,xml]
+----
+<?xml version="1.0" encoding="utf-8" ?>
+<xmile version="1.0" xmlns="http://docs.oasis-open.org/xmile/ns/XMILE/v1.0">
+<header>
+<product version=”1.0”>Product</product>
+<vendor>sample</vendor>
+<options/>
+</header>
+<sim_specs method="Euler" time_units="Months">
+<start>1</start>
+<stop>13</stop>
+<dt>0.25</dt>
+</sim_specs>
+<model>
+<variables>
+<aux name="Input" access="input"/>
+<aux name="Output" access="output"/>
+</variables>
+</model>
+</xmile>
+----
+
+[[sec-submodel-inputs]]
+==== Submodel Inputs
+
+Submodel inputs are identified by setting the `+access+` property of the variable to `+input+`:
+
+[source,xml]
+----
+<aux name="xyz" access="input">
+...
+</aux>
+----
+
+Note that variables MAY be designated submodel inputs without assigning them to submodel outputs. In this case, the variable’s equation determines its value (rather than a submodel output).
+
+Submodel inputs MAY simultaneously be implicit submodel outputs (see <<sec-submodel-outputs>>) by having a connector from the submodel input directly into a module. In this case, the variable is called a submodel throughput. This is used, for example, when the output of a module not only wants to be used at the level above it, but also wants to be forwarded on to another module.
+
+[[sec-submodel-outputs]]
+==== Submodel Outputs
+
+Submodel outputs are identified by either having connectors into a module or explicitly setting the `+access+` property of the variable to `+output+`:
+
+[source,xml]
+----
+<aux name="abc" access="output">
+...
+</aux>
+----
+
+There is a rather large difference between implicit outputs (formed through connectors) and explicit outputs (using `+access="output"+`, as variable __abc__ does above):
+
+* Implicit outputs SHALL only be accessible in the submodel they are directly connected to. These outputs, therefore, have very limited scope.
+
+* Explicit outputs SHALL be accessible in all submodels above or across from the submodel that contains it, where “across” means the modules are connected by a connector and includes any submodels thereof. In this sense, they are exported __upwards__ from the submodel they appear within, but due to connectors between modules, they can also be used in all connected modules and those connected modules’ submodels. For example, if a model contains two modules __A__ and __D__, and __A__ is connected to __D__ (with a connector), than any explicit submodel output in __A__ can be accessed in __D__. Furthermore, if __D__ has its own module named __E__ and __E__ has its own module named __F__, any explicit submodel output in __A__ can be accessed in __E__ and __F__ (shown below).
+
++
+image::figure-submodel-scope-a-d.png[]
+
++
+__D__, __E__, and __F__ can access all explicit submodel outputs of __A__ and its submodels. +
+Finally, imagine A has its own module named __B__ and __B__ has its own module named __C__. If there is a connector from module __A__ to a converter __x__ (shown below), __x__ can be assigned to any submodel output in __A__, __B__, or __C__.
+
++
+image::figure-submodel-scope-a-x.png[]
+
++
+__x__ can be assigned to any explicit submodel output in __A__, __B__, or __C__.
+
+Every variable that is an explicit output may also include the following OPTIONAL attribute:
+
+* Autoexport:  `+autoexport="…"+` with true/false (default: false). This is true when the software (rather than the user) turned an entity into an explicit output, as, for example, when creating aliases across submodels. When this is true, there are likely connections between modules that were automatically made using connectors. This is indicated with the `+autocreate+` attribute in a connector (see Chapter 6).
+
+[[sec-macros]]
+=== Macros
+
+Macros allow new built-in functions to be defined, which can also be used to translate built-in functions across vendor packages. They also provide a way to implement non-standard simulation behavior for stocks, flows, and auxiliaries.
+
+Macros live outside of all other blocks, at the same level as the `+<model>+` tag, and MAY be the only thing in a file other than its header. Macros MUST satisfy all the rules and assertions expressed under this section, unless indicated as optional. Macros are defined with a `+<macro>+` tag, which has these REQUIRED properties and attributes:
+
+* Name:  `+name="…"+` with the macro name (a valid XMILE identifier).
+
+* Equation:  `+<eqn>+` w/valid XMILE expression, in a CDATA section if needed.
+
+Macros also have the following OPTIONAL properties and attributes:
+
+* Parameter:  `+<parm>+` with the name of the formal parameter within the macro (its local name, which must be a valid XMILE identifier) (default: no parameters). There must be one `+<parm>+` property for each macro parameter and they must appear in the expected calling order (i.e., the order of the actual parameters). Parameters can optionally have default values so they do not always have to be specified when the macro is called. These are specified with the `+default="…"+` attribute on the `+<parm>+` tag, using a valid XMILE expression that can refer to any parameter already defined. Every parameter after the first parameter that has a default value specified (i.e., uses `+default+`) must also have a default value specified (i.e., the first use of `+default+` makes all succeeding parameters optional as well). Since the macro equation often refers to these parameters, it is strongly recommended that the `+<parm>+` tag, when used, appears before the `+<eqn>+` tag.
+
+* Function format:  `+<format>+` with text that indicates the proper use of the function, usually with its name and a description of its parameters in order (default: none).
+
+* Function documentation:  `+<doc>+` with text that describes the purpose of the function, optionally in HTML format (default: none).
+
+* Simulation specifications:  `+<sim_specs>+` as defined for the model (see <<sec-model-simulation-specification-section>>) (default: same DT and integration method as model that invokes the macro). This must only appear in conjunction with a `+<variables>+` tag. Only `+<start>+`, `+<stop>+`, `+<dt>+`, and `+method="…"+` are allowed and all but method are specified with a valid XMILE expression that can include parameters. When `+<sim_specs>+` appears, the default DT is one and the default integration method is `+euler+`.
+
+* Variables:  `+<variables>+` as defined for `+<model>+` (see <<sec-common-variable-properties>>-<<sec-submodels-4-7>>) (default: no variables).
+
+* View:  Exactly one `+<view>+` within a `+<views>+` tag (see Chapters 5 and 6) (default: no view). This must only appear in conjunction with a `+<variables>+` tag and exists only to facilitate editing macros.
+
+* Namespace:  `+namespace="…"+` with a XMILE namespace, for example, `+namespace="isee"+` (default: single namespace specified in the header’s `+<options>+` tag, or no namespace if either no namespaces or multiple namespaces are specified in the header).
+
+Macros MAY include submodels. OPTIONALLY, they can also be recursive, i.e., they can refer to themselves in their equations. In this case, the `+recursive_macros+` option must be set to true in the `+<uses_macros>+` tag of the XMILE options (see <<sec-xmile-options>>).
+
+[[sec-macros-without-variables]]
+==== Macros without Variables
+
+Macros can be used to implement simple functions that either extend the available built-in functions or translate vendor-specific functions. For example, to define a general logarithm for any base:
+
+[source,xml]
+----
+<macro name="LOG">
+<parm>x</parm>
+<parm>base</parm>
+<eqn>LN(x)/LN(base)</eqn>
+<format>
+<![CDATA[LOG(<value>, <base>)]]>
+</format>
+<doc>
+<![CDATA[Finds the base-<base> logarithm of <value>.]]>
+</doc>
+</macro>
+----
+
+Within an XMILE expression, this function could be used to, for example, find the base-2 logarithm of 256:
+
+[source,xml]
+----
+LOG(256, 2)
+----
+
+Recursion MAY be used to implement simple functions, for example, to calculate the factorial of a number:
+
+[source,xml]
+----
+<macro name="FACT">
+<parm>x</parm>
+<eqn>IF x <= 1 THEN 1 ELSE FACT(x – 1)</eqn>
+</macro>
+----
+
+Nested loops – or nested recursion – can be implemented by calling another recursive macro from within a recursive macro. For example, we can use the recursive FACT(__x__) function above to find the sum of the first __x__ factorials:
+
+[source,xml]
+----
+<macro name="FACTSUM">
+<parm>x</parm>
+<eqn>IF x <= 1 THEN 1 ELSE FACT(x) + FACTSUM(x – 1)</eqn>
+</macro>
+----
+
+By using default parameter values to implement optional parameters, more complex operations can be performed, such as finding the index of a value in a 1D-array:
+
+[source,xml]
+----
+<macro name="FIND">
+ <parm>A</parm>
+<parm>value</parm>
+<parm default=”1”>i</parm>
+<eqn>IF i > SIZE(A) THEN 0 ELSE
+IF A[i] = value THEN i ELSE FIND(A, value, i + 1)</eqn>
+<format>FIND(<array>, <value>[, <starting index>])</format>
+</macro>
+----
+
+Note that these last three examples of recursion all make use of tail recursion, i.e., the recursive call is the last thing that appears in the equation. This is important because implementers are free to map macros into any internal form, especially for the sake of efficiency. The use of tail recursion whenever possible allows implementers to convert the recursion into a simple loop.
+
+[[sec-macros-with-variables]]
+==== Macros with Variables
+
+The above simple forms are useful when functions can be directly represented by existing built-ins. However, sometimes extra variables (stocks, flows, auxiliaries) are also needed. In these cases, the extra variables MUST also be defined using a `+<variables>+` block, just as in a model. Consider a first-order smooth that we wish to name SMOOTH1. Since XMILE includes a built-in first-order smooth, we could define this function as follows:
+
+[source,xml]
+----
+<macro name="SMOOTH1">
+<parm>input</parm>
+<parm>averaging_time</parm>
+<parm default="input">initial</parm>
+<eqn>SMTH1(input, averaging_time, initial)</eqn>
+</macro>
+----
+
+Now imagine XMILE does not have a first-order smooth function. In this case, we need to implement it ourselves using stocks and flows:
+
+[source,xml]
+----
+<macro name="SMOOTH1">
+<parm>input</parm>
+<parm>averaging_time</parm>
+<parm default="input">initial</parm>
+<eqn>Smooth_of_Input</eqn>
+<variables>
+<stock name="Smooth_of_Input">
+<eqn>initial</eqn>
+<inflow>change_in_smooth</inflow>
+</stock>
+<flow name="change_in_smooth">
+<eqn>(input – Smooth_of_Input)/averaging_time</eqn>
+</flow>
+</variables>
+</macro>
+----
+
+Note that any stocks that are defined within a macro MUST have their own instances for each use of that macro and these instances MUST persist across the length of the simulation. That is to say, if this SMOOTH1 function is used five times in a model, there must also be five copies of the stock Smooth_of_Input, one for each use. Use of flows and auxiliaries do not require this (auxiliaries, in particular, are useful to simplify the equation into smaller, meaningful pieces).
+
+Recall that when variables appear within the macro, a view may also appear. This facilitates editing of the macro, allowing it to be created and edited as a stock-flow diagram.
+
+[[sec-macros-with-variables-and-simulation-specs]]
+==== Macros with Variables and Simulation Specs
+
+By combining variables with simulation specs, we can explicitly write loops. Instead of using recursion, as in <<sec-macros-without-variables>>, we can write the factorial macro using a loop:
+
+[source,xml]
+----
+<macro name="FACT">
+<parm>x</parm>
+<eqn>Fact</eqn>
+<sim_specs>
+<start>1</start>
+<stop>x</stop>  <!-- note stop time is parameterized -->
+</sim_specs>  <!-- DT defaults to 1 -->
+<variables>
+<stock name="Fact">
+<eqn>1</eqn>
+<inflow>change_in_fact</inflow>
+</stock>
+<flow name="change_in_fact">
+<eqn>Fact*TIME</eqn>
+</flow>
+</variables>
+</macro>
+----
+
+This is far more cumbersome than the recursive implementation, but it illustrates the mechanism for iteration. Each time FACT(__x__) is called, this submodel runs from 1 to __x__, accumulating the product of all TIME values (DT = 1, so 1, 2, 3, ..., __x__) into the stock __Fact__, which is also the return value.
+
+The recursive macro to find the first index of a given value in an array that was shown in <<sec-macros-without-variables>> can also be rewritten as a loop (simplified here to only two parameters):
+
+[source,xml]
+----
+<macro name="FIND">
+<parm>A</parm>
+<parm>value</parm>
+<eqn>index</eqn>
+<sim_specs>
+<start>1</start>
+<stop>SIZE(A)</stop>
+</sim_specs>
+<variables>
+<stock name="index">
+<eqn>0</eqn>
+<inflow>find_value</inflow>
+</stock>
+<flow name="find_value">
+<eqn>
+IF (index = 0) AND (A[TIME] = value)
+THEN TIME/DT
+ELSE 0
+</eqn>
+</flow>
+</variables>
+</macro>
+----
+
+There is one critical difference between this function and the recursive one (beyond the relative brevity of the recursive version):  This version always looks at every element of the array whereas the recursive version stops looking as soon as it finds the solution.
+
+Just as nested recursion was implemented with two recursive macros, one calling the other, nested loops can be implemented by using two iterative macros with one calling the other. For example, to sum all elements in a 2D array of size __X__ by __Y__:
+
+[source,xml]
+----
+<macro name="SUM2D">
+<parm>A</parm>
+<eqn>Total</eqn>
+<sim_specs>
+<start>1</start>
+<stop>SIZE(A[*, 1])</stop>
+</sim_specs>
+<variables>
+<stock name="Total">
+<eqn>0</eqn>
+<inflow>change_in_sum</inflow>
+</stock>
+<flow name="change_in_sum">
+<eqn>SUM1D(A[TIME, *])</eqn>
+</flow>
+</variables>
+</macro>
+----
+
+[source,xml]
+----
+<macro name="SUM1D">
+<parm>A</parm>
+<eqn>Total</eqn>
+<sim_specs>
+<start>1</start>
+<stop>SIZE(A)</stop>
+</sim_specs>
+<variables>
+<stock name="Total">
+<eqn>0</eqn>
+<inflow>change_in_sum</inflow>
+</stock>
+<flow name="change_in_sum">
+<eqn>A[TIME]></eqn>
+</flow>
+</variables>
+</macro>
+----
+
+This method takes advantage of array slicing, building up a two-dimensional result by breaking the 2D array into one-dimensional rows. Thus, SUM2D invokes SUM1D to sum each row, passing it, through array slicing, a 1D array.
+
+In the general case, where slicing cannot produce the necessary results, additional information needs to be passed to the macro implementing the inner loop. Although the following is a contrived and inflexible example, SUM2D could instead call a function SUMROW that knows it’s getting a 2D array and is given the row number to sum (by changing `+change_in_sum+`’s equation to `+SUMROW(A, TIME)+` in SUM2D):
+
+[source,xml]
+----
+<macro name="SUMROW">
+<parm>A</parm>
+<parm>i</parm>
+<eqn>Total</eqn>
+<sim_specs>
+<start>1</start>
+<stop>SIZE(A[i, *])</stop>
+</sim_specs>
+<variables>
+<stock name="Total">
+<eqn>0</eqn>
+<inflow>change_in_sum</inflow>
+</stock>
+<flow name="change_in_sum">
+<eqn>A[i, TIME]></eqn>
+</flow>
+</variables>
+</macro>
+----
+
+The main difference from the previous example is passing the row number, __i__, and then using it both to specify the stop time and select with row in the flow equation.
+
+[[sec-modifying-stock-and-flow-behavior]]
+==== Modifying Stock and Flow Behavior
+
+Filters based on options specified with a stock, a flow, or an auxiliary (called “option filters”) are used to modify the behavior of stocks, flows, and auxiliaries when they are simulated. Option filters are macros that run whenever a variable with the specified option is evaluated. Since they are macros, they MAY use any of the features already described. For clarity, all of the examples in this section refrain from using variables.
+
+All option filters are always passed both the value of the variable and the value of the optionfootnote:[For options that are only true or false, one (1) is passed for true and zero (0) is passed for false.]. They may also be passed other parameters and the order of those parameters will vary as described below.
+
+Option filters add two additional attributes to macros:
+
+* Type filtered:  `+filter="…"+` with `+stock+`, `+flow+`, or `+aux+`. Existence of this attribute signals that the macro is an option filter.  REQUIRED
+
+* Redirection:  `+applyto="…"+` with valid values from the table below (default: apply to filtered variable).  OPTIONAL
+
+The ability to redirect the filter so that it is applied to a variable (or variables) other than the one specified in the filter allows more sophisticated filters that operate on a stock’s flow, or stocks connected to a flow. In these cases, not only does the `+applyto+` option need to be specified, but additional parameters are also passed to the filter as detailed below:
+
+[cols="3*",options="header"]
+|===
+|filter type
+|applyto value
+|Parameters
+
+|stock
+|Inflows
+|flow, option, stock, inflow_sum
+
+|stock
+|Outflows
+|flow, option, stock, outflow_sum
+
+|flow
+|upstream
+|stock, option, flow
+
+|flow
+|downstream
+|stock, option, flow
+
+|===
+
+In the parameter lists above, __flow__ refers to the calculated flow value, __stock__ refers to the calculated stock value, __option__ refers to the value of the option, __pass:c[inflow_sum]__ refers to the sum of the stock’s inflows that have higher-priority than this flow, and __pass:c[outflow_sum]__ refers to the sum of the stock’s outflows that have higher-priority than this flow.
+
+An option filter to implement uniflows, i.e., flows with the `+<non_negative/>+` tag (option), could be implemented as follows:
+
+[source,xml]
+----
+<macro filter="flow" name="non_negative">
+<parm>flow</parm>
+<parm>option</parm>
+<eqn>IF option THEN MAX(flow, 0) ELSE flow</eqn>
+</macro>
+----
+
+Note this is an option filter for a flow (`+filter="flow"+`) and it implements the non-negative option (`+name="non_negative"+` – note this name must exactly match the tag that turns on the option). It is passed the value of the flow as the first parameter and the value of the option (zero if off, one if on) as the second parameter. The implementation is very straightforward, using the MAX function when the option is on.
+
+Non-negative stocks can also be implemented with an option filter, though it’s a bit more complicated as non-negative stocks must limit their outflows, not themselves (as mentioned in Chapter 3, it is strongly RECOMMENDED that option filters not be used to directly modify the value of a stock).
+
+[source,xml]
+----
+<macro filter="stock" name="non_negative" applyto="outflows">
+<parm>flow</parm>
+<parm>value</parm>
+<parm>stock</parm>
+<parm>outflow_sum</parm>
+<eqn>
+IF value
+THEN MAX(stock/DT – outflow_sum, flow)
+ELSE flow
+</eqn>
+</macro>
+----
+
+The existence of such a macro does not rule out another macro that operates on the stock instead of its outflows.  Such a macro would not have the `+applyto+` option.  In fact, any stock or flow option can implement three filters:  one for the stock or flow itself and one for each of the two `+applyto+` options.

@@ -1,0 +1,42 @@
+[[sec-acknowledgments]]
+== Acknowledgments
+
+The following individuals have participated in the creation of this specification and are gratefully acknowledged:
+
+Original Author of the initial contribution:
+
+Karim J. Chichakly, isee systems, inc.
+
+Participants:
+
+Steven Adler, IBM
+
+Gary Baxter, independent member
+
+Robert Brown, Mitre Corporation
+
+Karim Chichakly, isee systems, inc.
+
+Timothy Clancy, IBM
+
+Jim Duggan, System Dynamics Society
+
+Robert Eberlein, System Dynamics Society
+
+Will Glass-Husain, Forio Corporation
+
+Nelson Borges, Jr., IBM
+
+Anthony Kennedy, Ventana Systems UK Limited
+
+Gregory Love, Mitre Corporation
+
+Leonard Malczynski, System Dynamics Society
+
+Robert Powers, independent member
+
+William Schoenberg, isee systems, inc.
+
+Jerry Smith, US Department of Defense
+
+Ddembe Williams, KCA University

@@ -1,0 +1,121 @@
+image::oasis-logo.png[]
+
+XML Interchange Language for System Dynamics (XMILE) Version 1.0
+
+Candidate OASIS Standard 01
+
+29 July 2015
+
+Specification URIs
+
+This version:
+
+http://docs.oasis-open.org/xmile/xmile/v1.0/cos01/xmile-v1.0-cos01.doc[http://docs.oasis-open.org/xmile/xmile/v1.0/cos01/xmile-v1.0-cos01.doc] (Authoritative)
+
+http://docs.oasis-open.org/xmile/xmile/v1.0/cos01/xmile-v1.0-cos01.html[http://docs.oasis-open.org/xmile/xmile/v1.0/cos01/xmile-v1.0-cos01.html]
+
+http://docs.oasis-open.org/xmile/xmile/v1.0/cos01/xmile-v1.0-cos01.pdf[http://docs.oasis-open.org/xmile/xmile/v1.0/cos01/xmile-v1.0-cos01.pdf]
+
+Previous version:
+
+http://docs.oasis-open.org/xmile/xmile/v1.0/csprd01/xmile-v1.0-csprd01.doc[http://docs.oasis-open.org/xmile/xmile/v1.0/csprd01/xmile-v1.0-csprd01.doc] (Authoritative)
+
+http://docs.oasis-open.org/xmile/xmile/v1.0/csprd01/xmile-v1.0-csprd01.html[http://docs.oasis-open.org/xmile/xmile/v1.0/csprd01/xmile-v1.0-csprd01.html]
+
+http://docs.oasis-open.org/xmile/xmile/v1.0/csprd01/xmile-v1.0-csprd01.pdf[http://docs.oasis-open.org/xmile/xmile/v1.0/csprd01/xmile-v1.0-csprd01.pdf]
+
+Latest version:
+
+http://docs.oasis-open.org/xmile/xmile/v1.0/xmile-v1.0.doc[http://docs.oasis-open.org/xmile/xmile/v1.0/xmile-v1.0.doc] (Authoritative)
+
+http://docs.oasis-open.org/xmile/xmile/v1.0/xmile-v1.0.html[http://docs.oasis-open.org/xmile/xmile/v1.0/xmile-v1.0.html]
+
+http://docs.oasis-open.org/xmile/xmile/v1.0/xmile-v1.0.pdf[http://docs.oasis-open.org/xmile/xmile/v1.0/xmile-v1.0.pdf]
+
+Technical Committee:
+
+https://www.oasis-open.org/committees/xmile/[OASIS XML Interchange Language (XMILE) for System Dynamics TC]
+
+Chairs:
+
+Karim Chichakly (mailto:kchichakly@iseesystems.com[kchichakly@iseesystems.com]), http://www.iseesystems.com[isee systems inc.]
+
+Steven Adler (mailto:adler1@us.ibm.com[adler1@us.ibm.com]), http://www.ibm.com[IBM]
+
+Editors:
+
+Karim Chichakly (mailto:kchichakly@iseesystems.com[kchichakly@iseesystems.com]), http://www.iseesystems.com[isee systems inc.]
+
+Gary Baxter (mailto:garyrbaxter@yahoo.com[garyrbaxter@yahoo.com]), Individual
+
+Robert Eberlein (mailto:bob@astutesd.com[bob@astutesd.com]), http://www.systemdynamics.org[System Dynamics Society, Inc.]
+
+Will Glass-Husain (mailto:wglass@forio.com[wglass@forio.com]), Individual
+
+Robert Powers (mailto:bobbypowers@gmail.com[bobbypowers@gmail.com]), Individual
+
+William Schoenberg (mailto:bschoenberg@iseesystems.com[bschoenberg@iseesystems.com]), http://www.iseesystems.com[isee systems inc.]
+
+Additional artifacts:
+
+* This prose specification is one component of a Work Product that also includes:
+
+XML schemas: http://docs.oasis-open.org/xmile/xmile/v1.0/cos01/schemas/[http://docs.oasis-open.org/xmile/xmile/v1.0/cos01/schemas/]
+
+Examples: http://docs.oasis-open.org/xmile/xmile/v1.0/cos01/examples/[http://docs.oasis-open.org/xmile/xmile/v1.0/cos01/examples/]
+
+Related work:
+
+This specification replaces or supersedes:
+
+__XMILE: An XML Interchange Language for System Dynamics__. 7 June 2013. Karim Chichakly. http://www.iseesystems.com/community/support/XMILEv4.pdf[http://www.iseesystems.com/community/support/XMILEv4.pdf].
+
+This specification is related to:
+
+__SMILE: A Common Language for System Dynamics__. 7 June 2013. Karim Chichakly. http://www.iseesystems.com/community/support/SMILEv4.pdf[http://www.iseesystems.com/community/support/SMILEv4.pdf].
+
+Declared XML namespace:
+
+http://docs.oasis-open.org/xmile/ns/XMILE/v1.0[http://docs.oasis-open.org/xmile/ns/XMILE/v1.0]
+
+Abstract:
+
+The XML Interchange Language (XMILE) for System Dynamics (SD) defines an open XML protocol for the sharing, interoperability, and reuse of SD models and simulations. This document describes the XMILE language and format anyone who wishes to use SD models or embed them in their applications, such as vendors of SD software, Big Data, cloud, mobile, and social media solutions, as well as end users and consultants in the SD field.
+
+Status:
+
+This document was last revised or approved by the OASIS XML Interchange Language (XMILE) for System Dynamics TC on the above date. The level of approval is also listed above. Check the “Latest version” location noted above for possible later revisions of this document. Any other numbered Versions and other technical work produced by the Technical Committee (TC) are listed at https://www.oasis-open.org/committees/tc_home.php?wg_abbrev=xmile%20[https://www.oasis-open.org/committees/tc_home.php?wg_abbrev=xmile #technical].
+
+TC members should send comments on this specification to the TC’s email list. Others should send comments to the TC’s public comment list, after subscribing to it by following the instructions at the “Send A Comment” button on the TC’s web page at https://www.oasis-open.org/committees/xmile/[https://www.oasis-open.org/committees/xmile/].
+
+For information on whether any patents have been disclosed that may be essential to implementing this specification, and any offers of patent licensing terms, please refer to the Intellectual Property Rights section of the Technical Committee web page (https://www.oasis-open.org/committees/xmile/ipr.php[https://www.oasis-open.org/committees/xmile/ipr.php]).
+
+Citation format:
+
+When referencing this specification the following citation format should be used:
+
+**pass:c[[xmile-v1.0\]]**
+
+__XML Interchange Language for System Dynamics (XMILE) Version 1.0__. Edited by Karim Chichakly, Gary Baxter, Robert Eberlein, Will Glass-Husain, Robert Powers, and William Schoenberg. 29 July 2015. Candidate OASIS Standard 01. http://docs.oasis-open.org/xmile/xmile/v1.0/cos01/xmile-v1.0-cos01.html[http://docs.oasis-open.org/xmile/xmile/v1.0/cos01/xmile-v1.0-cos01.html]. Latest version: http://docs.oasis-open.org/xmile/xmile/v1.0/xmile-v1.0.html[http://docs.oasis-open.org/xmile/xmile/v1.0/xmile-v1.0.html].
+
+Notices
+
+Copyright © OASIS Open 2015. All Rights Reserved.
+
+All capitalized terms in the following text have the meanings assigned to them in the OASIS Intellectual Property Rights Policy (the "OASIS IPR Policy"). The full https://www.oasis-open.org/policies-guidelines/ipr[Policy] may be found at the OASIS website.
+
+This document and translations of it may be copied and furnished to others, and derivative works that comment on or otherwise explain it or assist in its implementation may be prepared, copied, published, and distributed, in whole or in part, without restriction of any kind, provided that the above copyright notice and this section are included on all such copies and derivative works. However, this document itself may not be modified in any way, including by removing the copyright notice or references to OASIS, except as needed for the purpose of developing any document or deliverable produced by an OASIS Technical Committee (in which case the rules applicable to copyrights, as set forth in the OASIS IPR Policy, must be followed) or as required to translate it into languages other than English.
+
+The limited permissions granted above are perpetual and will not be revoked by OASIS or its successors or assigns.
+
+This document and the information contained herein is provided on an "AS IS" basis and OASIS DISCLAIMS ALL WARRANTIES, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO ANY WARRANTY THAT THE USE OF THE INFORMATION HEREIN WILL NOT INFRINGE ANY OWNERSHIP RIGHTS OR ANY IMPLIED WARRANTIES OF MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE.
+
+OASIS requests that any OASIS Party or any other party that believes it has patent claims that would necessarily be infringed by implementations of this OASIS Committee Specification or OASIS Standard, to notify OASIS TC Administrator and provide an indication of its willingness to grant patent licenses to such patent claims in a manner consistent with the IPR Mode of the OASIS Technical Committee that produced this specification.
+
+OASIS invites any party to contact the OASIS TC Administrator if it is aware of a claim of ownership of any patent claims that would necessarily be infringed by implementations of this specification by a patent holder that is not willing to provide a license to such patent claims in a manner consistent with the IPR Mode of the OASIS Technical Committee that produced this specification. OASIS may include such claims on its website, but disclaims any obligation to do so.
+
+OASIS takes no position regarding the validity or scope of any intellectual property or other rights that might be claimed to pertain to the implementation or use of the technology described in this document or the extent to which any license under such rights might or might not be available; neither does it represent that it has made any effort to identify any such rights. Information on OASIS' procedures with respect to rights in any document or deliverable produced by an OASIS Technical Committee can be found on the OASIS website. Copies of claims of rights made available for publication and any assurances of licenses to be made available, or the result of an attempt made to obtain a general license or permission for the use of such proprietary rights by implementers or users of this OASIS Committee Specification or OASIS Standard, can be obtained from the OASIS TC Administrator. OASIS makes no representation that any information or list of intellectual property rights will at any time be complete, or that any claims in such list are, in fact, Essential Claims.
+
+The name "OASIS" is a trademark of https://www.oasis-open.org/[OASIS], the owner and developer of this specification, and should be used only to refer to the organization and its official outputs. OASIS welcomes reference to, and implementation and use of, specifications, while reserving the right to enforce its marks against misleading uses. Please see https://www.oasis-open.org/policies-guidelines/trademark[https://www.oasis-open.org/policies-guidelines/trademark] for above guidance.
+
+Table of Contents

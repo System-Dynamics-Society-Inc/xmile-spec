@@ -1,0 +1,728 @@
+[[sec-display-and-interface-xml-encoding]]
+== Display and Interface XML Encoding
+
+This chapter describes the specific structure of all XMILE tags appearing within the `+<views>+` tag of an XMILE file. <<sec-stock-and-flow-diagram-objects>> describes the display attributes of objects commonly found in a stock and flow diagram and <<sec-containers-6-2>> describes the attributes of common visual objects used to interface with a System Dynamics model.
+
+[[sec-stock-and-flow-diagram-objects]]
+=== Stock and flow diagram objects
+
+<<sec-stock>> through <<sec-alias>> describe the attributes commonly associated with objects in a visual representation of a stock and flow diagram. Each section corresponds to a distinct object although many of the attributes are common to multiple objects. These common attributes are listed below with references back to the sections in this document where they are defined and/or specified.
+
+Attributes common to objects described in <<sec-stock>> through <<sec-alias>>:
+
+* `+x,y –+` defined in <<sec-xmile-view-assumptions-and-attributes>>
+
+* `+color -+` defined in <<sec-common-styles-associated-with-all-xmile-display-objects>> and specified in <<sec-specification-of-color>>
+
+* `+background –+` defined in <<sec-common-styles-associated-with-all-xmile-display-objects>> and specified in <<sec-specification-of-color>>
+
+* `+z_index -+` defined in <<sec-common-styles-associated-with-all-xmile-display-objects>>
+
+* `+font_family -+` defined in <<sec-common-styles-associated-with-all-xmile-display-objects>>
+
+* `+font_size -+` defined in <<sec-common-styles-associated-with-all-xmile-display-objects>>
+
+* `+font_weight -+` defined in <<sec-common-styles-associated-with-all-xmile-display-objects>>
+
+* `+font_style -+` defined in <<sec-common-styles-associated-with-all-xmile-display-objects>>
+
+* `+text_decoration -+` defined in <<sec-common-styles-associated-with-all-xmile-display-objects>>
+
+* `+text_align -+` defined in <<sec-common-styles-associated-with-all-xmile-display-objects>>
+
+* `+text_background -+` defined in <<sec-common-styles-associated-with-all-xmile-display-objects>>
+
+* `+vertical_text_align –+` defined in <<sec-common-styles-associated-with-all-xmile-display-objects>>
+
+* `+text_padding -+` same as `+padding+` as defined in <<sec-common-styles-associated-with-all-xmile-display-objects>>
+
+* `+font_color -+` defined in <<sec-common-styles-associated-with-all-xmile-display-objects>>
+
+* `+text_border_color -+` same as `+border_color+` as defined in <<sec-common-styles-associated-with-all-xmile-display-objects>>
+
+* `+text_border_width -+` same as `+border_width+` as defined in <<sec-common-styles-associated-with-all-xmile-display-objects>>
+
+* `+text_border_style –+` same as `+border_style+` as defined in <<sec-common-styles-associated-with-all-xmile-display-objects>>
+
+Additional attributes common to objects described in <<sec-stock>> through <<sec-group>>:
+
+* `+name –+` described in <<sec-referencing-variable-objects-in-an-xmile-view>>, but in short it is the local name of the model entity represented by this tag.
+
+Additional attributes common to objects described in <<sec-stock>> through <<sec-module>>:
+
+* `+width, height –+` defined in <<sec-xmile-view-assumptions-and-attributes>>
+
+* `+label_side –+` This is the side of the symbol that the nameplate appears on.  Valid values are top|left|center|bottom|right
+
+* `+label_angle+` – This is the precise angle (in degrees where 0 is at 3 o’clock, increasing counter-clockwise) of the nameplate on the widget.  This is always specified in conjunction with `+label_side+`.
+
+`+name+` is REQUIRED for certain display objects as specified in <<sec-referencing-variable-objects-in-an-xmile-view>>.
+
+`+x+`, `+y+`, `+width+`, and `+height+` are REQUIRED for certain display objects as specified in <<sec-xmile-view-assumptions-and-attributes>>
+
+All other common attributes listed above are OPTIONAL for all display objects.
+
+[[sec-stock]]
+==== Stock
+
+The `+<stock>+` tag in the context of a `+<view>+` tag is used to describe the appearance of an XMILE stock equation object.  Support is REQUIRED for any implementation supporting views.  An example tag is shown below:
+
+`+<stock name=”Bathtub” x=”50” y=”100” width=”45” height=”35” label_side=”top” color=”blue” background=”white” z_index=”1” font_family=”Arial” font_size=”9pt” font_weight=”bold” font_style=”italic” text_decoration=”underline” text_align=”center” vertical_text_align=”center” text_padding=”2px” font_color=”blue” text_border_color=”black” text_border_width=”1px” text_border_style=”solid”/>+`
+
+Descriptions of all the display attributes of a stock can be found in <<sec-stock-and-flow-diagram-objects>>.
+
+[[sec-flow]]
+==== Flow
+
+The `+<flow>+` tag in the context of a `+<view>+` tag is used to describe the appearance of an XMILE flow equation object. Support is REQUIRED for any implementation supporting views.  An example tag is shown below:
+
+`+<flow name=”faucet” x=”50” y=”100” width=”18” height=”18” label_side=”top” color=”blue” background=”white” z_index=”1” font_family=”Arial” font_size=”9pt” font_weight=”bold” font_style=”italic” text_decoration=”underline” text_align=”center” vertical_text_align=”center” text_padding=”2px” font_color=”blue” text_border_color=”black” text_border_width=”1px” text_border_style=”solid”>+`
+
+`+<pts>+`
+
+`+<pt x=”0” y=”100”/>+`
+
+`+<pt x=”150 y=”100”/>+`
+
+`+</pts>+`
+
+`+</flow>+`
+
+* `+pts+` REQUIRED `+–+` These are the anchor points for the flow specified in model coordinates.  Flows can have any arbitrary number of points, but those points MUST form right angles.
+
+Descriptions of all other display attributes of a flow can be found in <<sec-stock-and-flow-diagram-objects>>.
+
+[[sec-aux]]
+==== Aux
+
+The `+<aux>+` tag in the context of a `+<view>+` tag is used to describe the appearance of an XMILE aux equation object.  Support is REQUIRED for any implementation supporting views.  An example tag is shown below:
+
+`+<aux name=”water flow rate” x=”50” y=”100” width=”45” height=”35” label_side=”top” color=”blue” background=”white” z_index=”1” font_family=”Arial” font_size=”9pt” font_weight=”bold” font_style=”italic” text_decoration=”underline” text_align=”center” vertical_text_align=”center” text_padding=”2px” font_color=”blue” text_border_color=”black” text_border_width=”1px” text_border_style=”solid”/>+`
+
+Descriptions of all the display attributes of an aux can be found in <<sec-stock-and-flow-diagram-objects>>.
+
+[[sec-module]]
+==== Module
+
+The `+<module>+` tag in the context of a `+<view>+` tag is used to describe the appearance of an XMILE module equation object.  Support is OPTIONAL for any implementation supporting views and modules.   An example tag is shown below:
+
+`+<module name=”Important_Module” x=”50” y=”100” width=”45” height=”35” label_side=”top” color=”blue” background=”white” z_index=”1” font_family=”Arial” font_size=”9pt” font_weight=”bold” font_style=”italic” text_decoration=”underline” text_align=”center” vertical_text_align=”center” text_padding=”2px” font_color=”blue” text_border_color=”black” text_border_width=”1px” text_border_style=”solid”/>+`
+
+Descriptions of all the display attributes of a module can be found in <<sec-stock-and-flow-diagram-objects>>.
+
+[[sec-group]]
+==== Group
+
+The `+<group>+` tag in the context of a `+<view>+` tag is used to describe the appearance of an XMILE group object. Support in the view is RECOMMENDED. A `+<group>+` display object differs from all other display objects used to represent model section objects in that there is a one-to-one relationship between group objects in the model section and group objects in the display section. This means that you can only have one `+<group>+` tag in the `+<views>+` tag that represents the `+<group>+` tag in the `+<variables>+` tag. All XMILE model objects which appear in the group within the model section are implicitly contained within the group object in the display section, but groups can also contain objects which are not present within the model section. Those objects are included within the group using an `+<item>+` tag. An example is shown below:
+
+`+<group name=”Major_Group” x=”50” y=”100” color=”blue” background=”white” z_index=”1” font_family=”Arial” font_size=”9pt” font_weight=”bold” font_style=”italic” text_decoration=”underline” text_align=”center” vertical_text_align=”center” text_padding=”2px” font_color=”blue” text_border_color=”black” text_border_width=”1px” text_border_style=”solid” locked=”true”>+`
+
+`+<item uid=”1”/>+`
+
+`+</group>+`
+
+* `+<item uid=”*”/>+` OPTIONAL pass:c[- A tag representing an un-named object which is present inside of this group.  The * is a UID for an object in the group’s model.  These are objects like aliases, tables, graphs, buttons etc.  Note:] `+<item>+` tags representing connector objects are NOT REQUIRED to be present in the tag to be considered a part of the group.  Connector objects are automatically considered a part of the group if one end of the connector is contained within the group.
+
+* `+locked="…"+` with true/false (default: `+false+`) REQUIRED – When a group is locked, all entities in that group move with the group.  When not locked, moving the group adjusts the items inside of the group (both model and display section objects).
+
+Descriptions of all other display attributes of a group can be found in <<sec-stock-and-flow-diagram-objects>>.
+
+[[sec-connector]]
+==== Connector
+
+The `+<connector>+` tag is used to describe the visual appearance of the relationships between XMILE model objects.  Support is REQUIRED for any implementation supporting views.  A connector is an arrow which only appears between two display objects.  An example tag is shown below:
+
+`+<connector uid=”1” x=”50” y=”100” angle=”32” line_style=”solid” delay_mark=”false” color=”blue” background=”white” z_index=”1” font_family=”Arial” font_size=”9pt” font_weight=”bold” font_style=”italic” text_decoration=”underline” text_align=”center” vertical_text_align=”center” text_padding=”2px” font_color=”blue” text_border_color=”black” text_border_width=”1px” text_border_style=”solid” polarity=””>+`
+
+`+<from>+`
+
+`+<alias uid=”2”/>+`
+
+`+</from>+`
+
+`+<to>faucet</to>+`
+
+`+<pts>+`
+
+`+<pt x=”50” y=”50”/>+`
+
+`+<pt x=”100” y=”100”/>+`
+
+`+<pt x=”150” y=”75”/>+`
+
+`+</pts>+`
+
+`+</connector>+`
+
+* `+polarity+` pass:c[– “+ | - | none” – default option = “]`+none+`”  OPTIONAL - The polarity is drawn as a symbol at the end of a connector arrowhead representing the type of the relationship between the variables connected by the connector.
+
+* `+from+` REQUIRED `+–+` The name of (or an alias tag pointing to) the model entity from which this connector starts.  The entity needs to be in the same model as the connector.
+
+* `+to+` REQUIRED `+–+` The name of the model entity to which this connector ends, the entity needs to be in the same model as the connector.
+
+* `+pts+` REQUIRED `+–+` These are the anchor points for the connector specified in model coordinates for when there are more than two points (the start and end point).  Connectors MAY  have any number of points (greater than two) and those points are RECOMMENDED to be connected using an arc when there are two points and Bezier curves if three or more points are present.  If a vendor does not support multipoint connectors, this information is ignored and the `+angle+` attribute is used instead to calculate the connector start and end points.
+
+* `+angle+` REQUIRED – The angle in degrees of the takeoff point from the center of the start object.  0 is 3 o’clock and angles increase counter-clockwise.
+
+* `+line_style+` “solid|dashed|vendor specific” – default option=”`+solid+`” OPTIONAL - Describes whether the connector is dashed or not.  For the vendor specific options, SVG line-style types are suggested.
+
+* `+delay_mark+` `+="…"+` with true/false (default: `+false+`) OPTIONAL - Describes whether or not this connector is marked with a symbol signifying a delay.
+
+Descriptions of all other display attributes of a connector can be found in <<sec-stock-and-flow-diagram-objects>>.
+
+[[sec-alias]]
+==== Alias
+
+The `+<alias>+` tag is used to describe the visual appearance of an alias of an XMILE model object.  Support is REQUIRED for any implementation supporting views.  An alias is a symbol representing a “portal” to the display of another XMILE model object in the same view.  Aliases are only valid for stocks, flows, and auxiliaries.  It is RECOMMENDED for aliases to take on all the same styles as the object they represent with only the differences being written to the `+<alias>+` tag.  Aliases MAY have connectors leaving them but MAY NOT have connectors pointing to them.  An example tag is shown below:
+
+`+<alias uid=”1” x=”50” y=”100”>+`
+
+`+<of>faucet</of>+`
+
+`+</alias>+`
+
+* `+uid+` REQUIRED `+–+` defined in <<sec-referring-to-specific-xmile-display-objects>>
+
+* `+x,y+` REQUIRED `+–+` defined in <<sec-xmile-view-assumptions-and-attributes>>
+
+* `+of+` REQUIRED `+–+` The name of the model entity which this alias represents.  The model entity must be in the same model as the alias.
+
+The other attributes of an alias are the same as the object to which the alias refers.
+
+[[sec-containers-6-2]]
+=== Containers
+
+Containers are used to box up other XMILE display objects into a single unit which can be moved, resized, and displayed together.  For this first version of the XMILE draft, there is only one OPTIONAL container - a stacked container which is used to display pages of widgets. In the future, this section of the specification could contain containers used to do auto-layout like horizontal box, vertical box, etc.
+
+Any object within a container does NOT REQUIRE an `+x,y+` position or a size. It inherits those properties from the container.
+
+[[sec-stacked-containers]]
+==== Stacked Containers
+
+A stacked container is used to allow XMILE display objects to be stacked on top of one another in flipbook form. Support for this tag is OPTIONAL. This allows model creators to create pages of tables or graphs.  Any display object may be placed within a stacked container, but typical objects are graphs and tables.  An example tag is shown below:
+
+`+<stacked_container x="92" y="114" height="282" width="492" uid="0" visible_index=”0”>+`
+
+`+</stacked_container>+`
+
+* `+visible_index+` REQUIRED `+–+` Integer 0 based index of which content object to display.
+
+Descriptions of all other display attributes of a stacked container can be found in <<sec-stock-and-flow-diagram-objects>>.
+
+Stacked container objects are REQUIRED to have ONLY the five properties shown above.  Any borders, backgrounds etc. are supplied by their contents.
+
+[[sec-input-objects]]
+=== Input Objects
+
+[[sec-sliders-and-knobs]]
+==== Sliders and Knobs
+
+Sliders and knobs are used to change the value of a variable in the model from the interface.  Support for these tags is OPTIONAL. Stocks can only be manipulated by knobs. Iin this case, knobs can only change the stock’s initial value, i.e., knobs attached to stocks MUST NOT be changed in the middle of a simulation run.  Sliders are defined with the `+<slider>+` tag and knobs are defined with the `+<knob>+` tag; they are otherwise the same.  An example slider tag is shown below:
+
+`+<slider x="172" y="114" color="black" width="197" height="43" min="7" max="9" background=”white” z_index=”1” font_family=”Arial” font_size=”9pt” font_weight=”bold” font_style=”italic” text_decoration=”underline” text_align=”center” vertical_text_align=”center” text_padding=”2px” font_color=”blue” text_border_color=”black” text_border_width=”1px” text_border_style=”solid”>+`
+
+`+<entity name="Converter_1" />+`
+
+`+<reset_to after="one_time_unit">7</reset_to>+`
+
+`+</slider>+`
+
+* Show name: OPTIONAL  `+show_name="…"+` with true/false (default: `+true+`)
+
+* Show number:  OPTIONAL `+show_number="…"+` with true/false; when the number is visible it MUST be directly editable (default: `+true+`)
+
+* Show input range: OPTIONAL  `+show_min_max="…"+` with true/false (default: `+true+`)
+
+* Input range REQUIRED:  `+min="…"+` and `+max="…"+`, overriding entity’s input range setting (default:  entity’s setting)
+
+* OPTIONAL reset (slider only):  `+<reset_to>+` with the value to reset the entity to; it has one attribute that define when to reset the entity’s value:  `+after="…"+` with either `+one_time_unit+` or `+one_dt+`.
+
+Descriptions of all other display attributes of a slider or knob can be found in <<sec-stock-and-flow-diagram-objects>>.
+
+[[sec-switches-and-radio-buttons-option-groups]]
+==== Switches and Radio Buttons (Option Groups)
+
+A switch forces a variable to be evaluated as zero (when the switch is off) or one (when the switch is on).  Support for these tags is OPTIONAL. A switch is defined using the `+<switch>+` tag, which, like the slider, defines which entity to control with the `+<entity>+` tag and can OPTIONALLY be reset (to either 0 or 1, but usually 0) using the `+<reset_to>+` tag.  In addition, it defines these attributes:
+
+* Show name OPTIONAL:  `+show_name="…"+` with true/false (default: `+true+`)
+
+* Switch appearance OPTIONAL:  `+switch_style="…"+` with either `+toggle+` or `+push_button+` (default: `+toggle+`)
+
+* Make a sound when clicked OPTIONAL:  `+clicking_sound="…"+` with true/false (default: `+false+`)
+
+Here is an example switch tag:
+
+`+<switch x="359" y="100" uid="2" label_side="bottom" label_angle="135" color="black" width="32" height="60" switch_style="toggle" clicking_sound="true" background=”white” z_index=”1” font_family=”Arial” font_size=”9pt” font_weight=”bold” font_style=”italic” text_decoration=”underline” text_align=”center” vertical_text_align=”center” text_padding=”2px” font_color=”blue” text_border_color=”black” text_border_width=”1px” text_border_style=”solid”>+`
+
+`+<entity name="Converter_2" value="0" />+`
+
+`+<reset_to after="one_time_unit">0</reset_to>+`
+
+`+</switch>+`
+
+Descriptions of all other display attributes of a switch can be found in <<sec-stock-and-flow-diagram-objects>>.
+
+Switches can also OPTIONALLY selectively control the running of groups or modules when the model’s simulation specification `+run_by+` setting is set to `+group+` or `+module+`.  In these cases, the `+<entity>+` tag is replaced with either a `+<group>+` tag or a `+<module>+` tag, which are otherwise identical to the `+<entity>+` tag and MUST have both a `+name+` and a `+value+`.  In these cases, groups or modules without switches run if their `+run+` property is set to `+true+` while those with switches only run if the switch is on (set to one).
+
+A group of mutually-exclusive switches (sometimes known as radio buttons or option buttons) is defined using the `+<options>+` tag with one `+<entity>+` tag for each entity in the option group.  Option groups MUST NOT be automatically reset after an interval (i.e., the `+<reset_to>+` tag is not allowed).  Option groups have these additional REQUIRED attributes:
+
+* Layout:  `+layout="…"+` with vertical/horizontal/grid (default: `+vertical+`)
+
+* Spacing:  `+horizontal_spacing="…"+` and `+vertical_spacing="…"+` with CSS spacing amount in pixels (px) by default (default: 2)
+
+A sample options group that selects between three policy options stored in an array:
+
+[source,xml]
+----
+<options x="827" y="146" width="43" height="25">
+<entity name="policy" index="1">
+<value>1</value>
+</entity>
+<entity name="policy" index="2">
+<value>0</value>
+</entity>
+<entity name="policy" index="3">
+<value>0</value>
+</entity>
+</options>
+----
+
+[[sec-numeric-inputs-and-list-input-devices]]
+==== Numeric Inputs and List Input Devices
+
+Numeric inputs allow values to be entered numerically (versus, for example, using a slider).  Support for these tags is OPTIONAL. Numeric inputs are defined using the `+<numeric_input>+` tag, which shares all of the same attributes and properties as the slider (except `+show_number+`, which is obviously always true for a numeric input, and `+show_min_max+`, which has no relevance). An example tag is shown below:
+
+[source,xml]
+----
+<numeric_input min="5" max="10" precision="0.01" background=”white” z_index=”1” font_family=”Arial” font_size=”9pt” font_weight=”bold” font_style=”italic” text_decoration=”underline” text_align=”center” vertical_text_align=”center” text_padding=”2px” font_color=”blue” text_border_color=”black” text_border_width=”1px” text_border_style=”solid”>
+<entity name="price">
+<value>7</value>
+</entity>
+</numeric_input>
+----
+
+Descriptions of all other display attributes of a numeric input can be found in <<sec-stock-and-flow-diagram-objects>>.
+
+List inputs provide a way to enter tabular data for a related group of variables.  They are RECOMMENDED to be arranged in pages within a stacked container.  A list input is defined using the `+<list_input>+` tag, which can use any of the display properties with their defaults and adds two new REQUIRED attributes:
+
+* Name of the input page REQUIRED:  `+name="…"+` with page name (default: none)
+
+* Numeric column width REQUIRED:  `+column_width="…"+` with width in model coordinates; the name column width is the remaining width of the list input (default: half the width of the list input)
+
+The entries within the list input are defined using the `+<numeric_input>+` tag.  The following sample list input accepts values for prices of three different products:
+
+[source,xml]
+----
+<list_input x="446" y="161" width="230" height="97">
+<numeric_input min="5" max="10" precision="0.01">
+<entity name="price" index="Shirt">
+<value>7</value>
+</entity>
+</numeric_input>
+<numeric_input min="10" max="20" precision="0.01">
+<entity name="price" index="Pant">
+<value>15</value>
+</entity>
+</numeric_input>
+<numeric_input min="20" max="60" precision="0.01">
+<entity name="price" index="Shoe">
+<value>40</value>
+</entity>
+</numeric_input>
+</list_input>
+----
+
+[[sec-graphical-inputs]]
+==== Graphical Inputs
+
+Graphical inputs allow graphical functions to be changed from the interface.  Support for this tag is OPTIONAL. They are defined using the `+<graphical_input>+` tag  which shares all the display properties and their defaults.  The REQUIRED `+<entity>+` tag defines which graphical function entity is controlled.  If the graphical input contains a different graphical function than the controlled variable, i.e., the user has edited the graphical input but not restored it, the `+<entity>+` tag is REQUIRED to also contain a `+<gf>+` tag describing the edited graphical function (otherwise, no `+<gf>+` tag appears).  The following graphical input has not been edited by the user so does not affect the controlled entity:
+
+[source,xml]
+----
+<graphical_input x="311" y="341" width="100" height="103" background=”white” z_index=”1” font_family=”Arial” font_size=”9pt” font_weight=”bold” font_style=”italic” text_decoration=”underline” text_align=”center” vertical_text_align=”center” text_padding=”2px” font_color=”blue” text_border_color=”black” text_border_width=”1px” text_border_style=”solid”>
+<entity name="effect of overtime on productivity"/>
+</graphical_input>
+----
+
+Descriptions of all other display attributes of a graphical input can be found in <<sec-stock-and-flow-diagram-objects>>.
+
+However, this one has been edited by the user and overrides the graphical function in the controlled entity:
+
+[source,xml]
+----
+<graphical_input x="311" y="341" width="100" height="103">
+<entity name="effect of overtime on productivity">
+<gf>
+<xscale min="0" max="1"/>
+<ypts>1,0.9,0.5,0.1,0</ypts>
+</gf>
+</entity>
+</graphical_input>
+----
+
+[[sec-output-objects]]
+=== Output Objects
+
+[[sec-numeric-displays]]
+==== Numeric Displays
+
+The `+<numeric_display>+` tag is used to describe the appearance of a widget on the model canvas which shows the instantaneous value of a model entity as text. Support for this tag is OPTIONAL. An example tag is shown below:
+
+`+<numeric_display precision="0.1" delimit_000s="true" color="blue" show_name="true" retain_ending_value="true" uid="1" x="339" y="261" width=”100” height=”22” background=”white” z_index=”1” font_family=”Arial” font_size=”9pt” font_weight=”bold” font_style=”italic” text_decoration=”underline” text_align=”center” vertical_text_align=”center” text_padding=”2px” font_color=”blue” text_border_color=”black” text_border_width=”1px” text_border_style=”solid”>+`
+
+`+<entity name="Converter_2" />+`
+
+`+</numeric_display>+`
+
+* Show name: OPTIONAL `+show_name="…"+` with true/false (default: `+true+`)
+
+* Retain ending value (at end of simulation, rather than show nothing) OPTIONAL:  `+retain_ending_value="…"+` with true/false (default: `+true+`)
+
+* Number formatting properties – <<sec-ranges-scales-number-formats>>
+
+Descriptions of all other display attributes of a numeric display can be found in <<sec-stock-and-flow-diagram-objects>>.
+
+[[sec-lamps-and-gauges]]
+==== Lamps and Gauges
+
+Lamps and gauges also indicate the current value of a single variable.  Support for these tags is OPTIONAL. A lamp is defined with the `+<lamp>+` tag and looks similar to an LED or LCD indicator.  A gauge is defined with the `+<gauge>+` tag and looks similar to a speedometer.  An example tag is shown below:
+
+`+<lamp retain_ending_value="true" x="543" y="104" uid="3">+`
+
+`+<entity name="Converter_1" />+`
+
+`+<zones>+`
+
+`+<zone type="panic" min="8" max="8.33" color="red" />+`
+
+`+<zone type="caution" min="8.33" max="8.66" color="yellow" />+`
+
+`+<zone type="normal" min="8.66" max="9" color="green"/>+`
+
+`+</zones>+`
+
+`+</lamp>+`
+
+* Show name: OPTIONAL  `+show_name="…"+` with true/false (default: `+false+` for lamps, `+true+` for gauges)
+
+* Show number (gauges only): OPTIONAL  `+show_number="…"+` with true/false (default: `+true+`)
+
+* Retain ending value (at end of simulation, rather than show nothing): OPTIONAL  `+retain_ending_value="…"+` with true/false (default: `+true+`)
+
+* Flash when in the panic region:  `+flash_on_panic="…"+` with true/false (default: `+true+`) OPTIONAL
+
+Lamps and gauges REQUIRE a list of zones within a `+<zones>+` tag, defining non-overlapping value ranges for the variable.  Each zone is defined by a `+<zone>+` with the following attributes:
+
+* Type:  `+type="…"+` with `+normal+`, `+caution+`, or `+panic+` (default: `+normal+`) REQUIRED
+
+* Color when variable is in range:  `+color="…"+` w/valid CSS color (default: `+black+`) REQUIRED
+
+* Start of range:  `+min="…"+` with starting value of range REQUIRED
+
+* End of range:  `+max="…"+` with ending value of range REQUIRED
+
+* Sound to play while in range:  `+sound="…"+`.  The value should be a resource which is a relative file path, an absolute file path, or an URL. OPTIONAL
+
+Descriptions of all other display attributes of a lamp or gauge can be found in <<sec-stock-and-flow-diagram-objects>>.
+
+[[sec-graphs]]
+==== Graphs
+
+Support for this tags is REQUIRED if the implementation supports outputs (per the header options, <<sec-xmile-options>>). Graphs are defined within the `+<graph>+` tag, which has the following attributes and properties, beyond the applicable display attributes, e.g., `+background+`:
+
+* Graph type: REQUIRED `+type="…"+` with `+time_series+`, `+scatter+`, or `+bar+` (default: `+time_series+`)
+
+* Title:  OPTIONAL `+<title>+` with graph title (default: none)
+
+* Documentation:  OPTIONAL `+<doc>+` with block of text, optionally in HTML format (default: none)
+
+* Show grid: OPTIONAL `+show_grid="…"+` with true/false (default: `+true+`)
+
+* Number of X Grid Lines: OPTIONAL `+num_x_grid_lines="…"+` with integer (default: `+0+`)
+
+* Number of Y Grid Lines: OPTIONAL `+num_y_grid_lines="…"+` with integer (default: `+0+`)
+
+* Number of X Axis Labels: OPTIONAL `+num_x_labels="…"+` with integer (default: `+0+`)
+
+* Number of Y Axis Labels: OPTIONAL `+num_y_labels="…"+` with integer (default: `+0+`)
+
+* X Axis Title:  OPTIONAL `+x_axis_title="…"+` with string (default: `+empty+`)
+
+* Right Axis Title: OPTIONAL `+right_axis_title="…"+` with string (default: `+empty+`)
+
+* Right Axis Auto-scale: OPTIONAL `+right_axis_auto_scale="…"+` with true/false (default: `+true+`)
+
+* Right Axis Multi-scale: OPTIONAL `+right_axis_multi_scale="…"+` with true/false (default: `+true+`)
+
+* Left  Axis Title: OPTIONAL left`+_axis_title="…"+` with string (default: `+empty+`)
+
+* Left Axis Auto-scale: OPTIONAL `+left_axis_auto_scale="…"+` with true/false (default: `+true+`)
+
+* Left Axis Multi-scale: OPTIONAL `+left_axis_multi_scale="…"+` with true/false (default: `+true+`)
+
+* Display numbers: OPTIONAL `+plot_numbers="…"+` with true/false (default: `+false+`)
+
+* Comparative plots:  REQUIRED `+comparative="…"+` with true/false (default: `+false+`).
+
+*Auto-scaling is defined as rounding axis labels to ‘pretty’ increments.
+
+*Multi-scaling is defined as using a different scale for each plot vs. grouping all plots on that axis to the same set of axis labels.
+
+Time-series graphs can OPTIONALLY include the following additional attributes:
+
+* Starting display time:  `+from="…"+` with the start time (default: STARTTIME)
+
+* Ending display time:  `+to="…"+` with the ending time (default: STOPTIME)
+
+Each graph includes a number of plotted variables.  Within the `+<graph>+` tag, one `+<plot>+` tag MUST appear for each variable plotted.  Each `+<plot>+` tag has the following attributes:
+
+* Plot index:  REQUIRED `+index="…"+` with sequential index number starting at zero for the first plot; this is important for both the legend and plotting numbers on curves (the plotted number is one greater than the index); for scatter plots, index 0 is the __x__-axis variable, index 1 is the __y__-axis variable, and (if a 3D scatter plot) index 2 is the __z__-axis variable (default: position of plot relative to other plots)
+
+* Line thickness: OPTIONAL `+pen_width="…"+` with the line thickness in pixels (default: 1)
+
+* Line style:  OPTIONAL `+pen_style="…"+` with `+solid+`, `+dotted+`, `+dashed+`, or `+dot_dashed+`  (default: `+solid+`)
+
+* Display y-axis scale:  OPTIONAL `+show_y_axis="…"+` with true/false (default: `+true+`)
+
+* Plot title:  REQUIRED `+title="…"+` with String (default: `+entity display name+`)
+
+* Which axis the plot is plotted against: OPTIONAL `+right_axis="…"+` with true/false (default: `+false+`)
+
+Within the `+<plot>+` tag, the REQUIRED`+<entity>+` tag defines which entity to plot, and the OPTIONAL `+<scale>+` tag defines custom scaling for the entity.  The scale settings are overridden by the presence of auto-scaling or non-mutli-scaling on the axis.
+
+The default scale for entities with a globally defined scale is that global scale.  When no global scale is defined for an entity, the default scale automatically fills the range of values for the entity (for comparative graphs, this is across all runs of that entity in the graph).  The `+<scale>+` tag allows the user to override these settings.
+
+Graphs plot an entity’s data from the current run and any other loaded runs. An example tag is shown below:
+
+`+<graph background="#FFFFC9" x="132" y="36" width="492" height="282" title=”Cool Graph” comparative="true" type="time_series" show_grid="true" num_x_grid_lines="5" num_y_grid_lines="5" num_x_labels="5" num_y_labels="3" left_axis_multi_scale="true" left_axis_auto_scale="true" right_axis_multi_scale="true" right_axis_auto_scale="true" from="1" to="13">+`
+
+`+<plot precision="1" color="blue" pen_width="1" index="0" show_y_axis="true">+`
+
+`+<entity name="Converter_1" />+`
+
+`+</plot>+`
+
+`+<plot precision="1" color="red" pen_width="1" index="0" show_y_axis="true" right_axis=”true”>+`
+
+`+<entity name="Converter_2" />+`
+
+`+</plot>+`
+
+`+</graph>+`
+
+[[sec-tables]]
+==== Tables
+
+Support for this tags is REQUIRED if outputs are supported (per the header options, <<sec-xmile-options>>). Tables are defined within the `+<table>+` tag, which has the following attributes and properties, beyond the applicable display attributes, e.g., `+background+` and `+font_size+` (and their defaults):
+
+* Title: OPTIONAL  `+<title>+` with table title (default: none)
+
+* Documentation: OPTIONAL `+<doc>+` with block of text, optionally in HTML format (default: none)
+
+* Data orientation:  REQUIRED `+orientation="…"+` with either `+horizontal+` or `+vertical+` (default: `+vertical+`)
+
+* Default column width:  REQUIRED `+column_width="…"+` with width in model coordinates
+
+* Default blank column width: OPTIONAL `+blank_column_width="…"+` with width in model coordinates
+
+* Report interval:  REQUIRED `+interval="…"+` specifying how often, in model time, to report values during the simulation; use `+DT+` to export every DT (default: 1)
+
+* Report ending/beginning balances: OPTIONAL  `+report_balances="…"+` with either `+beginning+` or `+ending+` (default: `+beginning+`)
+
+* Sum flows across report interval:  OPTIONAL `+report_flows="…"+` with either `+instantaneous+` or `+summed+` (default: `+instantaneous+`)
+
+* Comparative plots:  REQUIRED `+comparative="…"+` with true/false (default: `+false+`)
+
+* Wrap text in columns:  OPTIONAL `+wrap_text="…"+` with true/false (default: `+false+`)
+
+* Header style:  OPTIONAL Same attributes from <<sec-common-styles-associated-with-all-xmile-display-objects>> prefixed with “`+header_“+`
+
+Each table includes a number of variables.  Within the `+<table>+` tag, it is REQUIRED that one `+<item>+` tag appears for each variable displayed.  Each `+<item>+` tag has the following unique attributes:
+
+* Item type: REQUIRED `+type="…"+` with either `+time+`, `+variable+`, or `+blank+` (blank line) (default: `+variable+`).  Note that the `+time+` item only needs to be specified to override the default item settings (e.g., the column width) for the time column/row.
+
+Note that, unlike other display objects, the default `+text_align+` for table variables is `+right+`, rather than `+left+`.
+
+Within the `+<item>+` tag, the REQUIRED `+<entity>+` tag defines which entity to plot.
+
+Just as with the graph Tables plot an entity’s data from the current run and any other loaded runs.  An example tag is shown below:
+
+`+<table font_size="9pt" column_width="59" x="127" y="355" width="465" height="286" comparative="true">+`
+
+`+<item precision="0.01" type="time" />+`
+
+`+<item precision="0.01" delimit_000s="true">+`
+
+`+<entity name="Converter_1" />+`
+
+`+</item>+`
+
+`+</table>+`
+
+[[sec-annotations]]
+=== Annotations
+
+[[sec-text-boxes]]
+==== Text Boxes
+
+The `+<text_box>+` tag is used to describe the appearance of a static label on the model canvas. Support for this tag is OPTIONAL.  An example tag is shown below:
+
+`+<text_box x="274" y="119" uid="0" color=”black” background=”white” z_index=”1” font_family=”Arial” font_size=”9pt” font_weight=”bold” font_style=”italic” text_decoration=”underline” text_align=”center” vertical_text_align=”center” text_padding=”2px” font_color=”black” text_border_color=”black” text_border_width=”1px” text_border_style=”solid” width="260" height="58" appearance="transparent">+`
+
+`+Some text+`
+
+`+</text_box>+`
+
+* `+appearance+` OPTIONAL – “transparent|normal” – default `+normal+`.  A text box with a transparent appearance has no background and can easily be layered on top of other XMILE objects.  A text box with a normal appearance respects its `+background+` setting.
+
+Descriptions of all display attributes of a text box can be found in <<sec-stock-and-flow-diagram-objects>>.
+
+[[sec-graphics-frames]]
+==== Graphics Frames
+
+The `+<graphics_frame>+` tag is used to describe the appearance of an image or video on the model canvas. Support for this tag is OPTIONAL. The content for a graphics frame goes inside of the graphics frame object and is represented using either an `+image+` or a `+video+` tag.  The `+image+` tag is capable of representing its data as a string embedded within the XMILE file, or like the `+video+` tag is capable of referring to an external file using URL syntax.  For files hosted on the local file system, the file:// syntax is used.  Files can be referred to either absolutely or relatively.  If referred to absolutely and if a lookup by absolute path fails, a lookup using just the file name in the same directory as the XMILE file is the RECOMMENDED fallback.   An example graphics frame tag is shown below:
+
+`+<graphics_frame x="102" y="301" uid="1" width="400" height="300" border_color="black" border_style="solid" border_width="thin”>+`
+
+`+<image|video/>+`
+
+`+</graphics_frame>+`
+
+Descriptions of all display attributes of a graphics frame can be found in <<sec-stock-and-flow-diagram-objects>>.
+
+Both `+<image>+` and `+<video>+` have one OPTIONAL attribute:
+
+* Resize to completely fill the parent container:  `+size_to_parent="…"+` with true/false (default: `+false+`)
+
+Example `+<image>+` and `+<video>+` tags:
+
+`+<image size_to_parent="true" width="2509" height="1932">+`
+
+`+file://C:/Users/xmile/Downloads/Archive/home-screen.png+`
+
+`+</image>+`
+
+`+<video size_to_parent="true" width="2509" height="1932">+`
+
+`+file://C:/Users/xmile/Downloads/Archive/home-screen.png+`
+
+`+</video>+`
+
+When an image is embedded directly within the XMILE file, the data is started by using with ‘data:’ then its MIME type (’image/png’), then a semi-colon (‘;’) then the type of encoding (‘base64’) (base64 is the only REQUIRED option for this version of the spec) a comma (‘,’) and finally the data (`+data:image/png;base64,)+`. An example tag is shown below:
+
+`+<image size_to_parent="true" width="2509" height="1932">+`
+
+`+data:image/png;base64,*+`
+
+`+</image>+`
+
+[[sec-buttons]]
+==== Buttons
+
+Buttons are used to control the program, navigate to a hyperlinked location, or to display an information window (`+<popup>+` containing text, an image, or a video).  Support for this tag is OPTIONAL. All buttons appear within the `+<button>+` tag, which includes the standard display properties (<<sec-common-styles-associated-with-all-xmile-display-objects>>), as well as the following properties:
+
+* Transparency: OPTIONAL `+appearance="…"+` with either `+opaque+` or `+transparent+` (default: `+opaque+`)
+
+* Button corner style:  OPTIONAL `+style="…"+` with `+square+`, `+rounded+`, or `+capsule+` (default: `+square+`)
+
+* Label OPTIONAL:  `+label="…"+` with text of label to appear on button; when there is a label, the default text alignment is center (rather than left)
+
+* Image on button (overrides label) OPTIONAL:  Image in JPG, GIF, TIF, or PNG format:  `+<image resource=””>.+` The `+resource+` attribute is OPTIONAL and may specify a relative file path, an absolute file path, or an URL`+.+` The picture data may also be embedded inside the <`+image+`> tag in Data URI format, using base64 encoding.
+
+* Make a sound when clicked:  OPTIONAL `+clicking_sound="…"+` with true/false (default: `+true+`)
+
+* Sound played after click OPTIONAL (played after clicking sound, if any):  `+<sound>+` with URL-format pathname (default protocol is file://)
+
+Buttons that launch an information window contain a `+<popup>+` tag. The `+<popup>+` tag uses the same attributes as the other display objects, but its coordinates and size are in __screen__ coordinates rather than model coordinates.  Its position is relative to the top-left corner of the button (in screen coordinates).  If it is off screen, it is RECOMMENDED to be forced on screen when it appears.  The `+<popup>+` tag OPTIONALLY contains one of the following:
+
+* A `+<text_box>+` tag to display text (described under “Text Boxes” below)
+
+* An `+<image>+` tag to display an image
+
+* A `+<video>+` tag to display a movie
+
+Buttons that navigate include a `+<link>+`.  The OPTIONAL `+<link>+` tag has several attributes:
+
+* Top left position`+:  x="…"+` and `+y="…"(+`default: 0) REQUIRED
+
+* Zoom level (when `+target+` is model or interface):  REQUIRED `+zoom="…"+` with percentage zoom (default: 100.0)
+
+* OPTIONAL visual effect (when target is not `+URL+` or `+file+`):  `+effect="…"+` with `+none+` or one of the several predefined visual effects (default: `+none+`) +
+Predefined effect names (all directional names have an implied “from” in front of them, e.g., `+wipe_left+` pass:c[means wipe from the left side [to the right\]):]  `+dissolve+`, `+checkerboard+`, `+bars+`, `+wipe_left+`, `+wipe_right+`, `+wipe_top+`, `+wipe_bottom+`, `+wipe_clockwise+`, `+wipe_counterclockwise+`, `+iris_in+`, `+iris_out+`, `+doors_close+`, `+doors_open+`, `+venetian_left+`, `+venetian_right+`, `+venetian_top+`, `+venetian_bottom+`, `+push_bottom+`, `+push_top+`, `+push_left+`, `+push_right+`
+
+* Effect to black and back (only when an effect is given):  OPTIONAL `+to_black="…"+` with true/false; it uses the given effect to a black screen and then uses its opposite, if there is one, back out again to show the new location (default: `+false+`)
+
+* Link target REQUIRED:  `+target="…"+`  as an attribute as described below
+
+There are several possible link targets:
+
+* An arbitrary XMILE view:
+
+** Concatenate the view’s `+type+` (<<sec-introduction-to-the-xmile-view>>) with its `+order+` (<<sec-introduction-to-the-xmile-view>>) using a colon.  For example: `+target=stock_flow:0+` pass:c[would specify that this link points to the first stock_flow view.  The view’s order can either be an integer or] `+home_view+`.   If the order is not specified the order is assumed to be the `+home_view+`. For targets like this which do not use a page the `+x+` and `+y+` attributes of the link are assumed to be in view coordinates (vs. page coordinates)
+
+* An arbitrary XMILE page:
+
+** First navigate to the view using the above syntax, and then concatenate the page number using a comma.  For example: `+target=stock_flow:0,5+` pass:c[would specify that this link points to the first stock_flow view’s fifth page.  The page can either be an integer or] `+home_page+`.  If the page number is not specified the `+home_page+` is assumed. For targets like this which do use a page in their target the `+x+` and `+y+` attributes of the link are assumed to be in page coordinates (vs. view coordinates)
+
+* Next page:  `+next_page or+` previous page:  `+previous_page, or home_page or an integer representing the page number+`
+
+** `+using paging attributes (section 5.1) within the view the button is defined in.+`   The `+x+` and `+y+` attributes of the link are assumed to be in page coordinates (vs. view coordinates)
+
+* `+Next view: next_view or previous view: previous_view+`
+
+** `+using order attribute+` defined in <<sec-introduction-to-the-xmile-view>>, the view’s `+type+` is assumed to be the same `+type+` as the view which contains the button. The `+x+` and `+y+` attributes of the link are assumed to be in view coordinates (vs. page coordinates)
+
+* Home view: `+home_view+`
+
+** using the `+home_view+` attribute defined in <<sec-introduction-to-the-xmile-view>>, the view’s `+type+` is assumed to be the same type as the view which contains the button. The `+x+` and `+y+` attributes of the link are assumed to be in view coordinates (vs. page coordinates)
+
+* Last page navigated from:  `+back_page.+` The `+x+` and `+y+` attributes of the link are assumed to be in page coordinates (vs. view coordinates)
+
+* `+Last view navigated from: back_view+` . The `+x+` and `+y+` attributes of the link are assumed to be in view coordinates (vs. page coordinates)
+
+* File or web URL:  `+URL+` (`+<link>+` tag contains target URL; protocol is http:// if not specified)
+
+Buttons that control the program contain a `+<menu_action>+` tag, which has the menu name as its data.  OPTIONAL menu actions are broken into various categories:
+
+* File:  `+open+`, `+close+`, `+save+`, `+save_as+`, `+save_as_image+`, `+revert+`
+
+* Printing:  `+print_setup+`, `+print+`, `+print_screen+`
+
+* Simulation:  `+run+`, `+pause+`, `+resume+`, `+stop+`, `+run_restore+` (run __only if__ restored)
+
+* Restore objects:  `+restore_all+`, `+restore_sliders+`, `+restore_knobs+`, `+restore_list_inputs+`, `+restore_graphical_inputs+`, `+restore_switches+`, `+restore_numeric_displays+`, `+restore_graphs_tables+`, `+restore_lamps_gauges+`
+
+* Data:  `+data_manager+`, `+save_data_now+`, `+import_now+`, `+export_now+`
+
+* Miscellaneous:  `+exit+`, `+find+`, `+run_specs+`
+
+In the case of `+import_now+` and `+export_now+`, the `+<menu_action>+` tag has the following REQUIRED attributes:
+
+* Source (import) or destination (export) location:  `+resource="…".+`  The `+resource+` attribute may specify a relative file path, an absolute file path, or an URL`+.+`
+
+* For Excel only, worksheet name:  `+worksheet="…"+` with worksheet name
+
+* Alternatively, if all on-demand links are to be imported or exported:  `+all="true"+` (as a consequence, when `+all+` does not appear, it is `+false+`)
+
+In the case of `+save_data_now+`, the `+<menu_action>+` tag has the following REQUIRED attributes:
+
+* Name of saved run:  `+run_name="…"+` with name of saved run
+
+Note that buttons that navigate (i.e., use a `+<link>+` tag) MAY combine other actions with that navigation.  In particular, they MAY include both a `+<menu_action>+` and a `+<popup>+`.  They MAY also behave like a switch if they include a `+<switch_action>+` tag.  The entity being switched on or off is defined within the `+<switch_action>+` tag in the same way as within a `+<switch>+` tag, i.e., using an `+<entity>+` tag, or the identically formatted `+<group>+` or `+<module>+` tag.  If the value in the tag is 1 then the group or module is included in the simulation, if 0 it is not included.  The following button combines several properties to place an image on its face, redefine the clicking sound to a bicycle bell, and, when clicked, navigate to the next page with a visual effect while restoring graphs and tables and turning the bicycle policy group on:
+
+[source,xml]
+----
+<button x="748" y="226" width="294" height="252" clicking_sound="false">
+<image size_to_parent="true" width="960" height="720">
+C:/Images/button_ok.jpg
+</image>
+<sound>bicycle_bell.wav</sound>
+<link target="next_page" to_black="true" effect="iris_in"/>
+<menu_action>restore_graphs_tables</menu_action>
+<switch_action>
+<group name="Bicycle Policy">
+<value>1</value>
+</group>
+</switch_action>
+</button>
+----
