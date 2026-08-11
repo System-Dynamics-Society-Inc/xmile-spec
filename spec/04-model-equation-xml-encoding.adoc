@@ -172,9 +172,9 @@ Posters can also include OPTIONALLY visual and aural components that tell the us
 
 * Video message:  `+<video>+` as described in Section 6.5.2
 
-* Sound attached to message:  `+<sound>+` as described in <<sec-buttons>>
+* Sound attached to message:  `+<sound>+` as described in Section 6.5.3
 
-* Hyperlink to a place to navigate to:  `+<link>+`, as described in <<sec-buttons>>.
+* Hyperlink to a place to navigate to:  `+<link>+`, as described in Section 6.5.3.
 
 Note that only one visual type message (text, image, video) SHALL be allowed per event. While event poster interactivity is an optional part of the standard, it is strongly recommended that all implementations of event posters support text messages.
 
