@@ -1,10 +1,8 @@
-image::oasis-logo.png[]
+XML Interchange Language for System Dynamics (XMILE) Version 1.1
 
-XML Interchange Language for System Dynamics (XMILE) Version 1.0
+Candidate SDS Standard 02
 
-Candidate OASIS Standard 01
-
-29 July 2015
+20 August 2024
 
 Specification URIs
 

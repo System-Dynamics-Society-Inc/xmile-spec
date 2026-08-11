@@ -1,6 +1,6 @@
-= XML Interchange Language for System Dynamics (XMILE) Version 1.0
-:revnumber: 1.0
-:revdate: 29 July 2015
+= XML Interchange Language for System Dynamics (XMILE) Version 1.1
+:revnumber: 1.1
+:revdate: 20 August 2024
 :doctype: book
 :toc: left
 :toclevels: 3

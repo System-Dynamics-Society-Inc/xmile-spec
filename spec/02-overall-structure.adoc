@@ -5,13 +5,13 @@ A XMILE file contains information about a whole-model, with a well-specified str
 
 [source,xml]
 ----
-<xmile version="1.0" 
+<xmile version="1.1" 
       xmlns="http://docs.oasis-open.org/xmile/ns/XMILE/v1.0">
 ...
 </xmile>
 ----
 
-The version number MUST refer to the version of XMILE used (presently 1.0). The XML namespace refers to tags and attributes used in this specification. Both of these attributes are REQUIRED. Inside of the <xmile> tag are a number of top-level tags, listed below. These tags are marked req (a single instance is REQUIRED), opt (a single instance is OPTIONAL), * (zero or more tags MAY occur) and + (one or more tags MAY occur). Top level tags MAY occur in any order, but are RECOMMENDED to occur in the following order:
+The version number MUST refer to the version of XMILE used (presently 1.1). The XML namespace refers to tags and attributes used in this specification. Both of these attributes are REQUIRED. Inside of the <xmile> tag are a number of top-level tags, listed below. These tags are marked req (a single instance is REQUIRED), opt (a single instance is OPTIONAL), * (zero or more tags MAY occur) and + (one or more tags MAY occur). Top level tags MAY occur in any order, but are RECOMMENDED to occur in the following order:
 
 * `+<header>+` (req) - information about the origin of the file and required capabilities.
 
