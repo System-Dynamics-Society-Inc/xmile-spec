@@ -1,0 +1,33 @@
+name: build
+
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - run: npm ci
+
+      # Rejects a "Section 6.4.2" typed as plain text, which nothing could
+      # validate. Every reference must be an <<anchor>>.
+      - name: Lint cross-references
+        run: npm run lint
+
+      # Warnings are fatal, so a reference to a deleted section fails here.
+      - name: Build specification
+        run: npm run build
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: xmile-spec-html
+          path: build/
