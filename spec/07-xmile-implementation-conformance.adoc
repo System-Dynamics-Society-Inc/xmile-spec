@@ -228,7 +228,7 @@ To support the optional user input features of XMILE, an implementation:
 
 * MUST support the <`+slider+`> and <`+knob+`> tags (<<sec-sliders>>)
 
-* MUST support the <`+switch+`> and <`+options+`> tags (<<sec-switches-and-radio-buttons-option-groups>>)
+* MUST support the <`+switch+`> and <`+options+`> tags (Section 6.3.2)
 
 * If `+numeric_input+` is true in the `+<uses_inputs>+` tag, MUST support numeric inputs (<<sec-numeric-inputs-and-list-input-devices>>)
 
@@ -240,9 +240,9 @@ Additionally,
 
 * The input range tags <`+min+`> and <`+max+`> MUST be specified for sliders and knobs (<<sec-sliders>>)
 
-* A switch’s <`+group+`> or <`+module+`> tag MUST specify a <`+name+`> and a <`+value+`> (<<sec-switches-and-radio-buttons-option-groups>>)
+* A switch’s <`+group+`> or <`+module+`> tag MUST specify a <`+name+`> and a <`+value+`> (Section 6.3.2)
 
-* Option groups MUST specify values for <`+layout+`>, <`+horizontal_spacing+`>, and <`+vertical_spacing+`> (<<sec-switches-and-radio-buttons-option-groups>>)
+* Option groups MUST specify values for <`+layout+`>, <`+horizontal_spacing+`>, and <`+vertical_spacing+`> (Section 6.3.2)
 
 * A list input MUST specify a <`+name+`> and <`+column_width+`> (<<sec-numeric-inputs-and-list-input-devices>>)
 
@@ -373,4 +373,4 @@ To support the optional user input features of XMILE, an implementation:
 
 * Knobs attached to stocks MUST only adjust the stock’s initial value (<<sec-sliders>>)
 
-* Option groups MUST NOT support `+reset_to+` (<<sec-switches-and-radio-buttons-option-groups>>)
+* Option groups MUST NOT support `+reset_to+` (Section 6.3.2)
