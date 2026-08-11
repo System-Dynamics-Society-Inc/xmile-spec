@@ -230,9 +230,9 @@ To support the optional user input features of XMILE, an implementation:
 
 * MUST support the <`+switch+`> and <`+options+`> tags (Section 6.3.2)
 
-* If `+numeric_input+` is true in the `+<uses_inputs>+` tag, MUST support numeric inputs (<<sec-numeric-inputs-and-list-input-devices>>)
+* If `+numeric_input+` is true in the `+<uses_inputs>+` tag, MUST support numeric inputs (Section 6.3.3)
 
-* If `+list+` is true in the `+<uses_inputs>+` tag, MUST support list inputs (<<sec-numeric-inputs-and-list-input-devices>>)
+* If `+list+` is true in the `+<uses_inputs>+` tag, MUST support list inputs (Section 6.3.3)
 
 * If `+graphical_input+` is true in the `+<uses_inputs>+` tag, MUST support graphical inputs. If the graphical input contains a different graphical function than the controlled variable, the <`+entity+`> tag MUST include a <`+gf+`> tag to describe that graphical function (<<sec-graphical-inputs>>)
 
@@ -244,7 +244,7 @@ Additionally,
 
 * Option groups MUST specify values for <`+layout+`>, <`+horizontal_spacing+`>, and <`+vertical_spacing+`> (Section 6.3.2)
 
-* A list input MUST specify a <`+name+`> and <`+column_width+`> (<<sec-numeric-inputs-and-list-input-devices>>)
+* A list input MUST specify a <`+name+`> and <`+column_width+`> (Section 6.3.3)
 
 * A graphical input MUST specify an <`+entity+`> tag (<<sec-graphical-inputs>>)
 
