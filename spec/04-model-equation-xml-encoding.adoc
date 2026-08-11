@@ -168,9 +168,9 @@ Posters can also include OPTIONALLY visual and aural components that tell the us
 
 * Text message:  `+<text_box>+` with text as described in <<sec-text-boxes>>
 
-* Image message:  `+<image>+` as described in <<sec-graphics-frames>>
+* Image message:  `+<image>+` as described in Section 6.5.2
 
-* Video message:  `+<video>+` as described in <<sec-graphics-frames>>
+* Video message:  `+<video>+` as described in Section 6.5.2
 
 * Sound attached to message:  `+<sound>+` as described in <<sec-buttons>>
 
