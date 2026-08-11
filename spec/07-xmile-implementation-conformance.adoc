@@ -294,7 +294,7 @@ To support the optional conveyor features of XMILE, an implementation:
 
 * MUST implement conveyors as described (<<sec-conveyors>>)
 
-* MUST support the full list of array built-in functions for conveyors, including the [] operator to access conveyor elements (<<sec-array-built-in-functions>>)
+* MUST support the full list of array built-in functions for conveyors, including the [] operator to access conveyor elements (<<sec-array-slicing>>)
 
 * MUST implement all conveyor and leakage properties (<<sec-stocks-4-2>>, <<sec-conveyor-options>>, and 4.3)
 
@@ -305,7 +305,7 @@ To support the optional queue features of XMILE, an implementation:
 
 * MUST implement queues as described (<<sec-queues>>)
 
-* MUST support the full list of array built-in functions for queues, including the [] operator to access queue elements (<<sec-array-built-in-functions>>)
+* MUST support the full list of array built-in functions for queues, including the [] operator to access queue elements (<<sec-array-slicing>>)
 
 * MUST implement the queue overflow (<<sec-flows-4-3>>)
 
@@ -320,11 +320,11 @@ To support the optional array features of XMILE, an implementation:
 
 * MUST support subscripts and subscript expressions (<<sec-arrays>>)
 
-* MUST support array operators (<<sec-array-operations>>)
+* MUST support array operators (<<sec-sub-ranges>>)
 
-* MUST support array slicing (<<sec-array-slicing>>)
+* MUST support array slicing (<<sec-array-operations>>)
 
-* MUST support the full list of array built-in functions (<<sec-array-built-in-functions>>)
+* MUST support the full list of array built-in functions (<<sec-array-slicing>>)
 
 [[sec-optional-submodel-conformance-7-3-5]]
 ==== Optional Submodel Conformance

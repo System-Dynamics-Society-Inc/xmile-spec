@@ -1,0 +1,7 @@
+# References that 1.1 left pointing at sections it deleted, so there is
+# nothing to link to. Each is described in ERRATA-v1.1.adoc; they are
+# listed here so the check still fails on any NEW literal reference.
+# Regenerate with: npm run lint -- --update
+#
+# file	reference	count
+

@@ -935,6 +935,22 @@ revenue[Boston, blouses] – sales[Boston, blouses]
 
 Clearly, for dimension names to be used in this way, the array containing the equation MUST itself be sized using those dimension names, though not necessarily in the same order (e.g., the same equation could be used for profit defined with dimensions in the opposite order as in `+profit[Product, Location]+`).
 
+[[sec-sub-ranges]]
+===== Sub Ranges
+
+If an implementor of this specification wishes to support sub-range functionality the restriction that all dimensions used on the right-hand side of an equation MUST appear on the left-hand side is relaxed.  Sub-range functionality allows the user to use an array dimension which is specified either a strict sub-set or super-set on the left-hand side of the equation of any dimension used on the right-hand side.  In the case where an array element is encountered on the right-hand side which is not present in the dimension for the variable it is used with a 0 MUST be returned, `+NaN+` is not allowed.
+
+[source,xml]
+----
+Location: Boston, Chicago, LA
+LocationTotal: Boston, Chicago, LA, Total
+
+Revenue[Location] = ...
+Revenue with Total[LocationTotal] = IF (LocationTotal = LocationTotal.Total) THEN SUM(Revenue) ELSE Revenue[LocationTotal]
+----
+
+Sub-range array elements do not have to be specified in the same order they appear in their superset, element matching is done by the simulation engine to pair together identical elements from a sub-range and its superset.
+
 [[sec-array-operations]]
 ===== Array Operations
 
