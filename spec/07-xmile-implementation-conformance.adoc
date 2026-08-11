@@ -226,7 +226,7 @@ To support the optional user input features of XMILE, an implementation:
 
 * MUST include the `+<uses_inputs>+` tag in the `+<options>+` block (<<sec-xmile-options>>)
 
-* MUST support the <`+slider+`> and <`+knob+`> tags (<<sec-sliders-and-knobs>>)
+* MUST support the <`+slider+`> and <`+knob+`> tags (<<sec-sliders>>)
 
 * MUST support the <`+switch+`> and <`+options+`> tags (<<sec-switches-and-radio-buttons-option-groups>>)
 
@@ -238,7 +238,7 @@ To support the optional user input features of XMILE, an implementation:
 
 Additionally,
 
-* The input range tags <`+min+`> and <`+max+`> MUST be specified for sliders and knobs (<<sec-sliders-and-knobs>>)
+* The input range tags <`+min+`> and <`+max+`> MUST be specified for sliders and knobs (<<sec-sliders>>)
 
 * A switch’s <`+group+`> or <`+module+`> tag MUST specify a <`+name+`> and a <`+value+`> (<<sec-switches-and-radio-buttons-option-groups>>)
 
@@ -371,6 +371,6 @@ To support the optional event poster features of XMILE, an implementation:
 
 To support the optional user input features of XMILE, an implementation:
 
-* Knobs attached to stocks MUST only adjust the stock’s initial value (<<sec-sliders-and-knobs>>)
+* Knobs attached to stocks MUST only adjust the stock’s initial value (<<sec-sliders>>)
 
 * Option groups MUST NOT support `+reset_to+` (<<sec-switches-and-radio-buttons-option-groups>>)
