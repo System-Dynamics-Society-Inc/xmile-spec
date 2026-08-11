@@ -158,9 +158,9 @@ To support the optional features of XMILE to represent a model view, an implemen
 
 * MUST support the <`+alias+`> tag. If they exist, alias objects MUST represent only stock, flow, and aux objects. Alias objects MUST NOT have connectors pointing to them. <`+uid+`>, <`+x+`>, <`+y+`>, and <`+of+`>  attributes for each alias MUST be specified for an alias object (<<sec-alias>>)
 
-* MUST support the <`+graph+`> tag. <`+type+`> and <`+comparative+`> attributes MUST be specified for each graph .One <`+plot+`> tag MUST appear for each variable being plotted. Each <`+plot+`> tag MUST specify a value for the <`+index+`>, <`+title+`>,  and <`+entity+`> attributes (<<sec-graphs>>)
+* MUST support the <`+graph+`> tag. <`+type+`> and <`+comparative+`> attributes MUST be specified for each graph .One <`+plot+`> tag MUST appear for each variable being plotted. Each <`+plot+`> tag MUST specify a value for the <`+index+`>, <`+title+`>,  and <`+entity+`> attributes (<<sec-tables>>)
 
-* MUST support a <`+table+`> tag. <`+orientation+`>, <`+column_width+`>, <`+interval+`>, and <`+comparative+`>   attributes for the table MUST be specified .One <`+item+`> tag MUST appear for each variable being displayed. Each <`+item+`> tag MUST specify a value for the <`+type+`>  and <`+entity+`> attributes (<<sec-tables>>)
+* MUST support a <`+table+`> tag. <`+orientation+`>, <`+column_width+`>, <`+interval+`>, and <`+comparative+`>   attributes for the table MUST be specified .One <`+item+`> tag MUST appear for each variable being displayed. Each <`+item+`> tag MUST specify a value for the <`+type+`>  and <`+entity+`> attributes (Section 6.4.4)
 
 Additionally,
 
@@ -205,19 +205,19 @@ To support the optional simulation output features of XMILE, an implementation:
 
 * MUST include the `+<uses_outputs>+` tag in the `+<options>+` block (<<sec-xmile-options>>)
 
-* MUST support the <`+graph+`> tag. <`+type+`> and <`+comparative+`> attributes MUST be specified for each graph .One <`+plot+`> tag MUST appear for each variable being plotted. Each <`+plot+`> tag MUST specify a value for the <`+index+`>, <`+title+`>,  and <`+entity+`> attributes (<<sec-graphs>>)
+* MUST support the <`+graph+`> tag. <`+type+`> and <`+comparative+`> attributes MUST be specified for each graph .One <`+plot+`> tag MUST appear for each variable being plotted. Each <`+plot+`> tag MUST specify a value for the <`+index+`>, <`+title+`>,  and <`+entity+`> attributes (<<sec-tables>>)
 
-* MUST support the <`+table+`> tag. <`+orientation+`>, <`+column_width+`>, <`+interval+`>, and <`+comparative+`>   attributes for the table MUST be specified .One <`+item+`> tag MUST appear for each variable being displayed. Each <`+item+`> tag MUST specify a value for the <`+type+`>  and <`+entity+`> attributes (<<sec-tables>>)
+* MUST support the <`+table+`> tag. <`+orientation+`>, <`+column_width+`>, <`+interval+`>, and <`+comparative+`>   attributes for the table MUST be specified .One <`+item+`> tag MUST appear for each variable being displayed. Each <`+item+`> tag MUST specify a value for the <`+type+`>  and <`+entity+`> attributes (Section 6.4.4)
 
 * If `+numeric_display+` is true in the `+<uses_outputs>+` tag, MUST support numeric displays (<<sec-numeric-displays>>)
 
-* If `+lamp+` is true in the `+<uses_outputs>+` tag, MUST support lamps and a list of zones with non-overlapping value ranges for the variable MUST be specified within the <`+zones+`> tag (<<sec-lamps-and-gauges>>)
+* If `+lamp+` is true in the `+<uses_outputs>+` tag, MUST support lamps and a list of zones with non-overlapping value ranges for the variable MUST be specified within the <`+zones+`> tag (<<sec-graphs>>)
 
-* If `+gauge+` is true in the `+<uses_outputs>+` tag, MUST support gauges and a list of zones with non-overlapping value ranges for the variable MUST be specified within the <`+zones+`> tag (<<sec-lamps-and-gauges>>)
+* If `+gauge+` is true in the `+<uses_outputs>+` tag, MUST support gauges and a list of zones with non-overlapping value ranges for the variable MUST be specified within the <`+zones+`> tag (<<sec-graphs>>)
 
 Additionally,
 
-* Each zone for a lamp or a gauge (in a `+<zone>+` tag) MUST specify values for <`+type+`>, <`+color+`>, <`+min+`>, and <`+max+`> (<<sec-lamps-and-gauges>>)
+* Each zone for a lamp or a gauge (in a `+<zone>+` tag) MUST specify values for <`+type+`>, <`+color+`>, <`+min+`>, and <`+max+`> (<<sec-graphs>>)
 
 [[sec-optional-inputs-conformance]]
 ==== Optional Inputs Conformance

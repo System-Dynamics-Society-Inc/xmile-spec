@@ -261,49 +261,6 @@ The `+<numeric_display>+` tag is used to describe the appearance of a widget on 
 
 Descriptions of all other display attributes of a numeric display can be found in <<sec-stock-and-flow-diagram-objects>>.
 
-[[sec-lamps-and-gauges]]
-==== Lamps and Gauges
-
-Lamps and gauges also indicate the current value of a single variable.  Support for these tags is OPTIONAL. A lamp is defined with the `+<lamp>+` tag and looks similar to an LED or LCD indicator.  A gauge is defined with the `+<gauge>+` tag and looks similar to a speedometer.  An example tag is shown below:
-
-`+<lamp retain_ending_value="true" x="543" y="104" uid="3">+`
-
-`+<entity name="Converter_1" />+`
-
-`+<zones>+`
-
-`+<zone type="panic" min="8" max="8.33" color="red" />+`
-
-`+<zone type="caution" min="8.33" max="8.66" color="yellow" />+`
-
-`+<zone type="normal" min="8.66" max="9" color="green"/>+`
-
-`+</zones>+`
-
-`+</lamp>+`
-
-* Show name: OPTIONAL  `+show_name="…"+` with true/false (default: `+false+` for lamps, `+true+` for gauges)
-
-* Show number (gauges only): OPTIONAL  `+show_number="…"+` with true/false (default: `+true+`)
-
-* Retain ending value (at end of simulation, rather than show nothing): OPTIONAL  `+retain_ending_value="…"+` with true/false (default: `+true+`)
-
-* Flash when in the panic region:  `+flash_on_panic="…"+` with true/false (default: `+true+`) OPTIONAL
-
-Lamps and gauges REQUIRE a list of zones within a `+<zones>+` tag, defining non-overlapping value ranges for the variable.  Each zone is defined by a `+<zone>+` with the following attributes:
-
-* Type:  `+type="…"+` with `+normal+`, `+caution+`, or `+panic+` (default: `+normal+`) REQUIRED
-
-* Color when variable is in range:  `+color="…"+` w/valid CSS color (default: `+black+`) REQUIRED
-
-* Start of range:  `+min="…"+` with starting value of range REQUIRED
-
-* End of range:  `+max="…"+` with ending value of range REQUIRED
-
-* Sound to play while in range:  `+sound="…"+`.  The value should be a resource which is a relative file path, an absolute file path, or an URL. OPTIONAL
-
-Descriptions of all other display attributes of a lamp or gauge can be found in <<sec-stock-and-flow-diagram-objects>>.
-
 [[sec-graphs]]
 ==== Graphs
 
