@@ -1,0 +1,9 @@
+# Keep line endings LF everywhere. Without this, a Windows editor can rewrite a
+# whole file to CRLF and produce a diff of thousands of lines with no change in
+# content -- which is exactly what happened while the 1.1 errata were being
+# prepared.
+* text=auto eol=lf
+
+# Never touch the Word originals or the figures.
+*.docx binary
+*.png  binary
