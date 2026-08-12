@@ -5,6 +5,7 @@
   "description": "XML Interchange Language for System Dynamics (XMILE) specification",
   "scripts": {
     "build": "node tools/build.mjs spec/xmile.adoc build/xmile.html",
+    "build:release": "node tools/release-build.mjs spec/xmile.adoc build/xmile-release.html",
     "lint": "node tools/lint.mjs spec",
     "check": "npm run lint && npm run build"
   },

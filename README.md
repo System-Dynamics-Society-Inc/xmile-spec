@@ -20,11 +20,17 @@ released the way code is.
 
 ```sh
 npm install
-npm run check      # lint, then build to build/xmile.html
+npm run check          # lint, then build to build/xmile.html
+npm run build:release  # single self-contained file, figures embedded
 ```
 
-Node is the only requirement. Both steps run in CI on every push and pull
-request, and a warning fails the build.
+Node is the only requirement. Both steps of `check` run in CI on every push and
+pull request, and a warning fails the build.
+
+`build` emits HTML alongside an `images/` directory, which is what you want
+while editing. `build:release` embeds the figures in the page instead, so the
+result is one file that survives being downloaded on its own — that is what is
+attached to a GitHub release.
 
 ## History
 
