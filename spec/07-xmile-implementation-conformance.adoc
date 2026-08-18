@@ -158,9 +158,9 @@ To support the optional features of XMILE to represent a model view, an implemen
 
 * MUST support the <`+alias+`> tag. If they exist, alias objects MUST represent only stock, flow, and aux objects. Alias objects MUST NOT have connectors pointing to them. <`+uid+`>, <`+x+`>, <`+y+`>, and <`+of+`>  attributes for each alias MUST be specified for an alias object (<<sec-alias>>)
 
-* MUST support the <`+graph+`> tag. <`+type+`> and <`+comparative+`> attributes MUST be specified for each graph .One <`+plot+`> tag MUST appear for each variable being plotted. Each <`+plot+`> tag MUST specify a value for the <`+index+`>, <`+title+`>,  and <`+entity+`> attributes (<<sec-tables>>)
+* MUST support the <`+graph+`> tag. <`+type+`> and <`+comparative+`> attributes MUST be specified for each graph .One <`+plot+`> tag MUST appear for each variable being plotted. Each <`+plot+`> tag MUST specify a value for the <`+index+`>, <`+title+`>,  and <`+entity+`> attributes (<<sec-graphs>>)
 
-* MUST support a <`+table+`> tag. <`+orientation+`>, <`+column_width+`>, <`+interval+`>, and <`+comparative+`>   attributes for the table MUST be specified .One <`+item+`> tag MUST appear for each variable being displayed. Each <`+item+`> tag MUST specify a value for the <`+type+`>  and <`+entity+`> attributes (Section 6.4.4)
+* MUST support a <`+table+`> tag. <`+orientation+`>, <`+column_width+`>, <`+interval+`>, and <`+comparative+`>   attributes for the table MUST be specified .One <`+item+`> tag MUST appear for each variable being displayed. Each <`+item+`> tag MUST specify a value for the <`+type+`>  and <`+entity+`> attributes (<<sec-tables>>)
 
 Additionally,
 
@@ -205,19 +205,11 @@ To support the optional simulation output features of XMILE, an implementation:
 
 * MUST include the `+<uses_outputs>+` tag in the `+<options>+` block (<<sec-xmile-options>>)
 
-* MUST support the <`+graph+`> tag. <`+type+`> and <`+comparative+`> attributes MUST be specified for each graph .One <`+plot+`> tag MUST appear for each variable being plotted. Each <`+plot+`> tag MUST specify a value for the <`+index+`>, <`+title+`>,  and <`+entity+`> attributes (<<sec-tables>>)
+* MUST support the <`+graph+`> tag. <`+type+`> and <`+comparative+`> attributes MUST be specified for each graph .One <`+plot+`> tag MUST appear for each variable being plotted. Each <`+plot+`> tag MUST specify a value for the <`+index+`>, <`+title+`>,  and <`+entity+`> attributes (<<sec-graphs>>)
 
-* MUST support the <`+table+`> tag. <`+orientation+`>, <`+column_width+`>, <`+interval+`>, and <`+comparative+`>   attributes for the table MUST be specified .One <`+item+`> tag MUST appear for each variable being displayed. Each <`+item+`> tag MUST specify a value for the <`+type+`>  and <`+entity+`> attributes (Section 6.4.4)
+* MUST support the <`+table+`> tag. <`+orientation+`>, <`+column_width+`>, <`+interval+`>, and <`+comparative+`>   attributes for the table MUST be specified .One <`+item+`> tag MUST appear for each variable being displayed. Each <`+item+`> tag MUST specify a value for the <`+type+`>  and <`+entity+`> attributes (<<sec-tables>>)
 
 * If `+numeric_display+` is true in the `+<uses_outputs>+` tag, MUST support numeric displays (<<sec-numeric-displays>>)
-
-* If `+lamp+` is true in the `+<uses_outputs>+` tag, MUST support lamps and a list of zones with non-overlapping value ranges for the variable MUST be specified within the <`+zones+`> tag (<<sec-graphs>>)
-
-* If `+gauge+` is true in the `+<uses_outputs>+` tag, MUST support gauges and a list of zones with non-overlapping value ranges for the variable MUST be specified within the <`+zones+`> tag (<<sec-graphs>>)
-
-Additionally,
-
-* Each zone for a lamp or a gauge (in a `+<zone>+` tag) MUST specify values for <`+type+`>, <`+color+`>, <`+min+`>, and <`+max+`> (<<sec-graphs>>)
 
 [[sec-optional-inputs-conformance]]
 ==== Optional Inputs Conformance
@@ -226,27 +218,11 @@ To support the optional user input features of XMILE, an implementation:
 
 * MUST include the `+<uses_inputs>+` tag in the `+<options>+` block (<<sec-xmile-options>>)
 
-* MUST support the <`+slider+`> and <`+knob+`> tags (<<sec-sliders>>)
-
-* MUST support the <`+switch+`> and <`+options+`> tags (Section 6.3.2)
-
-* If `+numeric_input+` is true in the `+<uses_inputs>+` tag, MUST support numeric inputs (Section 6.3.3)
-
-* If `+list+` is true in the `+<uses_inputs>+` tag, MUST support list inputs (Section 6.3.3)
-
-* If `+graphical_input+` is true in the `+<uses_inputs>+` tag, MUST support graphical inputs. If the graphical input contains a different graphical function than the controlled variable, the <`+entity+`> tag MUST include a <`+gf+`> tag to describe that graphical function (Section 6.3.4)
+* MUST support the <`+slider+`> tag (<<sec-sliders>>)
 
 Additionally,
 
-* The input range tags <`+min+`> and <`+max+`> MUST be specified for sliders and knobs (<<sec-sliders>>)
-
-* A switch’s <`+group+`> or <`+module+`> tag MUST specify a <`+name+`> and a <`+value+`> (Section 6.3.2)
-
-* Option groups MUST specify values for <`+layout+`>, <`+horizontal_spacing+`>, and <`+vertical_spacing+`> (Section 6.3.2)
-
-* A list input MUST specify a <`+name+`> and <`+column_width+`> (Section 6.3.3)
-
-* A graphical input MUST specify an <`+entity+`> tag (Section 6.3.4)
+* The input range tags <`+min+`> and <`+max+`> MUST be specified for sliders (<<sec-sliders>>)
 
 [[sec-optional-annotations-conformance]]
 ==== Optional Annotations Conformance
@@ -257,17 +233,9 @@ To support the optional model annotation features of XMILE, an implementation:
 
 * MUST support the <`+text_box+`> tag (<<sec-text-boxes>>)
 
-* MUST support the <`+graphics_frame+`> tag (Section 6.5.2)
-
-* MUST support the <`+button+`> tag (Section 6.5.3)
-
 Additionally,
 
-* When an image is embedded directly within the XMILE file, the type of encoding MUST be “`+base64+`” (Section 6.5.2)
-
-* Buttons that control the program MUST contain a `+<menu_action>+` tag
-
-* Menu actions <`+import_now+`>, <`+export_now+`>, and <`+save_data_now+`> MUST have the required attributes specified (Section 6.5.3)
+* When an image is embedded directly within the XMILE file, the type of encoding MUST be “`+base64+`” (<<sec-media-and-navigation-objects>>)
 
 [[sec-conformance-clause-2-xmile-simulator]]
 === Conformance Clause 2:  XMILE Simulator
@@ -371,6 +339,4 @@ To support the optional event poster features of XMILE, an implementation:
 
 To support the optional user input features of XMILE, an implementation:
 
-* Knobs attached to stocks MUST only adjust the stock’s initial value (<<sec-sliders>>)
-
-* Option groups MUST NOT support `+reset_to+` (Section 6.3.2)
+* Sliders attached to stocks MUST only adjust the stock’s initial value (<<sec-sliders>>)
