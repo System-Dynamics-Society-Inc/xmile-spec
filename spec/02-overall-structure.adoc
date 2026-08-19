@@ -5,15 +5,17 @@ A XMILE file contains information about a whole-model, with a well-specified str
 
 [source,xml]
 ----
-<xmile version="1.1" 
+<xmile version="1.2" 
       xmlns="http://docs.oasis-open.org/xmile/ns/XMILE/v1.0">
 ...
 </xmile>
 ----
 
-The version number MUST refer to the version of XMILE used (presently 1.1). The XML namespace refers to tags and attributes used in this specification. Both of these attributes are REQUIRED. Inside of the <xmile> tag are a number of top-level tags, listed below. These tags are marked req (a single instance is REQUIRED), opt (a single instance is OPTIONAL), * (zero or more tags MAY occur) and + (one or more tags MAY occur). Top level tags MAY occur in any order, but are RECOMMENDED to occur in the following order:
+The version number MUST refer to the version of XMILE used (presently 1.2). The XML namespace refers to tags and attributes used in this specification. Both of these attributes are REQUIRED. Inside of the <xmile> tag are a number of top-level tags, listed below. These tags are marked req (a single instance is REQUIRED), opt (a single instance is OPTIONAL), * (zero or more tags MAY occur) and + (one or more tags MAY occur). Top level tags MAY occur in any order, but are RECOMMENDED to occur in the following order:
 
 * `+<header>+` (req) - information about the origin of the file and required capabilities.
+
+* `+<ai_information>+` (opt) - status and settings relating to the use of AI in the creation of this file.
 
 * `+<sim_specs>+` (opt) - default simulation specifications for this file.
 
@@ -159,6 +161,234 @@ A sample options block appears below:
 <uses_arrays maximum_dimensions=”2”/>   <!-- has 2D arrays -->
 <has_model_view/>    <!-- has diagram of model -->
 </options>
+----
+
+[[sec-ai-information-section]]
+=== AI Information Section
+
+The OPTIONAL `+<ai_information>+` tag records status and settings relating to the use of AI in the creation of a model. Its purpose is to ensure that someone opening a model can reliably determine whether, and where, AI was used in creating it. This does not prevent someone from developing a model with AI and then transcribing it into another model by hand, but it does mean that use of AI within conforming software, including through copy and paste, is tracked.
+
+The `+<ai_information>+` tag has three OPTIONAL sub-tags:
+
+* AI interaction log:  `+<log>+` w/the log of interaction between the user and the AI agent. This SHOULD be plain text, markup, or markdown, in whichever form is most convenient for the software. The `+log_truncated+` attribute of `+<status>+` indicates whether this log has been truncated. This tag MAY be empty or absent when there is no log of activity.
+
+* Software-specific settings:  `+<settings>+` w/settings related to AI usage. No sub-tags or attributes are specified, as the nature of these settings is expected to be software specific.
+
+* AI usage status:  `+<status>+` as described in <<sec-ai-status>>. This tag consists of attributes and has no sub-tags.
+
+The information under `+<status>+` is persistent, and becomes invalid unless it is updated each time the model is written. It is also used when working with copy and paste, or other injection of model content, as described in <<sec-notes-on-ai-settings>>.
+
+[[sec-ai-status]]
+==== AI Status
+
+The following attributes are supported on `+<status>+`. Additional attributes MAY be included as long as they follow the rules for signature generation described in <<sec-ai-signing>>.
+
+[cols="2,2,5",options="header"]
+|===
+|Attribute
+|Valid values
+|Comments
+
+|`+verified+`
+|true/false
+|If false, the content is not trusted. In this case the other attributes MAY be skipped, as it indicates that the use of AI in model construction is unknown. Models saved in software that does not support `+<ai_information>+` will have `+verified+` false.
+
+|`+trusted+`
+|true/false
+|True if all required tags have been specified and the signature on the last model reading was correct, as described in <<sec-ai-signing>>. Typically false will arise from bad signing, or from a public signing key that is not trusted.
+
+|`+tampered+`
+|true/false
+|True if signature verification has ever failed when reading the model. When true, `+trusted+` will also be false.
+
+|`+uses+`
+|true/false
+|True if AI has ever been used as part of model construction.
+
+|`+analyzed+`
+|true/false
+|True if any AI based analysis of the model has been done and the model subsequently saved.
+
+|`+log_truncated+`
+|true/false
+|True if the log of interactions with the AI agent has ever been truncated. If the software does not store this log as part of its regular activity, this MUST be set to true.
+
+|`+timestamp+`
+|integer
+|The time at which the `+<ai_information>+` was last saved, in seconds since 1 January 1970.
+
+|`+algorithm+`
+|`+ed25519+`
+|The algorithm used to generate the signature. Only one algorithm is supported.
+
+|`+keyurl+`
+|https URL
+|A web address that returns, in response to a GET, the base 64 encoded public key for verifying the signature.
+
+|`+want_var_info+`
+|true/false
+|True when variable information is included in the text used to generate the signature.
+
+|`+want_var_status+`
+|true/false
+|True when the status of each variable in the model is included in the text used to generate the signature.
+
+|`+skip_module_files+`
+|true/false
+|If true, modules saved as separate files do not have their variable information included here, but instead include it in their own `+<ai_information>+` section. If false or absent, all variables in all modules are processed when `+want_var_info+` is true.
+
+|`+sampling+`
+|integer
+|The number of entries between variable information. This is used for large models, RECOMMENDED above 500 variables, where generating all variable information might be time consuming. If absent it MUST be assumed to be 1.
+
+|`+want_log+`
+|true/false
+|True if the AI log is included in the text used to generate the signature. If AI has not been used this would normally be false, even though true would generate the same signature.
+
+|`+signature+`
+|string
+|The base 64 encoded signature for the text.
+
+|===
+
+[[sec-ai-signing]]
+==== Signing
+
+Signing is done using the ed25519 signature algorithmfootnote:[https://datatracker.ietf.org/doc/html/rfc8032[RFC 8032]] against a message constructed by combining the attributes above with the additional information indicated below. The private key used MUST correspond to the public key returned by `+keyurl+`. Software vendors MAY choose which public keys they trust; an untrusted key SHALL be treated as an unsigned model, though checking for tampering MAY still occur. Software providers SHOULD communicate amongst themselves to determine bilateral standards for key trust.
+
+The text to be signed MUST have all whitespace (space, tab, line feed, carriage return) and all underbar characters removed. It consists of:
+
+* All key/value pairs from the `+<status>+` tag, sorted alphabetically by key. There MUST be an equals sign between the key and the value, and a space after the value, with no spaces within either the key or the value. Attribute values MUST NOT be quoted, so for example `+log_truncated="true"+` in the XML becomes `+logtruncated=true+`.
+
+* If `+want_var_info+` is true, the variable name followed by an equals sign followed by its equation, for the model variables sorted alphabetically by variable name. For models containing modules, variables in the root module appear first, followed by the module variables with the variable names module qualified. Modules and sectors, and any content other than stocks, flows and auxiliaries, MUST be excluded from the list. For arrays with non-apply-to-all equations, all equations are listed from the first to the last element with no separation between them. This content MAY be partial, based on the value of `+sampling+`. Each equation, or equation list for non-apply-to-all equations, appears as it does in the XML, noting that there are no spaces within either the equation list or the variable name. Equations using cross level ghosts MUST use the local variable name. The equations for cross level inputs appear as they do in the XML, even when such equations are empty or invalid.
+
+* If `+want_var_status+` is true, the AI status information for each variable, ignoring `+sampling+`, where the status is a single letter from <<sec-ai-variable-status>>. The full list of status values MUST be followed by a space, but there is no space within the list.
+
+* If `+want_log+` is true, the log is appended, again with all whitespace characters removed. The log itself MUST be included in the `+<log>+` tag.
+
+If there is a terminal space on the constructed message string, which happens when the log is not included, it MUST be removed. Thus the only spaces are internal separators, and never come from the content forming the message.
+
+[[sec-ai-variable-status]]
+==== Variable AI Status
+
+Each variable MAY record how AI contributed to it, using the OPTIONAL `+ai_state="…"+` attribute on the variable tag, as described in <<sec-common-variable-properties>>. The value is one of the following codes:
+
+[cols="1,6",options="header"]
+|===
+|Code
+|Meaning
+
+|`+A+`
+|No information. The variable is from an untrusted source. `+trusted+` MUST be false if any variable has this status.
+
+|`+B+`
+|Created by a person not using AI. This will only occur when a modeler adds content using AI to an existing model. Depending on the software implementation these MAY always be reported as `+F+`.
+
+|`+C+`
+|AI was used to generate the variable and its equation. No editing by a person has been done.
+
+|`+D+`
+|Created by a person but edited by AI. Depending on the software implementation this MAY always be `+H+`.
+
+|`+E+`
+|Edited by a person, with unknown creation. This should never occur.
+
+|`+F+`
+|Created and edited by a person not using AI.
+
+|`+G+`
+|Created by AI then edited by a person, though possibly edited again by AI.
+
+|`+H+`
+|Created and edited by a person and also edited by AI.
+
+|===
+
+These states do not incorporate any sequence information. For example, a variable created and edited by a person, then edited by AI, then edited again by a person, is the same as if that last editing had not occurred, that is `+H+`.
+
+An example of the attribute on a variable definition is:
+
+[source,xml]
+----
+<flow name="ai generated flow" ai_state="C">
+----
+
+[[sec-notes-on-ai-settings]]
+==== Notes on AI Settings
+
+The AI settings are all irreversible. If a model starts unverified, or has content injected through the clipboard or another mechanism that is unverified, the model remains forever unverified. The same applies to `+trusted+` becoming false, and to `+uses+`, `+analyzed+` and `+log_truncated+` becoming true.
+
+Software implementations SHOULD require `+want_var_info+`, and additionally `+want_var_status+` if AI has been used. Unless the log has been truncated, `+want_log+` SHOULD also be true.
+
+When injecting content from outside sources, such as the clipboard, software implementations SHOULD include the signing, but MAY exclude variable information as long as the source of the content is fully trusted, most typically the software itself.
+
+[[sec-ai-examples]]
+==== Examples
+
+Status information for a simple AI generated model with one variable, price:
+
+[source,xml]
+----
+<status verified="true" trusted="true" tampered="false" uses="true" analyzed="false"
+        log_truncated="false" timestamp="1751663454" algorithm="ed25519"
+        keyurl="https://iseesystems.com/keys/stella01.txt" want_var_info="true"
+        want_var_status="true" want_log="true" sampling="1"
+        signature="FB3fCMap7xCQ+9GUmxl1QvdAQDehvMyPSOMNYtjv5hCWh6cHSA249hn6fo9120YAhmEUIoVg7hqMcs0aLaN/BA=="/>
+----
+
+The message string used to generate the signature is shown below. Line wrapping here occurs at the embedded spaces, and there is no space at the end:
+
+[source,text]
+----
+algorithm=ed25519 analyzed=false keyurl=https://iseesystems.com/keys/stella01.txt
+logtruncated=false sampling=1 tampered=false timestamp=1751663454 trusted=true
+uses=true verified=true wantlog=true wantvarinfo=true wantvarstatus=true price=50 C
+<h3>Youinstructedmeto...</h3><br/><h3>HereiswhatIhavedone...</h3><h3>SimplePriceModelNoFeedback</h3>Themodelwasupdatedtoincludeasinglevariable,'price',asrequested.Nofeedbackloopscouldbeformedbecausetheinputonlyspecifiedasingle,constantvariable,andnoothervariablesorrelationshipswereimpliedorprovidedasevidencetosupportthecreationofadditionalvariablesortheircausalconnections.Therefore,nochangesweremadetoclosefeedbackloops.<br/>
+----
+
+The definition for price is:
+
+[source,xml]
+----
+<aux name="price" ai_state="C">
+  <doc>The price of the product, set at a constant value as per the request. There is
+  no information provided to suggest that this variable should change over time or be
+  influenced by other factors.</doc>
+  <eqn>50</eqn>
+  <units>$/wheel</units>
+</aux>
+----
+
+The `+C+` in `+ai_state+` matches the `+C+` immediately after the equation for price (50) in the signature string.
+
+The same content for a model built entirely by hand would be:
+
+[source,xml]
+----
+<status verified="true" trusted="true" tampered="false" uses="false" analyzed="false"
+        log_truncated="false" timestamp="1751663148" algorithm="ed25519"
+        keyurl="https://iseesystems.com/keys/stella01.txt" want_var_info="true"
+        want_var_status="false" want_log="false" sampling="1"
+        signature="hnBrID6G4q9cX3Ga2WPHmFIMpVGCrTlLcxpFKU2stKNuL7/8IhOvZVDxvovCJ77AlRcfN4abQrWv9JBQ7t4WBQ=="/>
+----
+
+Note that `+want_var_status+` is false, as the variables are all untouched by AI. In this case the content string to be signed contains only the key/value pairs and the list of variables and equations:
+
+[source,text]
+----
+algorithm=ed25519 analyzed=false keyurl=https://iseesystems.com/keys/stella01.txt
+logtruncated=false sampling=1 tampered=false timestamp=1751663148 trusted=true
+uses=false verified=true wantlog=false wantvarinfo=true wantvarstatus=false price=50
+----
+
+The definition for price is largely the same, though no documentation was added and it is unmarked because the model records no AI usage:
+
+[source,xml]
+----
+<aux name="price">
+  <eqn>50</eqn>
+  <units>$/Wheel</units>
+</aux>
 ----
 
 [[sec-model-simulation-specification-section]]

@@ -94,6 +94,8 @@ All variables have the following OPTIONAL properties:
 
 * Number format:  `+<format>+` as described in <<sec-ranges-scales-number-formats>> (default: unspecified)
 
+* AI status:  `+ai_state="…"+` attribute w/a single-letter code recording how AI contributed to this variable, as described in <<sec-ai-variable-status>> (default: none)
+
 Of these, the name is REQUIRED for all variables and must be unique across all variables in the containing model. If the intent is to simulate the model, the equation is also required. For a stock, the equation contains the stock’s initial value, rather than the stock’s integration equation.
 
 The documentation can be plain text or can be HTML. If in plain text, it must use XMILE identifier escape sequences for non-printable characters (i.e., \n for newline, \t for tab, and, necessarily, \\ for backslash), rather than a hexadecimal code such as &#x0A. If in HTML, it must include the proper HTML header. Note this is true for all documentation and user-specified text fields in a XMILE file (i.e., including those in display objects defined in Chapters 5 and 6).
