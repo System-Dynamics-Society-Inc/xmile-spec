@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<xmile version="1.1" xmlns="https://github.com/System-Dynamics-Society-Inc/xmile-spec/releases/tag/v1.1" xmlns:isee="http://iseesystems.com/XMILE">
+<xmile version="1.1" xmlns="http://docs.oasis-open.org/xmile/ns/XMILE/v1.0" xmlns:isee="http://iseesystems.com/XMILE">
 	<header>
 		<options namespace="std, isee"/>
 		<name>AIGenerated.xmile</name>
