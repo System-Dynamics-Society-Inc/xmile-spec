@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xmile version="1.1" xmlns="http://github.com/System-Dynamics-Society-Inc/xmile-spec/releases/tag/v1.1 xmlns:isee="http://iseesystems.com/XMILE">
+	<header>
+		<options namespace="std, isee"?
+		<uses_arrays/>
+		</options>
+		<name>WithArrays.xmile</name>
+		<uuid>a771bc1f-bfcc-4d00-9bf1-0c5e5a06150c</uuid>
+		<vendor>isee systems, inc.</vendor>
+		<product version="4.4" isee:build_number="4016" isee:saved_by_v1="true" lang="en">Stella Architect</product>
+	</header>
+	<ai_information>
+		<status verified="false" mixed="true" trusted="true" tampered="false" uses="false" analyzed="false" log_truncated="false" timestamp="1787096051" algorithm="ed25519" keyurl="https://iseesystems.com/keys/stella01.txt" want_var_info="true" want_var_status="false" want_log="false" sampling="1" signature="bXbFIM6sIBtUZRQ89VQcZpmAquQqqUOrUnZUHd2XOHqc7N8fZ7H50mhJ1inGHmMrNY2dWXuQHdFTJj+aittVBg=="/>
+	</ai_information>
+	<sim_specs isee:sim_duration="0" isee:run_prefix="Run" isee:simulation_delay="0" isee:restore_on_start="false" method="Euler" time_units="Month" isee:instantaneous_flows="false" isee:ignore_module_errors="false" isee:strict_units="false" isee:loop_scores="true" isee:loop_exhaustive_allowed="1000">
+		<start>0</start>
+		<stop>100</stop>
+		<dt>1</dt>
+	</sim_specs>
+	<dimensions>
+		<dim name="Location">
+			<elem name="Here"/>
+			<elem name="There"/>
+			<elem name="Everywhere"/>
+		</dim>
+	</dimensions>
+	<isee:prefs saved_runs="5" keep="false" show_module_prefix="true" live_update_on_drag="true" show_restore_buttons="false" layer="model" isee:design="" isee:design_custom="false" interface_max_page_width="10000" interface_max_page_height="10000" interface_min_page_width="0" interface_min_page_height="0" rifp="false">
+		<isee:tag_styles>
+			<isee:tag_style tag="Interface"/>
+			<isee:tag_style tag="Output"/>
+			<isee:tag_style tag="Parameter"/>
+			<isee:tag_style tag="Policy"/>
+		</isee:tag_styles>
+	</isee:prefs>
+	<isee:multiplayer_settings include_chat="true" allow_observers="false" advance_time_increment="1" max_advance_time_in_ms="0" model_stops_when_players_drop="false" observer_start_page="home_page" enabled="false"/>
+	<isee:time_formats default_format="Builtin">
+		<isee:time_format name="Builtin" type="adaptive"/>
+	</isee:time_formats>
+	<isee:number_format_extenders/>
+	<model_units>
+		<unit name="Dimensionless">
+			<eqn>1</eqn>
+			<alias>dmnl</alias>
+			<alias>unitless</alias>
+			<alias>fraction</alias>
+		</unit>
+		<unit name="Widgets">
+			<eqn/>
+			<alias>widget</alias>
+		</unit>
+		<unit name="Hour">
+			<eqn/>
+			<alias>Hours</alias>
+		</unit>
+		<unit name="Month">
+			<eqn/>
+			<alias>Months</alias>
+		</unit>
+		<unit name="Person">
+			<eqn/>
+			<alias>People</alias>
+			<alias>Persons</alias>
+		</unit>
+		<unit name="Unit">
+			<eqn/>
+			<alias>Units</alias>
+		</unit>
+		<unit name="Week">
+			<eqn/>
+			<alias>Weeks</alias>
+		</unit>
+		<unit name="Year">
+			<eqn/>
+			<alias>Years</alias>
+		</unit>
+		<unit name="Day">
+			<eqn/>
+			<alias>Days</alias>
+		</unit>
+	</model_units>
+	<model>
+		<variables>
+			<aux name="width">
+				<eqn>5</eqn>
+				<units>Widget</units>
+			</aux>
+			<aux name="consumption">
+				<dimensions>
+					<dim name="Location"/>
+				</dimensions>
+				<eqn>ALLOCATE(supply, Location, demand[Location.*], priority[Location.*], width)</eqn>
+			</aux>
+			<aux name="demand">
+				<dimensions>
+					<dim name="Location"/>
+				</dimensions>
+				<element subscript="Here">
+					<eqn>20</eqn>
+				</element>
+				<element subscript="There">
+					<eqn>10</eqn>
+				</element>
+				<element subscript="Everywhere">
+					<eqn>12</eqn>
+				</element>
+				<units>Widget</units>
+			</aux>
+			<aux name="priority">
+				<dimensions>
+					<dim name="Location"/>
+				</dimensions>
+				<element subscript="Here">
+					<eqn>10</eqn>
+				</element>
+				<element subscript="There">
+					<eqn>2</eqn>
+				</element>
+				<element subscript="Everywhere">
+					<eqn>8</eqn>
+				</element>
+				<units>Dmnl</units>
+			</aux>
+			<aux name="supply">
+				<eqn>TIME</eqn>
+				<units>Widget</units>
+			</aux>
+		</variables>
+		<views>
++			<view isee:show_pages="false" background="white" page_width="1122" page_height="793" isee:popup_graphs_are_comparative="true" isee:enable_non_negative_highlights="false" type="stock_flow">
+				<aux x="216" y="127" name="supply"/>
+				<aux x="178" y="238" name="demand"/>
+				<aux x="423" y="171" name="consumption"/>
+				<connector uid="6" angle="16.5872">
+					<from>demand</from>
+					<to>consumption</to>
+				</connector>
+				<connector uid="7" angle="348.536">
+					<from>supply</from>
+					<to>consumption</to>
+				</connector>
+				<aux x="182" y="182" name="priority"/>
+				<connector uid="9" angle="3.77832">
+					<from>priority</from>
+					<to>consumption</to>
+				</connector>
+				<aux x="176" y="291" name="width"/>
+				<connector uid="11" angle="26.0096">
+					<from>width</from>
+					<to>consumption</to>
+				</connector>
+			</view>
+		</views>
+	</model>
+</xmile>
+

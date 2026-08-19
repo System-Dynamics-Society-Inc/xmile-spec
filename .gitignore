@@ -1,4 +1,6 @@
 node_modules/
+.venv/
+venv/
 build/
 build-v10/
 build-v11/

@@ -16,7 +16,15 @@ jobs:
         with:
           node-version: '20'
 
+      # The schema is XSD 1.1, which no Node validator implements. See
+      # tools/validate.py.
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
       - run: npm ci
+
+      - run: python -m pip install -r tools/requirements.txt
 
       # Rejects a "Section 6.4.2" typed as plain text, which nothing could
       # validate. Every reference must be an <<anchor>>.
@@ -26,6 +34,11 @@ jobs:
       # Warnings are fatal, so a reference to a deleted section fails here.
       - name: Build specification
         run: npm run build
+
+      # With no documents this compiles the schema and stops, so an edit that
+      # breaks it fails here rather than in someone else's validator.
+      - name: Validate schema
+        run: npm run validate
 
       - uses: actions/upload-artifact@v4
         with:

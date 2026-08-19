@@ -1,12 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified" xmlns="http://docs.oasis-open.org/xmile/ns/XMILE/v1.0" targetNamespace="http://docs.oasis-open.org/xmile/ns/XMILE/v1.0">
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:vc="http://www.w3.org/2007/XMLSchema-versioning" vc:minVersion="1.1" elementFormDefault="qualified" attributeFormDefault="unqualified" defaultAttributes="vendor_attributes" xmlns="http://docs.oasis-open.org/xmile/ns/XMILE/v1.0" targetNamespace="http://docs.oasis-open.org/xmile/ns/XMILE/v1.0">
 <!--
 
-	XML Interchange Language for System Dynamics (XMILE) Version 1.0
-	Candidate OASIS Standard 01
-	29 July 2015
+	XML Interchange Language for System Dynamics (XMILE) Version 1.1
+	SDS Candidate Standard 02
+	20 August 2024
+	Copyright (c) System Dynamics Society 2024. All rights reserved.
+
+	Derived from the XMILE Version 1.0 schema:
+	Candidate OASIS Standard 01, 29 July 2015
 	Copyright (c) OASIS Open 2015. All rights reserved.
 	Source: http://docs.oasis-open.org/xmile/xmile/v1.0/cos01/schemas/
+
+	This schema requires an XSD 1.1 processor. The vc:minVersion attribute
+	makes an XSD 1.0 processor skip it rather than misreport it.
+
+	The XML namespace is deliberately unchanged from v1.0: version 1.1 keeps
+	the .../ns/XMILE/v1.0 namespace and distinguishes itself through the
+	version attribute on <xmile>, so existing documents keep validating.
 
 -->
 
@@ -17,6 +28,55 @@
     Contributing Authors: Will Glass-Hussain
                           Robert Eberlein
   -->
+
+  <!--
+    Vendor extensions.
+
+    Section 2 (Namespaces) states that XMILE makes "provision for vendor
+    specific additions", but the v1.0 schema had no wildcard of any kind, so a
+    file carrying any foreign-namespace content failed to validate even though
+    the specification permits it.
+
+    XSD 1.1 repairs that in one place rather than by adding a wildcard to every
+    one of the ninety-odd complex types:
+
+      * defaultOpenContent applies an element wildcard to every complex type in
+        the schema. mode="interleave" allows an extension anywhere among the
+        standard children rather than only at the end, which is what vendors
+        actually emit. appliesToEmpty="true" extends the same courtesy to types
+        that would otherwise permit no children at all.
+
+      * defaultAttributes (on xs:schema, above) applies vendor_attributes to
+        every complex type, admitting foreign-namespace attributes. XSD 1.0 had
+        no equivalent, and could not have carried a wildcard inside the xs:all
+        groups this schema uses in any case.
+
+    processContents="lax" means a foreign element is validated if the processor
+    happens to have a schema for its namespace and passed over otherwise, so a
+    vendor MAY publish a schema for its own extensions without this schema
+    needing to know about it.
+
+    Both are restricted to namespaces other than XMILE's own: an unprefixed
+    element or attribute still has to be one this specification defines. That
+    is the point of the mechanism. It accepts isee:foo, and still rejects a
+    bare foo that merely looks standard.
+  -->
+  <xs:defaultOpenContent mode="interleave" appliesToEmpty="true">
+    <xs:any namespace="##other" processContents="lax"/>
+  </xs:defaultOpenContent>
+
+  <xs:attributeGroup name="vendor_attributes">
+    <!--
+      ##local matters as much as ##targetNamespace here. Attributes are
+      unqualified in this schema, so an unprefixed attribute is in NO namespace
+      rather than in XMILE's. Excluding only ##targetNamespace would therefore
+      let the wildcard swallow every unrecognised bare attribute, and a
+      withdrawn one such as lamp="true", or a vendor one that forgot its prefix
+      such as ai_state="...", would validate silently. Excluding ##local too
+      keeps unprefixed attributes closed to exactly what this schema declares.
+    -->
+    <xs:anyAttribute notNamespace="##targetNamespace ##local" processContents="lax"/>
+  </xs:attributeGroup>
 
   <xs:element name="xmile">
     <xs:annotation>
@@ -60,10 +120,21 @@
           </xs:element>
         </xs:choice>
       </xs:sequence>
+      <!--
+        Section 2: "The version number MUST refer to the version of XMILE used
+        (presently 1.1)."
+
+        1.0 is still accepted because the namespace did not change between the
+        two versions, so this schema is the only schema a 1.0 document will be
+        validated against. A 1.0 document that uses a feature 1.1 withdrew is
+        still rejected, by the absence of that feature, which is the accurate
+        reason rather than its version number.
+      -->
       <xs:attribute name="version" use="required">
         <xs:simpleType>
           <xs:restriction base="xs:decimal">
             <xs:enumeration value="1.0"/>
+            <xs:enumeration value="1.1"/>
           </xs:restriction>
         </xs:simpleType>
       </xs:attribute>
@@ -176,20 +247,23 @@
           </xs:complexType>
         </xs:element>
         <xs:element name="has_model_view" type="empty_type" minOccurs="0"/>
+        <!--
+          v1.1: the lamp and gauge flags went with the withdrawal of Lamps and
+          Gauges. numeric_display remains, per Section 2 (XMILE Options): "The
+          <uses_outputs> tag implies both time-series graphs and tables are
+          included. It has one OPTIONAL attribute ... numeric_display".
+        -->
         <xs:element name="uses_outputs" minOccurs="0">
           <xs:complexType>
-            <xs:attribute name="numeric_display" type="xs:boolean"/>
-            <xs:attribute name="lamp" type="xs:boolean" use="optional"/>
-            <xs:attribute name="gauge" type="xs:boolean" use="optional"/>
+            <xs:attribute name="numeric_display" type="xs:boolean" use="optional" default="false"/>
           </xs:complexType>
         </xs:element>
-        <xs:element name="uses_inputs" minOccurs="0">
-          <xs:complexType>
-            <xs:attribute name="numeric_input" type="xs:boolean" use="optional"/>
-            <xs:attribute name="list" type="xs:boolean" use="optional"/>
-            <xs:attribute name="graphical_input" type="xs:boolean" use="optional"/>
-          </xs:complexType>
-        </xs:element>
+        <!--
+          v1.1: sliders are the only remaining input device, so this tag no
+          longer needs attributes to say which kinds are present. Section 2:
+          "The <uses_inputs> tag implies sliders are included."
+        -->
+        <xs:element name="uses_inputs" type="empty_type" minOccurs="0"/>
         <xs:element name="uses_annotation" type="empty_type" minOccurs="0"/>
         <xs:element name="uses_arrays" minOccurs="0">
           <xs:complexType>
@@ -334,13 +408,29 @@
     </xs:annotation>
     <xs:complexType>
       <xs:sequence>
+        <!--
+          Was xs:choice, which let a unit carry an <eqn> or <alias> elements but
+          never both. Section 2 (Model Units) gives this example:
+
+            <unit name="models_per_year">
+            <eqn>models/year</eqn>
+            <alias>model_per_year</alias>
+            <alias>mpy</alias>
+            </unit>
+
+          so the specification's own example could not validate against its own
+          schema. xs:sequence admits an optional equation followed by any number
+          of aliases, which is what the example and the surrounding prose
+          describe. The disabled attribute comes from the same example block.
+        -->
         <xs:element name="unit" minOccurs="0" maxOccurs="unbounded">
           <xs:complexType>
-            <xs:choice>
+            <xs:sequence>
               <xs:element name="eqn" type="xs:string" minOccurs="0" maxOccurs="1"/>
               <xs:element name="alias" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
-            </xs:choice>
+            </xs:sequence>
             <xs:attribute name="name" type="xs:string" use="required"/>
+            <xs:attribute name="disabled" type="xs:boolean" use="optional" default="false"/>
           </xs:complexType>
         </xs:element>
       </xs:sequence>
@@ -374,15 +464,13 @@
   <!-- entity is used for both just a name declaration and a name with a value
        we use the name with the value as the ref and inline uses where there are
        online attributes -->
-  <xs:element name="entity">
-    <xs:complexType>
-      <xs:all>
-        <xs:element name="value" type="xs:double"/>
-      </xs:all>
-      <xs:attribute name="name" type="xs:string" use="required"/>
-      <xs:attribute name="index" type="xs:string" use="optional"/>
-    </xs:complexType>
-  </xs:element>
+  <!--
+    v1.1: the global <entity> declaration is gone. Its only two references were
+    from the option group and from <switch_action>, both withdrawn with
+    Switches and Option Groups, which left it unreachable. The <entity> children
+    that survive, inside <slider>, <numeric_display> and <stacked_container>,
+    were always declared inline and are unaffected.
+  -->
 
 
 
@@ -833,7 +921,13 @@
       <xs:choice minOccurs="0" maxOccurs="unbounded">
         <xs:element ref="style" minOccurs="0" maxOccurs="1"/>
         <xs:element name="view" minOccurs="0" maxOccurs="unbounded">
-          <xs:complexType>
+          <!--
+            defaultAttributesApply="false" because this type extends
+            view_content_type, which already carries vendor_attributes and
+            passes the wildcard down. Applying the group a second time here
+            would declare two attribute wildcards on one type.
+          -->
+          <xs:complexType defaultAttributesApply="false">
             <xs:complexContent>
               <xs:extension base="view_content_type">
                 <xs:attribute name="background" type="xs:string"/>
@@ -880,42 +974,6 @@
       <xs:enumeration value="stock_flow"/>
       <xs:enumeration value="interface"/>
       <xs:enumeration value="popup"/>
-    </xs:restriction>
-  </xs:simpleType>
-
-
-  <xs:simpleType name="menu_action_choices">
-    <xs:restriction base="xs:string">
-      <xs:enumeration value="open"/>
-      <xs:enumeration value="close"/>
-      <xs:enumeration value="save"/>
-      <xs:enumeration value="save_as"/>
-      <xs:enumeration value="save_as_image"/>
-      <xs:enumeration value="revert"/>
-      <xs:enumeration value="print_setup"/>
-      <xs:enumeration value="print"/>
-      <xs:enumeration value="print_screen"/>
-      <xs:enumeration value="run"/>
-      <xs:enumeration value="pause"/>
-      <xs:enumeration value="resume"/>
-      <xs:enumeration value="stop"/>
-      <xs:enumeration value="run_restore"/>
-      <xs:enumeration value="restore_all"/>
-      <xs:enumeration value="restore_sliders"/>
-      <xs:enumeration value="restore_knobs"/>
-      <xs:enumeration value="restore_list_inputs"/>
-      <xs:enumeration value="restore_graphical_inputs"/>
-      <xs:enumeration value="restore_switches"/>
-      <xs:enumeration value="restore_numeric_displays"/>
-      <xs:enumeration value="restore_graphs_tables"/>
-      <xs:enumeration value="restore_lamps_gauges"/>
-      <xs:enumeration value="data_manager"/>
-      <xs:enumeration value="save_data_now"/>
-      <xs:enumeration value="import_now"/>
-      <xs:enumeration value="export_now"/>
-      <xs:enumeration value="exit"/>
-      <xs:enumeration value="find"/>
-      <xs:enumeration value="run_specs"/>
     </xs:restriction>
   </xs:simpleType>
 
@@ -1033,6 +1091,21 @@
               </xs:restriction>
             </xs:simpleType>
           </xs:attribute>
+          <!--
+            Section 6 (Connector) defines polarity as an OPTIONAL connector
+            attribute, "+ | - | none", default none, and uses it in the example
+            tag there. It was absent from the v1.0 schema entirely, so every
+            conforming use of a documented attribute failed to validate.
+          -->
+          <xs:attribute name="polarity" use="optional" default="none">
+            <xs:simpleType>
+              <xs:restriction base="xs:string">
+                <xs:enumeration value="+"/>
+                <xs:enumeration value="-"/>
+                <xs:enumeration value="none"/>
+              </xs:restriction>
+            </xs:simpleType>
+          </xs:attribute>
           <xs:attributeGroup ref="style_attributes"/>
         </xs:complexType>
       </xs:element>
@@ -1050,9 +1123,10 @@
       </xs:element>
 
       <xs:element ref="text_box"/>
-      <xs:element ref="graphics_frame"/>
+      <!-- v1.1: <graphics_frame> withdrawn (was 6.5.2). -->
 
       <!-- Output objects -->
+      <xs:element ref="numeric_display"/>
       <xs:element name="graph">
         <xs:complexType>
           <xs:choice>
@@ -1128,91 +1202,26 @@
 
 
 
-      <!-- input devices -->
+      <!--
+        Input devices.
 
-      <xs:element name="button">
-        <xs:complexType>
-          <xs:all>
-            <xs:element ref="image" minOccurs="0"/>
-            <xs:element ref="video" minOccurs="0"/>
-            <xs:element ref="sound" minOccurs="0"/>
-            <xs:element name="menu_action" minOccurs="0">
-              <xs:complexType>
-                <xs:simpleContent>
-                  <xs:extension base="menu_action_choices">
-                    <!-- the following only apply for import_now and export_now - then they are required see spec-->
-                    <xs:attribute name="resource" type="xs:string" use="optional"/>
-                    <xs:attribute name="worksheet" type="xs:string" use="optional"/>
-                    <xs:attribute name="all" type="xs:boolean" default="false"/>
-                    <!-- the following only with save_data_now -->
-                    <xs:attribute name="run_name" type="xs:string" use="optional"/>
-                  </xs:extension>
-                </xs:simpleContent>
-              </xs:complexType>
-            </xs:element>
-            <xs:element ref="switch_action" minOccurs="0"/>
-            <xs:element ref="popup" minOccurs="0"/>
-            <xs:element ref="link" minOccurs="0"/>
-          </xs:all>
-          <xs:attributeGroup ref="style_attributes"/>
-          <xs:attributeGroup ref="positioning_attributes"/>
-          <xs:attribute name="transparency" type="transparency_type" default="opaque"/>
-          <xs:attribute name="style" default="square">
-            <xs:simpleType>
-              <xs:restriction base="xs:string">
-                <xs:enumeration value="square"/>
-                <xs:enumeration value="rounded"/>
-                <xs:enumeration value="capsule"/>
-              </xs:restriction>
-            </xs:simpleType>
-          </xs:attribute>
-          <xs:attribute name="label" type="xs:string" use="optional"/>
-          <!-- clarify_spec - should list attributes and elements separately clicking_sound is between two elements -->
-          <xs:attribute name="clicking_sound" type="xs:boolean" default="true"/>
+        v1.1 withdrew every input device except the slider. Removed from this
+        choice, and their global declarations deleted below:
 
+          <button>           was 6.5.3, with its inline <menu_action>
+          <knob>             was 6.3.1, "Sliders and Knobs", now "Sliders"
+          <list_input>       was 6.3.3
+          <switch>           was 6.3.2
+          <graphical_input>  was 6.3.4
+          <options>          was 6.3.2, the radio button / option group
 
-          <xs:attribute name="show_name" type="xs:boolean" use="optional" default="true"/>
-          <xs:attribute name="show_number" type="xs:boolean" use="optional" default="true"/>
-          <xs:attribute name="show_min_max" type="xs:boolean" use="optional" default="true"/>
-          <xs:attribute name="name" type="xs:string"/>
-          <!-- clarify_spec - buttons need uids  -->
-          <xs:attribute name="uid" type="xs:int" use="optional"/>
-        </xs:complexType>
-      </xs:element>
+        <numeric_display> is NOT an input and survives: v1.1 keeps it as an
+        output object (Section 6, Numeric Displays). It has been moved up to
+        the output objects, where it belongs.
+      -->
 
       <xs:element ref="slider"/>
-      <xs:element ref="knob"/>
-      <xs:element ref="list_input"/>
-      <xs:element ref="numeric_display"/>
-      <xs:element ref="switch"/>
-      <xs:element ref="graphical_input"/>
       <xs:element ref="stacked_container"/>
-
-      <!-- options is also used for file options so is expanded inline here -->
-      <xs:element name="options">
-        <xs:complexType>
-          <xs:choice>
-            <xs:element ref="entity" maxOccurs="unbounded"/>
-          </xs:choice>
-          <xs:attributeGroup ref="style_attributes"/>
-          <xs:attributeGroup ref="positioning_attributes"/>
-          <xs:attribute name="show_name" type="xs:boolean" default="false"/>
-          <xs:attribute name="clicking_sound" type="xs:boolean" default="false"/>
-          <xs:attribute name="layout" default="vertical">
-            <xs:simpleType>
-              <xs:restriction base="xs:string">
-                <xs:enumeration value="vertical"/>
-                <xs:enumeration value="horizontal"/>
-              </xs:restriction>
-            </xs:simpleType>
-          </xs:attribute>
-          <xs:attribute name="vertical_spacing" type="xs:int" default="2"/>
-          <xs:attribute name="horizontal_spacing" type="xs:int" default="2"/>
-          <xs:attribute name="uid" type="xs:int" use="required"/>
-        </xs:complexType>
-      </xs:element>
-
-
 
     </xs:choice>
 
@@ -1298,58 +1307,6 @@
     </xs:complexType>
   </xs:element>
 
-  <xs:element name="knob">
-    <xs:complexType>
-      <xs:all>
-        <xs:element name="entity">
-          <xs:complexType>
-            <xs:attribute name="name" type="xs:string" use="required"/>
-            <xs:attribute name="index" type="xs:string" use="optional"/>
-          </xs:complexType>
-        </xs:element>
-      </xs:all>
-      <xs:attribute name="show_name" type="xs:boolean" use="optional" default="true"/>
-      <xs:attribute name="show_number" type="xs:boolean" use="optional" default="true"/>
-      <xs:attribute name="show_min_max" type="xs:boolean" use="optional" default="true"/>
-      <xs:attribute name="name" type="xs:string"/>
-      <xs:attribute name="min" type="xs:double" use="optional"/>
-      <xs:attribute name="max" type="xs:double" use="optional"/>
-      <xs:attribute name="precision" type="xs:double" use="optional"/>
-      <xs:attributeGroup ref="style_attributes"/>
-      <xs:attributeGroup ref="positioning_attributes"/>
-    </xs:complexType>
-  </xs:element>
-
-
-  <xs:element name="list_input">
-    <xs:complexType>
-      <xs:choice>
-        <xs:element name="numeric_input" maxOccurs="unbounded">
-          <xs:complexType>
-            <xs:all>
-              <!-- note we do not expect value in this case-->
-              <xs:element name="entity" minOccurs="0">
-                <xs:complexType>
-                  <xs:attribute name="name" type="xs:string" use="required"/>
-                  <xs:attribute name="index" type="xs:string" use="optional"/>
-                </xs:complexType>
-              </xs:element>
-            </xs:all>
-            <xs:attribute name="min" type="xs:double" use="optional"/>
-            <xs:attribute name="max" type="xs:double" use="optional"/>
-            <xs:attribute name="precision" type="xs:double" use="optional"/>
-          </xs:complexType>
-        </xs:element>
-      </xs:choice>
-      <xs:attribute name="name" type="xs:string" use="required"/>
-      <xs:attribute name="column_width" type="xs:int" use="required"/>
-      <!-- the following is required if used in a stacked container -->
-      <xs:attribute name="index" type="xs:int" use="optional"/>
-      <xs:attributeGroup ref="style_attributes"/>
-      <xs:attributeGroup ref="positioning_attributes"/>
-    </xs:complexType>
-  </xs:element>
-
   <xs:element name="numeric_display">
     <xs:complexType>
       <xs:all>
@@ -1369,56 +1326,6 @@
     </xs:complexType>
   </xs:element>
 
-  <xs:element name="switch">
-    <xs:complexType>
-      <xs:all>
-        <xs:element name="entity">
-          <xs:complexType>
-            <xs:attribute name="name" type="xs:string" use="required"/>
-            <xs:attribute name="index" type="xs:string" use="optional"/>
-            <xs:attribute name="value" type="xs:double" use="optional"/>
-          </xs:complexType>
-        </xs:element>
-        <xs:element ref="reset_to" minOccurs="0"/>
-      </xs:all>
-      <xs:attributeGroup ref="style_attributes"/>
-      <xs:attributeGroup ref="positioning_attributes"/>
-      <xs:attribute name="show_name" type="xs:boolean" default="false"/>
-      <xs:attribute name="clicking_sound" type="xs:boolean" default="false"/>
-      <xs:attribute name="switch_style" default="toggle">
-        <xs:simpleType>
-          <xs:restriction base="xs:string">
-            <xs:enumeration value="toggle"/>
-            <xs:enumeration value="push_button"/>
-          </xs:restriction>
-        </xs:simpleType>
-      </xs:attribute>
-      <xs:attribute name="uid" type="xs:int" use="required"/>
-    </xs:complexType>
-  </xs:element>
-
-
-  <xs:element name="graphical_input">
-    <xs:complexType>
-      <xs:all>
-        <xs:element name="entity">
-          <xs:complexType>
-            <xs:attribute name="name" type="xs:string" use="required"/>
-            <xs:attribute name="index" type="xs:string" use="optional"/>
-          </xs:complexType>
-        </xs:element>
-        <xs:element ref="gf" minOccurs="0"/>
-      </xs:all>
-      <xs:attributeGroup ref="style_attributes"/>
-      <xs:attributeGroup ref="positioning_attributes"/>
-      <xs:attribute name="show_name" type="xs:boolean" default="false"/>
-      <!--clarify_spec - what uid values are truly required? -->
-      <xs:attribute name="uid" type="xs:int" use="optional"/>
-    </xs:complexType>
-  </xs:element>
-
-
-
   <xs:element name="stacked_container">
     <xs:annotation>
       <xs:documentation>
@@ -1426,7 +1333,8 @@
         stacked on top of one another in flipbook form.
       </xs:documentation>
     </xs:annotation>
-    <xs:complexType>
+    <!-- defaultAttributesApply="false": inherits the wildcard from view_content_type. -->
+    <xs:complexType defaultAttributesApply="false">
       <xs:complexContent>
         <xs:extension base="view_content_type">
           <xs:attribute name="x" type="xs:double"/>
@@ -1490,38 +1398,7 @@
 
 
   <!-- clarify_spec this is not really spelled out completely in the spec -->
-  <xs:element name="switch_action">
-    <xs:complexType>
-      <xs:choice>
-        <xs:element ref="entity"/>
-        <xs:element name="group">
-          <xs:complexType>
-            <xs:all>
-              <xs:element name="value" type="xs:double"/>
-            </xs:all>
-            <xs:attribute name="name" type="xs:string" use="required"/>
-          </xs:complexType>
-        </xs:element>
-      </xs:choice>
-    </xs:complexType>
-  </xs:element>
-
   <!-- clarify_spec this is not really spelled out completely in the spec -->
-  <xs:element name="popup">
-    <xs:complexType>
-      <xs:choice>
-        <xs:element ref="text_box"/>
-        <xs:element ref="image"/>
-        <xs:element ref="video"/>
-        <xs:element ref="sound"/>
-        <xs:element ref="link"/>
-      </xs:choice>
-      <xs:attributeGroup ref="style_attributes"/>
-      <xs:attributeGroup ref="positioning_attributes"/>
-    </xs:complexType>
-  </xs:element>
-
-
   <xs:element name="shape">
     <xs:annotation>
       <xs:documentation>
@@ -1614,6 +1491,28 @@
   </xs:element>
 
   <!-- clarify_spec - note that style is not allowed at the file level  in this xsd -->
+  <!--
+    The cascading style system.
+
+    Section 5: "A <style> tag contains display information and defaults
+    separated into children tags by object type. The style system controls the
+    look and feel of all visual XMILE objects."
+
+    The v1.0 schema admitted only six of those object types, so a style block
+    that set defaults for a graph, a table, a slider or a text box, all of them
+    visual XMILE objects, failed to validate. The list below is every display
+    object type Section 6 defines in v1.1:
+
+      diagram objects  stock, flow, aux, module, group, connector, alias
+      containers       stacked_container
+      input objects    slider
+      output objects   numeric_display, graph, table
+      annotations      text_box
+
+    Withdrawn devices are deliberately absent: a v1.1 style block cannot set
+    defaults for a knob, switch, option group, graphical input, lamp, gauge,
+    graphics frame or button, because none of them exist any more.
+  -->
   <xs:element name="style">
     <xs:complexType>
       <xs:all>
@@ -1623,14 +1522,80 @@
         <xs:element name="connector" type="style_type" minOccurs="0"/>
         <xs:element name="module" type="style_type" minOccurs="0"/>
         <xs:element name="group" type="style_type" minOccurs="0"/>
+        <xs:element name="alias" type="style_type" minOccurs="0"/>
+        <xs:element name="stacked_container" type="style_type" minOccurs="0"/>
+        <xs:element name="slider" type="style_type" minOccurs="0"/>
+        <xs:element name="numeric_display" type="style_type" minOccurs="0"/>
+        <xs:element name="graph" type="graph_style_type" minOccurs="0"/>
+        <xs:element name="table" type="table_style_type" minOccurs="0"/>
+        <xs:element name="text_box" type="style_type" minOccurs="0"/>
       </xs:all>
       <xs:attributeGroup ref="style_attributes"/>
     </xs:complexType>
   </xs:element>
 
+  <!--
+    A style entry carries the style attributes for its object type, and MAY
+    carry a default <shape> for the object types that are drawn with one
+    (Section 5: "Size: arbitrary rectangle or, for specific objects listed
+    below, a <shape> tag"). The v1.0 style_type had an empty content model, so
+    a default shape could not be expressed at all.
+  -->
   <xs:complexType name="style_type">
+    <xs:sequence>
+      <xs:element ref="shape" minOccurs="0"/>
+    </xs:sequence>
     <xs:attributeGroup ref="style_attributes"/>
     <xs:attributeGroup ref="style_positioning_attributes"/>
+  </xs:complexType>
+
+  <!--
+    Graphs and tables carry presentation settings beyond the common style
+    attributes, and a defaults block is exactly where a reader would expect to
+    set them once for every graph or table rather than repeating them on each
+    one. These two types are the object's own presentation attributes, taken
+    from <graph> and <table> below and made optional: a defaults block supplies
+    whichever it wants, so nothing here can be REQUIRED even where it is
+    required on the object itself (column_width and report_interval are).
+
+    Attributes that identify a particular instance, title, doc and the specific
+    axis titles, are deliberately excluded. They describe one object, not a
+    default for every object of that type.
+  -->
+  <xs:complexType name="graph_style_type">
+    <xs:sequence>
+      <xs:element ref="shape" minOccurs="0"/>
+    </xs:sequence>
+    <xs:attributeGroup ref="style_attributes"/>
+    <xs:attributeGroup ref="style_positioning_attributes"/>
+    <xs:attribute name="type" type="graph_type" use="optional"/>
+    <xs:attribute name="show_grid" type="xs:boolean" use="optional"/>
+    <xs:attribute name="num_x_grid_lines" type="xs:int" use="optional"/>
+    <xs:attribute name="num_y_grid_lines" type="xs:int" use="optional"/>
+    <xs:attribute name="num_y_labels" type="xs:int" use="optional"/>
+    <xs:attribute name="plot_numbers" type="xs:boolean" use="optional"/>
+    <xs:attribute name="comparative" type="xs:boolean" use="optional"/>
+    <xs:attribute name="left_axis_auto_scale" type="xs:boolean" use="optional"/>
+    <xs:attribute name="left_axis_multi_scale" type="xs:boolean" use="optional"/>
+    <xs:attribute name="right_axis_auto_scale" type="xs:boolean" use="optional"/>
+    <xs:attribute name="right_axis_multi_scale" type="xs:boolean" use="optional"/>
+  </xs:complexType>
+
+  <xs:complexType name="table_style_type">
+    <xs:sequence>
+      <xs:element ref="shape" minOccurs="0"/>
+    </xs:sequence>
+    <xs:attributeGroup ref="style_attributes"/>
+    <xs:attributeGroup ref="style_positioning_attributes"/>
+    <xs:attributeGroup ref="header_style_attributes"/>
+    <xs:attribute name="orientation" type="orientation" use="optional"/>
+    <xs:attribute name="column_width" type="xs:int" use="optional"/>
+    <xs:attribute name="blank_column_width" type="xs:int" use="optional"/>
+    <xs:attribute name="report_interval" type="report_interval" use="optional"/>
+    <xs:attribute name="report_balances" type="report_balances" use="optional"/>
+    <xs:attribute name="report_flows" type="report_flows" use="optional"/>
+    <xs:attribute name="wrap_text" type="xs:boolean" use="optional"/>
+    <xs:attribute name="comparative" type="xs:boolean" use="optional"/>
   </xs:complexType>
 
   <xs:attributeGroup name="positioning_attributes">
@@ -1920,18 +1885,6 @@
     </xs:complexType>
   </xs:element>
 
-  <xs:element name="graphics_frame">
-    <xs:complexType>
-      <xs:choice>
-        <xs:element ref="video"/>
-        <xs:element ref="image"/>
-      </xs:choice>
-      <xs:attributeGroup ref="style_attributes"/>
-      <xs:attributeGroup ref="positioning_attributes"/>
-      <xs:attribute name="uid" type="xs:int" use="required"/>
-    </xs:complexType>
-  </xs:element>
-
   <!-- almost same as image -->
   <xs:element name="sound">
     <xs:complexType>
@@ -1987,16 +1940,16 @@
     </xs:complexType>
   </xs:element>
 
-  <xs:complexType name="empty_type">
-    <xs:complexContent>
-      <xs:restriction base="xs:anyType"/>
-    </xs:complexContent>
-  </xs:complexType>
+  <!--
+    Both types were written as an unconstrained restriction of xs:anyType,
+    which is an empty content model reached the long way round. Because
+    xs:anyType already carries an attribute wildcard, that spelling collides
+    with the schema-wide defaultAttributes group: a restriction of anyType
+    cannot also take vendor_attributes. Declaring the empty content model
+    directly says the same thing and lets vendor attributes through.
+  -->
+  <xs:complexType name="empty_type"/>
 
-  <xs:complexType name="boolean_or_empty_type">
-    <xs:complexContent>
-      <xs:restriction base="xs:anyType"/>
-    </xs:complexContent>
-  </xs:complexType>
+  <xs:complexType name="boolean_or_empty_type"/>
 
 </xs:schema>

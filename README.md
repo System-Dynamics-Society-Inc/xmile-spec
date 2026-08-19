@@ -13,24 +13,59 @@ released the way code is.
 | --- | --- |
 | `spec/` | The specification. `xmile.adoc` is the master file; one file per chapter. |
 | `spec/images/` | Figures. |
-| `tools/` | The one-time Word conversion, plus the build and lint used day to day. |
+| `spec/schema/` | `xmile.xsd.xml`, the XML Schema for XMILE documents. XSD 1.1. |
+| `tools/` | The one-time Word conversion, plus the build, lint and validate used day to day. |
 | `archive/` | The original Word documents, kept for provenance. Not edited. |
 
 ## Building
 
 ```sh
 npm install
-npm run check          # lint, then build to build/xmile.html
+npm run check          # lint, build, and compile the schema
 npm run build:release  # single self-contained file, figures embedded
 ```
 
-Node is the only requirement. Both steps of `check` run in CI on every push and
+Node is all you need to lint and build. `check` runs in CI on every push and
 pull request, and a warning fails the build.
 
 `build` emits HTML alongside an `images/` directory, which is what you want
 while editing. `build:release` embeds the figures in the page instead, so the
 result is one file that survives being downloaded on its own — that is what is
 attached to a GitHub release.
+
+## Validating
+
+`tools/validate.py` checks XMILE documents against `spec/schema/xmile.xsd.xml`.
+
+```sh
+npm run validate                     # compile the schema and stop
+npm run validate -- model.stmx       # also validate documents
+npm run validate -- "models/*.stmx"  # globs are expanded by the tool
+```
+
+With no documents it only compiles the schema, which is what `check` and CI do.
+On its own that catches a schema broken by an edit.
+
+This is the one part of the toolchain that is not Node. The schema is an **XSD
+1.1** schema and has to be: Chapter 2 promises "provision for vendor specific
+additions", and expressing that needs `xs:defaultOpenContent` and schema-level
+`defaultAttributes`, neither of which exists in XSD 1.0, while `<header>` and
+`<style>` are `xs:all` groups, which in XSD 1.0 cannot contain a wildcard at
+all. No Node implementation of XSD 1.1 exists.
+
+```sh
+python -m venv .venv
+.venv/Scripts/activate            # or: source .venv/bin/activate
+python -m pip install -r tools/requirements.txt
+```
+
+`npm run validate` looks for an activated virtualenv, then a `.venv` or `venv`
+in the repository, then the system Python, and names what is missing if none of
+them works.
+
+Note that **xmllint and the .NET `XmlSchemaSet` implement XSD 1.0 only**. They
+reject this schema rather than skip it, despite the `vc:minVersion="1.1"` that
+asks them to. Xerces-J and Saxon-EE read it correctly.
 
 ## History
 
