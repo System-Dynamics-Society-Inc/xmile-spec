@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<xmile version="1.1" xmlns="http://docs.oasis-open.org/xmile/ns/XMILE/v1.0" xmlns:isee="http://iseesystems.com/XMILE">
+<xmile version="1.2" xmlns="http://docs.oasis-open.org/xmile/ns/XMILE/v1.0" xmlns:isee="http://iseesystems.com/XMILE">
 	<header>
 		<options namespace="std, isee"?
-		<uses_arrays/>
+		<uses_arrays maximum_dimensions="1"/>
 		</options>
 		<name>WithArrays.xmile</name>
 		<uuid>a771bc1f-bfcc-4d00-9bf1-0c5e5a06150c</uuid>

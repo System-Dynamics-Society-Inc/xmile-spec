@@ -168,15 +168,21 @@ A sample options block appears below:
 
 The OPTIONAL `+<ai_information>+` tag records status and settings relating to the use of AI in the creation of a model. Its purpose is to ensure that someone opening a model can reliably determine whether, and where, AI was used in creating it. This does not prevent someone from developing a model with AI and then transcribing it into another model by hand, but it does mean that use of AI within conforming software, including through copy and paste, is tracked.
 
-The `+<ai_information>+` tag has three OPTIONAL sub-tags:
+The `+<ai_information>+` tag has two REQUIRED and three OPTIONAL sub-tags:
 
-* AI interaction log:  `+<log>+` w/the log of interaction between the user and the AI agent. This SHOULD be plain text, markup, or markdown, in whichever form is most convenient for the software. The `+log_truncated+` attribute of `+<status>+` indicates whether this log has been truncated. This tag MAY be empty or absent when there is no log of activity.
-
-* Software-specific settings:  `+<settings>+` w/settings related to AI usage. No sub-tags or attributes are specified, as the nature of these settings is expected to be software specific.
-
-* AI usage status:  `+<status>+` as described in <<sec-ai-status>>. This tag consists of attributes and has no sub-tags.
+* Required:AI usage status:  `+<status>+` as described in <<sec-ai-status>>. This tag consists of attributes and has no sub-tags.
 
 The information under `+<status>+` is persistent, and becomes invalid unless it is updated each time the model is written. It is also used when working with copy and paste, or other injection of model content, as described in <<sec-notes-on-ai-settings>>.
+
+* Required:AI interaction log:  `+<log>+` w/the log of interaction between the user and the AI agent. This SHOULD be plain text, markup, or markdown, in whichever form is most convenient for the software. The `+log_truncated+` attribute of `+<status>+` indicates whether this log has been truncated. This tag MAY be empty but not absent when there is no log of activity.
+
+* Optional:Software-specific settings:  `+<settings>+` w/settings related to AI usage. No sub-tags or attributes are specified, as the nature of these settings is expected to be software specific.
+
+--start claude fix this--* Optional:Agentic AI interaction log:  `+<agentic_log>+` w/the log of interaction between the user an Agentic AI agent where the prompts, replies, and status are delineated. This tag MAY be empty or absent when there is no log of agentic activity. The `+log_truncated+` attribute of `+<status>+` indicates whether this log, or the regular +<log>+ has been truncated. 
+
+ The agentic log consists of one or more +<message>+ tags which each one having two required attributes +<type>+ and +<content>+ and two optional attributes +<is_thinking>+ and +<agent_name>+. All attributes have plain text as their content except for +<content>+ which can also have markup or markdown. 
+--end claude fix this--
+
 
 [[sec-ai-status]]
 ==== AI Status

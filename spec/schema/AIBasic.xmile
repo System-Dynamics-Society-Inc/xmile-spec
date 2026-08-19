@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xmile version="1.2" xmlns="http://docs.oasis-open.org/xmile/ns/XMILE/v1.0" xmlns:isee="http://iseesystems.com/XMILE">
+	<header>
+		<options namespace="std, isee"/>
+		<name>AIBasic</name>
+		<uuid>e8e2cfbd-c3e8-46dc-9c27-4bacbc953430</uuid>
+		<vendor>isee systems, inc.</vendor>
+		<product version="4.4" isee:build_number="9999" isee:saved_by_v1="true" lang="en">Stella Architect</product>
+	</header>
+	<ai_information>
+		<status verified="true" mixed="false" trusted="true" tampered="false" uses="true" analyzed="false" log_truncated="false" timestamp="1787137882" algorithm="ed25519" keyurl="https://iseesystems.com/keys/stella01.txt" want_var_info="true" want_var_status="true" want_log="true" sampling="1" signature="Hwl6ThVVQu0bkH5t0dWsRL9GxNyJ61c3VVLodODfYu9vPEpEtwLwm+9/grWYk3FbJiIRcAdDM/oTf1JtNR9YAg=="/>
+		<testing signed_message_body="algorithm=ed25519 analyzed=false keyurl=https://iseesystems.com/keys/stella01.txt logtruncated=false mixed=false sampling=1 tampered=false timestamp=1787137882 trusted=true uses=true verified=true wantlog=true wantvarinfo=true wantvarstatus=true birthrate=0.03 births=population*birthrate deathrate=0.015 deaths=population*deathrate population=1000 CCCCC &lt;h3&gt;Youinstructedmeto...&lt;/h3&gt;buildasimplepopulationmodel&lt;br/&gt;&lt;h3&gt;HereiswhatIhavedone...&lt;/h3&gt;&lt;h3&gt;SimplePopulationDynamicsModel&lt;/h3&gt;&lt;p&gt;Thismodelrepresentsclassicalpopulationdynamicsconsistingoftwofundamentalfeedbackloops:areinforcingfeedbackloopdrivingpopulationgrowththroughbirths,andabalancingfeedbackloopregulatingpopulationthroughdeaths.Thestockofpopulationaccumulatesovertimebasedonthenetdifferencebetweenbirthanddeathrates.&lt;/p&gt;&lt;br/&gt;&lt;h4&gt;1.population--&gt;(+)births&lt;/h4&gt;Ahigherpopulationgeneratesmoretotalbirthsperyear.&lt;br/&gt;&lt;h4&gt;2.birthrate--&gt;(+)births&lt;/h4&gt;Ahigherfractionalbirthrateincreasestotalannualbirths.&lt;br/&gt;&lt;h4&gt;3.population--&gt;(+)deaths&lt;/h4&gt;Alargerpopulationresultsinmoretotalannualdeaths.&lt;br/&gt;&lt;h4&gt;4.deathrate--&gt;(+)deaths&lt;/h4&gt;Ahigherfractionaldeathrateincreasestotalannualdeaths.&lt;br/&gt;"/>
+		<log>&lt;h3&gt;You instructed me to...&lt;/h3&gt;build a simple population model&lt;br/&gt;&lt;h3&gt;Here is what I have done...&lt;/h3&gt;&lt;h3&gt;Simple Population Dynamics Model&lt;/h3&gt;&lt;p&gt;This model represents classical population dynamics consisting of two fundamental feedback loops: a reinforcing feedback loop driving population growth through births, and a balancing feedback loop regulating population through deaths. The stock of population accumulates over time based on the net difference between birth and death rates.&lt;/p&gt;
+&lt;br/&gt;&lt;h4&gt;1. population --&gt;(+) births&lt;/h4&gt;A higher population generates more total births per year.&lt;br/&gt;&lt;h4&gt;2. birth rate --&gt;(+) births&lt;/h4&gt;A higher fractional birth rate increases total annual births.&lt;br/&gt;&lt;h4&gt;3. population --&gt;(+) deaths&lt;/h4&gt;A larger population results in more total annual deaths.&lt;br/&gt;&lt;h4&gt;4. death rate --&gt;(+) deaths&lt;/h4&gt;A higher fractional death rate increases total annual deaths.&lt;br/&gt;</log>
+		<settings>
+			<isee:setting key="backgroundKnowledge" value=""/>
+			<isee:setting key="problemStatement" value=""/>
+		</settings>
+	</ai_information>
+	<sim_specs isee:sim_duration="1.5" isee:run_prefix="Run" isee:simulation_delay="0.03" isee:restore_on_start="false" method="Euler" time_units="year" isee:instantaneous_flows="false" isee:ignore_module_errors="false" isee:strict_units="true" isee:loop_scores="true" isee:loop_exhaustive_allowed="1000">
+		<start>0</start>
+		<stop>50</stop>
+		<dt>0.25</dt>
+	</sim_specs>
+	<isee:prefs saved_runs="5" keep="false" show_module_prefix="true" live_update_on_drag="true" show_restore_buttons="false" layer="model" isee:design="Deluxe Prev-Next Blue Green Pastel" isee:design_custom="false" interface_scale_ui="true" interface_max_page_width="10000" interface_max_page_height="10000" interface_min_page_width="0" interface_min_page_height="0" rifp="true">
+		<isee:tag_styles>
+			<isee:tag_style tag="Interface"/>
+			<isee:tag_style tag="Output"/>
+			<isee:tag_style tag="Parameter"/>
+			<isee:tag_style tag="Policy"/>
+		</isee:tag_styles>
+	</isee:prefs>
+	<isee:multiplayer_settings include_chat="true" allow_observers="false" advance_time_increment="1" max_advance_time_in_ms="0" model_stops_when_players_drop="false" observer_start_page="home_page" enabled="false"/>
+	<isee:time_formats default_format="Builtin">
+		<isee:time_format name="Builtin" type="adaptive"/>
+	</isee:time_formats>
+	<isee:number_format_extenders/>
+	<model_units>
+		<unit name="People">
+			<eqn/>
+			<alias>person</alias>
+			<alias>persons</alias>
+		</unit>
+		<unit name="Years">
+			<eqn/>
+			<alias>yr</alias>
+			<alias>year</alias>
+		</unit>
+	</model_units>
+	<model>
+		<variables>
+			<aux name="birth rate" ai_state="C">
+				<doc>Fractional rate at which new individuals are born per year.</doc>
+				<eqn>0.03</eqn>
+				<units>1/year</units>
+			</aux>
+			<aux name="death rate" ai_state="C">
+				<doc>Fractional rate at which individuals die per year.</doc>
+				<eqn>0.015</eqn>
+				<units>1/year</units>
+			</aux>
+			<flow name="births" ai_state="C">
+				<doc>Total number of people born each year, increasing the population stock.</doc>
+				<eqn>population*birth_rate</eqn>
+				<non_negative/>
+				<units>people/year</units>
+			</flow>
+			<flow name="deaths" ai_state="C">
+				<doc>Total number of deaths each year, decreasing the population stock.</doc>
+				<eqn>population*death_rate</eqn>
+				<non_negative/>
+				<units>people/year</units>
+			</flow>
+			<stock name="population" ai_state="C">
+				<doc>The total number of individuals in the population.</doc>
+				<eqn>1000</eqn>
+				<inflow>births</inflow>
+				<outflow>deaths</outflow>
+				<units>people</units>
+			</stock>
+		</variables>
+		<views>
+			<view isee:show_pages="false" background="white" page_width="1122" page_height="793" isee:page_cols="2" isee:page_rows="2" isee:popup_graphs_are_comparative="true" isee:enable_non_negative_highlights="false" type="stock_flow">
+				<aux x="274.5" y="293.5" name="birth rate"/>
+				<aux x="432.5" y="293.5" name="death rate"/>
+				<flow label_side="bottom" x="274.5" y="233.5" name="births">
+					<pts>
+						<pt x="212" y="233.5"/>
+						<pt x="337" y="233.5"/>
+					</pts>
+				</flow>
+				<flow label_side="bottom" x="432.5" y="233.5" name="deaths">
+					<pts>
+						<pt x="382" y="233.5"/>
+						<pt x="507" y="233.5"/>
+					</pts>
+				</flow>
+				<stock x="359.5" y="233.5" name="population"/>
+				<connector uid="1" polarity="+" isee:polarity_placement="outside" angle="220">
+					<isee:documentation>Reasoning:
+A higher population generates more total births per year.
+
+Polarity Reasoning: 
+As population increases, annual births increase in the same direction.</isee:documentation>
+					<isee:reasoning>A higher population generates more total births per year.</isee:reasoning>
+					<isee:polarity_reasoning>As population increases, annual births increase in the same direction.</isee:polarity_reasoning>
+					<from>population</from>
+					<to>births</to>
+				</connector>
+				<connector uid="2" polarity="+" isee:polarity_placement="outside" angle="90">
+					<isee:documentation>Reasoning:
+A higher fractional birth rate increases total annual births.
+
+Polarity Reasoning: 
+An increase in birth rate leads to an increase in births.</isee:documentation>
+					<isee:reasoning>A higher fractional birth rate increases total annual births.</isee:reasoning>
+					<isee:polarity_reasoning>An increase in birth rate leads to an increase in births.</isee:polarity_reasoning>
+					<from>birth_rate</from>
+					<to>births</to>
+				</connector>
+				<connector uid="3" polarity="+" isee:polarity_placement="outside" angle="40">
+					<isee:documentation>Reasoning:
+A larger population results in more total annual deaths.
+
+Polarity Reasoning: 
+As population increases, annual deaths increase in the same direction.</isee:documentation>
+					<isee:reasoning>A larger population results in more total annual deaths.</isee:reasoning>
+					<isee:polarity_reasoning>As population increases, annual deaths increase in the same direction.</isee:polarity_reasoning>
+					<from>population</from>
+					<to>deaths</to>
+				</connector>
+				<connector uid="4" polarity="+" isee:polarity_placement="outside" angle="90">
+					<isee:documentation>Reasoning:
+A higher fractional death rate increases total annual deaths.
+
+Polarity Reasoning: 
+An increase in death rate leads to an increase in deaths.</isee:documentation>
+					<isee:reasoning>A higher fractional death rate increases total annual deaths.</isee:reasoning>
+					<isee:polarity_reasoning>An increase in death rate leads to an increase in deaths.</isee:polarity_reasoning>
+					<from>death_rate</from>
+					<to>deaths</to>
+				</connector>
+			</view>
+		</views>
+	</model>
+</xmile>
+
