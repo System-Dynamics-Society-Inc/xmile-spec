@@ -166,7 +166,7 @@ A sample options block appears below:
 [[sec-ai-information-section]]
 === AI Information Section
 
-The OPTIONAL `+<ai_information>+` tag records status and settings relating to the use of AI in the creation of a model. Its purpose is to ensure that someone opening a model can reliably determine whether, and where, AI was used in creating it. This does not prevent someone from developing a model with AI and then transcribing it into another model by hand, but it does mean that use of AI within conforming software, including through copy and paste, is tracked.
+The OPTIONAL `+<ai_information>+` tag records status and settings relating to the use of AI in the creation of a model. Its purpose is to ensure that someone opening a model can reliably determine whether, and where, AI was used in creating it. This does not prevent someone from developing a model with AI and then transcribing it into another model by hand, but it does mean that use of AI within conforming software, including through copy and paste, is tracked. Depending on version and vendor markings in the saved file this may mark the model as tampered as described below.
 
 The REQUIRED sub-tag is:
 
@@ -180,7 +180,7 @@ OPTIONAL sub-tags include:
 
 * Software-specific settings:  `+<settings>+` w/settings related to AI usage. No sub-tags or attributes are specified, as the nature of these settings is expected to be software specific.
 
-* Testing signature block:  `+<testing>+` w/the single attribute `+signed_message_body="…"+`, whose value is the constructed message string described in <<sec-ai-signing>>. This tag is intended primarily for testing between vendors consuming the output of different providers, and is not expected to be included in production software artifacts.
+* Testing signature block:  `+<testing>+` w/the single attribute `+signed_message_body="…"+`, whose value is the constructed message string described in <<sec-ai-signing>>. This tag is intended primarily for testing between vendors consuming the output of different providers, and is not expected to be included in production software artifacts. It is included in some of the example files here to clarify any ambiguities about its construction.
 
 The `+log_truncated+` attribute of `+<status>+` indicates whether either log has been truncated.
 
@@ -204,7 +204,7 @@ The following attributes are supported on `+<status>+`. Additional attributes MA
 
 |`+mixed+`
 |true/false
-|Present in all current sample files and included in the signed message string, but not yet defined in this specification. See the editor's question following this table.
+|True if the model was previously opened from XML that did not contain an `+<ai_information>+` tag. There is no way to determine the provenance of a model that does not contain the `+<ai_information>+` tag, and that indeterminacy persists.
 
 |`+trusted+`
 |true/false
@@ -264,22 +264,6 @@ The following attributes are supported on `+<status>+`. Additional attributes MA
 
 |===
 
-[NOTE]
-====
-*EDITOR'S QUESTION (1.2 draft):* `+mixed+` needs a definition. It appears on
-`+<status>+` in every sample file, and `+mixed=false+` is present in the signed
-message string in `+<testing>+`, so it is already load-bearing for signature
-verification, but the source draft for this section does not describe it. What
-does it assert? The natural readings are that the model mixes AI generated and
-hand built content, or that it mixes trusted and untrusted content, and those are
-not the same claim. In all four sample files `+mixed+` is exactly the inverse of
-`+verified+`: the two unverified files carry `+mixed="true"+` and the two
-verified ones carry `+mixed="false"+`. If that relationship is intended then the
-attribute is redundant and could be dropped; if it is coincidental then the
-independent meaning needs stating. Is it also irreversible, like the other status
-flags?
-====
-
 [[sec-agentic-log]]
 ==== Agentic AI Interaction Log
 
@@ -294,8 +278,8 @@ The tag consists of one or more `+<message>+` tags. Each `+<message>+` has the f
 |Comments
 
 |`+type+`
-|see below
-|The kind of message this is, which distinguishes a user prompt from an agent reply or a status report.
+|text
+|The kind of message this is, which distinguishes a user prompt from an agent reply or a status report. The text should be human readable and short, but can take any value.
 
 |`+content+`
 |text
@@ -335,15 +319,6 @@ An example of an agentic log, abbreviated:
 </agentic_log>
 ----
 
-[NOTE]
-====
-*EDITOR'S QUESTION (1.2 draft):* the permitted values of `+type+` are not yet
-specified. The sample files use `+user_text+`, `+agent_text+` and
-`+agent_complete+`. Is that the complete set, should it be a closed enumeration
-that the schema can validate, or is it deliberately open so that vendors can add
-their own message kinds? If it is open, a rule is needed for how a reader treats
-a `+type+` it does not recognise.
-====
 
 [NOTE]
 ====
@@ -376,7 +351,7 @@ If there is a terminal space on the constructed message string, which happens wh
 [[sec-agentic-log-signing]]
 ===== Signing the Agentic Log
 
-When the file includes an agentic log, a second signature is created for it. The message to be signed is formed by collating the `+type+` attribute of every `+<message>+` in `+<agentic_log>+`, in document order, and is signed with the same algorithm and keys described above.
+When the file includes an agentic log, a second signature is created for it. The message to be signed is formed by collating the `+content+` attribute of every `+<message>+` in `+<agentic_log>+`, in document order, and is signed with the same algorithm and keys described above.
 
 That signature is embedded at the beginning of the content of the `+<log>+` tag, in the form
 
@@ -385,7 +360,7 @@ That signature is embedded at the beginning of the content of the `+<log>+` tag,
 {note:signature}
 ----
 
-followed by a newline and then the regular log contents, if any. Software that recognises the agentic log MAY validate the signature against the same key. Software that does not recognise it can ignore the prefix, though it is RECOMMENDED that the prefix be stripped before the log is presented to a user. It need not be reinserted when the model is saved.
+followed by a newline and then the regular log contents, if any. Any text not containing : or } can be substituted for note and the signature is described below. Software that recognises the agentic log MUST validate the signature and regenerate it on writing against the same key pair as described below. Software that does not recognise the agentic log can ignore the prefix, though it is RECOMMENDED that the prefix be stripped before the log is presented to a user. The prefix MUST be removed when the model is saved if the software does not write the agentic log. This prefix is inserted before the log is appended to the signature text and before the whitespace removal thereof.
 
 For example, the `+<log>+` of a model carrying an agentic log begins:
 
@@ -394,30 +369,6 @@ For example, the `+<log>+` of a model carrying an agentic log begins:
 {This model was created or analyzed by a newer version of the software using an
 interactive agent:GShTaJAeBlaGmlmvQtn/mkyi+zJGIvzofLiACTPE7mnzKO+5dmf0Lio/Ie46UZqcVtKqh2GtB7UpSeYQCGE6Dg==}
 ----
-
-[NOTE]
-====
-*EDITOR'S QUESTION (1.2 draft):* the text before the colon is not specified. The
-sample files use "This model was created or analyzed by a newer version of the
-software using an interactive agent". Is that exact string normative, so that a
-reader can recognise the prefix reliably, or is it free text that a reader must
-locate by structure alone? If it is free text, the note itself may contain a
-colon, and a rule is needed for which colon separates the note from the
-signature. Specifying a fixed string, or delimiting on the *last* colon, would
-remove the ambiguity.
-====
-
-[NOTE]
-====
-*EDITOR'S QUESTION (1.2 draft):* two points about how the two signatures
-interact. First, when `+want_log+` is true the `+<log>+` contents are appended to
-the main signed message, and those contents now begin with this prefix, so the
-agentic signature is itself signed. Is that intended, and is the prefix included
-before or after whitespace removal? Second, only the `+type+` of each message is
-collated, so `+content+` is unsigned and any message text can be altered without
-invalidating the signature. Is signing the sequence of message kinds the intended
-guarantee, or should `+content+` be covered too?
-====
 
 
 [[sec-ai-variable-status]]

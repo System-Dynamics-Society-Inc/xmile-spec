@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <xmile version="1.2" xmlns="http://docs.oasis-open.org/xmile/ns/XMILE/v1.0" xmlns:isee="http://iseesystems.com/XMILE">
 	<header>
-		<options namespace="std, isee"?
+		<options namespace="std, isee">
 		<uses_arrays maximum_dimensions="1"/>
 		</options>
 		<name>WithArrays.xmile</name>

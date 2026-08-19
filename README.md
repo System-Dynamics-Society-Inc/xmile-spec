@@ -14,7 +14,7 @@ released the way code is.
 | `spec/` | The specification. `xmile.adoc` is the master file; one file per chapter. |
 | `spec/images/` | Figures. |
 | `spec/schema/` | `xmile.xsd.xml`, the XML Schema for XMILE documents. XSD 1.1. |
-| `tools/` | The one-time Word conversion, plus the build, lint and validate used day to day. |
+| `tools/` | The one-time Word conversion, plus the build, lint, validate and verify used day to day. |
 | `archive/` | The original Word documents, kept for provenance. Not edited. |
 
 ## Building
@@ -66,6 +66,44 @@ them works.
 Note that **xmllint and the .NET `XmlSchemaSet` implement XSD 1.0 only**. They
 reject this schema rather than skip it, despite the `vc:minVersion="1.1"` that
 asks them to. Xerces-J and Saxon-EE read it correctly.
+
+## Verifying signatures
+
+`tools/verify_signatures.py` checks the ed25519 signatures in the
+`<ai_information>` block, described in Chapter 2 under Signing.
+
+```sh
+npm run verify                        # verify spec/schema/*.xmile
+npm run verify -- FILE [FILE...]      # verify specific files
+npm run verify -- --offline           # build messages, skip the signatures
+npm run verify -- --show-message F    # print the message that was built
+```
+
+It is written from the specification rather than from any producer's code, so
+when it disagrees with a vendor's output, one of the specification, the
+producer, or this tool is wrong — and it becomes possible to work out which.
+
+Two signatures are checked. The **main** signature covers the `<status>`
+attributes, the variable equations, the per-variable AI states and the log. The
+**agentic** signature covers the collated `content` of every `<message>` in
+`<agentic_log>`, and is carried in the `{note:signature}` prefix at the head of
+`<log>`.
+
+The `<testing>` tag is what makes this useful rather than merely binary. Its
+`signed_message_body` holds the exact string the producer signed, so the message
+built here can be compared against it directly. That separates *the message was
+assembled differently* from *the signature does not match*, which are otherwise
+indistinguishable — one wrong character fails exactly like a tampered model. A
+file without a `<testing>` block can only report the combined result, which is a
+good reason to include one in any file used as a test case.
+
+Verification needs the same Python environment as validation, plus the
+`cryptography` package; both are in `tools/requirements.txt`. It also fetches the
+public key named by each file's `keyurl`, so it needs network access unless you
+pass `--key` with a local copy or `--offline` to skip the signature checks.
+
+This is deliberately not part of `npm run check`, because whether a given sample
+verifies depends on the sample rather than on the repository being correct.
 
 ## History
 
