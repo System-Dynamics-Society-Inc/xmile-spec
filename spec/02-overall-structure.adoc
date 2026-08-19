@@ -168,20 +168,23 @@ A sample options block appears below:
 
 The OPTIONAL `+<ai_information>+` tag records status and settings relating to the use of AI in the creation of a model. Its purpose is to ensure that someone opening a model can reliably determine whether, and where, AI was used in creating it. This does not prevent someone from developing a model with AI and then transcribing it into another model by hand, but it does mean that use of AI within conforming software, including through copy and paste, is tracked.
 
-The `+<ai_information>+` tag has two REQUIRED and three OPTIONAL sub-tags:
+The REQUIRED sub-tag is:
 
-* Required:AI usage status:  `+<status>+` as described in <<sec-ai-status>>. This tag consists of attributes and has no sub-tags.
+* AI usage status:  `+<status>+` as described in <<sec-ai-status>>. This tag consists of attributes and has no sub-tags.
+
+OPTIONAL sub-tags include:
+
+* AI interaction log:  `+<log>+` w/the log of interaction between the user and the AI agent. This SHOULD be plain text, markup, or markdown, in whichever form is most convenient for the software. This tag MAY be empty or absent when there is no log of activity.
+
+* Agentic AI interaction log:  `+<agentic_log>+` w/the log of interaction between the user and an agentic AI agent, in which the prompts, replies and status are delineated as separate messages, as described in <<sec-agentic-log>>. This tag MAY be empty or absent when there is no log of agentic activity.
+
+* Software-specific settings:  `+<settings>+` w/settings related to AI usage. No sub-tags or attributes are specified, as the nature of these settings is expected to be software specific.
+
+* Testing signature block:  `+<testing>+` w/the single attribute `+signed_message_body="…"+`, whose value is the constructed message string described in <<sec-ai-signing>>. This tag is intended primarily for testing between vendors consuming the output of different providers, and is not expected to be included in production software artifacts.
+
+The `+log_truncated+` attribute of `+<status>+` indicates whether either log has been truncated.
 
 The information under `+<status>+` is persistent, and becomes invalid unless it is updated each time the model is written. It is also used when working with copy and paste, or other injection of model content, as described in <<sec-notes-on-ai-settings>>.
-
-* Required:AI interaction log:  `+<log>+` w/the log of interaction between the user and the AI agent. This SHOULD be plain text, markup, or markdown, in whichever form is most convenient for the software. The `+log_truncated+` attribute of `+<status>+` indicates whether this log has been truncated. This tag MAY be empty but not absent when there is no log of activity.
-
-* Optional:Software-specific settings:  `+<settings>+` w/settings related to AI usage. No sub-tags or attributes are specified, as the nature of these settings is expected to be software specific.
-
---start claude fix this--* Optional:Agentic AI interaction log:  `+<agentic_log>+` w/the log of interaction between the user an Agentic AI agent where the prompts, replies, and status are delineated. This tag MAY be empty or absent when there is no log of agentic activity. The `+log_truncated+` attribute of `+<status>+` indicates whether this log, or the regular +<log>+ has been truncated. 
-
- The agentic log consists of one or more +<message>+ tags which each one having two required attributes +<type>+ and +<content>+ and two optional attributes +<is_thinking>+ and +<agent_name>+. All attributes have plain text as their content except for +<content>+ which can also have markup or markdown. 
---end claude fix this--
 
 
 [[sec-ai-status]]
@@ -198,6 +201,10 @@ The following attributes are supported on `+<status>+`. Additional attributes MA
 |`+verified+`
 |true/false
 |If false, the content is not trusted. In this case the other attributes MAY be skipped, as it indicates that the use of AI in model construction is unknown. Models saved in software that does not support `+<ai_information>+` will have `+verified+` false.
+
+|`+mixed+`
+|true/false
+|Present in all current sample files and included in the signed message string, but not yet defined in this specification. See the editor's question following this table.
 
 |`+trusted+`
 |true/false
@@ -217,7 +224,7 @@ The following attributes are supported on `+<status>+`. Additional attributes MA
 
 |`+log_truncated+`
 |true/false
-|True if the log of interactions with the AI agent has ever been truncated. If the software does not store this log as part of its regular activity, this MUST be set to true.
+|True if either the `+<log>+` or the `+<agentic_log>+` has ever been truncated. If the software does not store a log as part of its regular activity, this MUST be set to true.
 
 |`+timestamp+`
 |integer
@@ -257,6 +264,98 @@ The following attributes are supported on `+<status>+`. Additional attributes MA
 
 |===
 
+[NOTE]
+====
+*EDITOR'S QUESTION (1.2 draft):* `+mixed+` needs a definition. It appears on
+`+<status>+` in every sample file, and `+mixed=false+` is present in the signed
+message string in `+<testing>+`, so it is already load-bearing for signature
+verification, but the source draft for this section does not describe it. What
+does it assert? The natural readings are that the model mixes AI generated and
+hand built content, or that it mixes trusted and untrusted content, and those are
+not the same claim. In all four sample files `+mixed+` is exactly the inverse of
+`+verified+`: the two unverified files carry `+mixed="true"+` and the two
+verified ones carry `+mixed="false"+`. If that relationship is intended then the
+attribute is redundant and could be dropped; if it is coincidental then the
+independent meaning needs stating. Is it also irreversible, like the other status
+flags?
+====
+
+[[sec-agentic-log]]
+==== Agentic AI Interaction Log
+
+The `+<agentic_log>+` tag holds the record of an interaction with an agentic AI agent. Where `+<log>+` is a single block of text, the agentic log separates the exchange into individual messages, so that prompts, replies and status reports can be told apart.
+
+The tag consists of one or more `+<message>+` tags. Each `+<message>+` has the following REQUIRED attributes:
+
+[cols="2,2,5",options="header"]
+|===
+|Attribute
+|Valid values
+|Comments
+
+|`+type+`
+|see below
+|The kind of message this is, which distinguishes a user prompt from an agent reply or a status report.
+
+|`+content+`
+|text
+|The message itself. All other attributes are plain text; `+content+` MAY also contain markup or markdown. Because it is an attribute value, any markup MUST be XML escaped.
+
+|===
+
+and the following OPTIONAL attributes:
+
+[cols="2,2,5",options="header"]
+|===
+|Attribute
+|Valid values
+|Comments
+
+|`+is_thinking+`
+|true/false
+|True when the message records the agent's intermediate reasoning rather than a reply directed at the user (default: false).
+
+|`+agent_name+`
+|text
+|The name of the agent that produced the message. Not meaningful on messages originating from the user (default: none).
+
+|===
+
+An example of an agentic log, abbreviated:
+
+[source,xml]
+----
+<agentic_log>
+  <message type="user_text" content="build me a small population model for rabbits"
+           is_thinking="false"/>
+  <message type="agent_text" content="Running model simulation..."
+           is_thinking="false" agent_name="Merlin"/>
+  <message type="agent_complete" content="Task completed successfully"
+           is_thinking="false" agent_name="Merlin"/>
+</agentic_log>
+----
+
+[NOTE]
+====
+*EDITOR'S QUESTION (1.2 draft):* the permitted values of `+type+` are not yet
+specified. The sample files use `+user_text+`, `+agent_text+` and
+`+agent_complete+`. Is that the complete set, should it be a closed enumeration
+that the schema can validate, or is it deliberately open so that vendors can add
+their own message kinds? If it is open, a rule is needed for how a reader treats
+a `+type+` it does not recognise.
+====
+
+[NOTE]
+====
+*EDITOR'S QUESTION (1.2 draft):* `+content+` is an attribute, so a multi-line
+HTML or markdown reply has to be XML escaped, and the sample files show
+substantial escaped HTML inside it. Should `+content+` instead be the element
+content of `+<message>+`, where a CDATA section could carry the markup
+unescaped, as `+<eqn>+` already does elsewhere in this specification? That would
+be a breaking change to files already in circulation, so it needs deciding
+before 1.2 is approved rather than after.
+====
+
 [[sec-ai-signing]]
 ==== Signing
 
@@ -273,6 +372,53 @@ The text to be signed MUST have all whitespace (space, tab, line feed, carriage 
 * If `+want_log+` is true, the log is appended, again with all whitespace characters removed. The log itself MUST be included in the `+<log>+` tag.
 
 If there is a terminal space on the constructed message string, which happens when the log is not included, it MUST be removed. Thus the only spaces are internal separators, and never come from the content forming the message.
+
+[[sec-agentic-log-signing]]
+===== Signing the Agentic Log
+
+When the file includes an agentic log, a second signature is created for it. The message to be signed is formed by collating the `+type+` attribute of every `+<message>+` in `+<agentic_log>+`, in document order, and is signed with the same algorithm and keys described above.
+
+That signature is embedded at the beginning of the content of the `+<log>+` tag, in the form
+
+[source,text]
+----
+{note:signature}
+----
+
+followed by a newline and then the regular log contents, if any. Software that recognises the agentic log MAY validate the signature against the same key. Software that does not recognise it can ignore the prefix, though it is RECOMMENDED that the prefix be stripped before the log is presented to a user. It need not be reinserted when the model is saved.
+
+For example, the `+<log>+` of a model carrying an agentic log begins:
+
+[source,text]
+----
+{This model was created or analyzed by a newer version of the software using an
+interactive agent:GShTaJAeBlaGmlmvQtn/mkyi+zJGIvzofLiACTPE7mnzKO+5dmf0Lio/Ie46UZqcVtKqh2GtB7UpSeYQCGE6Dg==}
+----
+
+[NOTE]
+====
+*EDITOR'S QUESTION (1.2 draft):* the text before the colon is not specified. The
+sample files use "This model was created or analyzed by a newer version of the
+software using an interactive agent". Is that exact string normative, so that a
+reader can recognise the prefix reliably, or is it free text that a reader must
+locate by structure alone? If it is free text, the note itself may contain a
+colon, and a rule is needed for which colon separates the note from the
+signature. Specifying a fixed string, or delimiting on the *last* colon, would
+remove the ambiguity.
+====
+
+[NOTE]
+====
+*EDITOR'S QUESTION (1.2 draft):* two points about how the two signatures
+interact. First, when `+want_log+` is true the `+<log>+` contents are appended to
+the main signed message, and those contents now begin with this prefix, so the
+agentic signature is itself signed. Is that intended, and is the prefix included
+before or after whitespace removal? Second, only the `+type+` of each message is
+collated, so `+content+` is unsigned and any message text can be altered without
+invalidating the signature. Is signing the sequence of message kinds the intended
+guarantee, or should `+content+` be covered too?
+====
+
 
 [[sec-ai-variable-status]]
 ==== Variable AI Status
