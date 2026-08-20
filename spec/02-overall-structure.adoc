@@ -190,7 +190,7 @@ The information under `+<status>+` is persistent, and becomes invalid unless it 
 [[sec-ai-status]]
 ==== AI Status
 
-The following attributes are supported on `+<status>+`. Additional attributes MAY be included as long as they follow the rules for signature generation described in <<sec-ai-signing>>.
+The following attributes are supported on `+<status>+`. Of these, `+verified+` and `+trusted+` are REQUIRED; the rest are OPTIONAL, since a `+verified+` of false licenses omitting them. Additional attributes MAY be included as long as they follow the rules for signature generation described in <<sec-ai-signing>>.
 
 [cols="2,2,5",options="header"]
 |===

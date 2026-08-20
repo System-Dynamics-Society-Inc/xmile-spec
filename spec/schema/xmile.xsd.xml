@@ -2004,9 +2004,14 @@
       </xs:documentation>
     </xs:annotation>
     <xs:complexType>
-      <xs:attribute name="verified" type="xs:boolean" use="optional"/>
+      <!--
+        verified and trusted are REQUIRED. Everything else is optional: when
+        verified is false the chapter licenses omitting the rest, so requiring
+        any further attribute would reject a file the chapter permits.
+      -->
+      <xs:attribute name="verified" type="xs:boolean" use="required"/>
+      <xs:attribute name="trusted" type="xs:boolean" use="required"/>
       <xs:attribute name="mixed" type="xs:boolean" use="optional"/>
-      <xs:attribute name="trusted" type="xs:boolean" use="optional"/>
       <xs:attribute name="tampered" type="xs:boolean" use="optional"/>
       <xs:attribute name="uses" type="xs:boolean" use="optional"/>
       <xs:attribute name="analyzed" type="xs:boolean" use="optional"/>
