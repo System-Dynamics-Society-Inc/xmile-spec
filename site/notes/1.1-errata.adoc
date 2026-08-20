@@ -1,0 +1,71 @@
+Version 1.1 withdrew seven subsections of Chapter 6 but did not revise the text
+that referred to them. This is version 1.1 with those corrections applied. It is
+*proposed, not approved*: the approved document is
+link:../1.1/[XMILE 1.1], which reproduces what the Technical Committee passed,
+errors included.
+
+The version number is unchanged. Nothing here adds a capability or alters a
+requirement that was correctly stated; the corrections make the document say
+what the withdrawals already implied.
+
+== What was wrong
+
+Nineteen references pointed at sections that no longer existed, and thirteen more
+still resolved but named different content than the author meant, because
+removing a section renumbered its siblings. The second class is the more
+dangerous, because those references read as correct.
+
+Most were normative conformance clauses still requiring support for the very
+features 1.1 removed, so they were contradictions rather than merely broken
+links.
+
+== What was corrected
+
+Each correction is scoped to one withdrawn feature, so any of them can be
+dropped on its own.
+
+[cols="2,3",options="header"]
+|===
+|Correction |Effect
+
+|Complete the withdrawal of the optional input devices
+|Drops the conformance clauses for knobs, switches, option groups, numeric
+inputs, list inputs and graphical inputs, and the `uses_inputs` attributes that
+selected them.
+
+|Complete the withdrawal of lamps and gauges
+|Drops the lamp, gauge and zone clauses and the `lamp` and `gauge` flags.
+
+|Correct the graph and table conformance cross-references
+|Repoints the four clauses whose section numbers had drifted.
+
+|Complete the withdrawal of graphics frames and buttons
+|Drops the graphics frame, button and menu action clauses, and moves four
+message tag definitions to a new subsection. The only correction that adds text.
+|===
+
+One case did not fit the pattern. Chapter 4 requires the image, video, sound and
+link tags for event poster messages, and those tags were defined only inside
+Graphics Frames and Buttons. Version 1.1 did not touch Chapter 4, so removing
+the messages would go further than the Committee evidently intended. Those four
+definitions were moved into a new subsection under Annotations, carried over as
+written apart from wording that named buttons. The graphics frame and button
+container tags remain withdrawn.
+
+Afterwards nothing in the specification refers to a withdrawn feature, no
+reference is written as a literal section number, and the build resolves every
+cross-reference.
+
+== Open questions for the Technical Committee
+
+. Was withdrawing the input devices, lamps, gauges, graphics frames and buttons
+meant to be this thorough? Completing it drops conformance requirements that
+implementations may currently claim to meet.
+
+. Should event posters keep their image, video, sound and link messages? These
+corrections assume yes. If not, the fourth correction should be dropped and the
+four message bullets removed from Interactivity in Event Posters instead.
+
+. The `uses_inputs` and `uses_annotation` options now each imply a single object
+type, sliders and text boxes respectively. Whether they still earn their place
+is a design question rather than an erratum.

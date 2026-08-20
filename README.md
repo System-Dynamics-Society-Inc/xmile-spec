@@ -159,10 +159,16 @@ requests, so it can be served from anywhere:
 
 ```
 index.html      redirects to whichever release is current
-1.0/index.html  release page, and its specification file
-1.1/index.html  ...
-1.2/index.html  a release under review, and a link to its redline
+1.0/index.html         release page, and its specification file
+1.1/index.html         the current standard
+1.1-errata/index.html  under review: 1.1 with the errata corrected
+1.2/index.html         under review: the AI information extension
 ```
+
+Reviews form a chain. Each `under-review` release is measured against the
+`reviewBase` named in the manifest, and the page names and links that base, so a
+reader can see that the errata corrections are measured against the approved
+1.1, and 1.2 against those corrections rather than against 1.1 itself.
 
 Every internal link is relative, so the tree works under any prefix. Each page
 also carries a `rel="canonical"` built from the `canonical` field in

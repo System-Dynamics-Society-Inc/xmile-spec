@@ -291,7 +291,14 @@ def build_page(entries, meta, title):
     editorial = [e for e in entries if e[0] != 'renumbered']
     mechanical = [e for e in entries if e[0] == 'renumbered']
 
-    parts = ['<title>%s</title>' % html.escape(title),
+    parts = ['<!doctype html>',
+             '<html lang="en">',
+             # Without a declared charset a browser sniffs, and the specification
+             # prose is full of curly quotes and dashes that then arrive as
+             # mojibake in a file opened straight off disk.
+             '<meta charset="utf-8">',
+             '<meta name="viewport" content="width=device-width,initial-scale=1">',
+             '<title>%s</title>' % html.escape(title),
              '<style>%s</style>' % CSS,
              '<div class="wrap">',
              '<h1>%s</h1>' % html.escape(title),
@@ -340,6 +347,7 @@ def build_page(entries, meta, title):
             parts.append(render_block(op, old, new))
 
     parts.append('</div>')
+    parts.append('</html>')
     return '\n'.join(parts)
 
 

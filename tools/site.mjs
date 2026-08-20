@@ -52,6 +52,21 @@ const STATUS = {
 const escape = (s) => String(s).replace(/[&<>"']/g, (c) => (
   { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 
+// A release's id is its path, its label is what a link says. They differ where
+// a revision is not a new version number: the errata corrections to 1.1 are
+// still version 1.1, so "1.1 + errata" names them without implying otherwise.
+const idOf = (r) => r.id;
+const labelOf = (r) => r.label ?? r.id;
+
+/** The release a review is measured against, so the page can name and link it. */
+const baseOf = (r) => (r.reviewBase
+  ? releases.find((other) => other.ref === r.reviewBase) ?? null
+  : null);
+const baseName = (r) => {
+  const base = baseOf(r);
+  return base ? labelOf(base) : String(r.reviewBase).replace(/^v/, '');
+};
+
 function run(cmd, cmdArgs) {
   return execFileSync(cmd, cmdArgs, { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] });
 }
@@ -77,13 +92,13 @@ function buildAssets(release, dir) {
         ? path.join(tree, asset.sourcePath)
         : path.join(tree, 'spec', 'xmile.adoc');
       if (!fs.existsSync(source)) {
-        console.warn(`  ! ${release.version}: ${source} not found, skipping ${asset.file}`);
+        console.warn(`  ! ${idOf(release)}: ${source} not found, skipping ${asset.file}`);
         asset.missing = true;
         continue;
       }
       run('node', ['tools/release-build.mjs', source, path.join(dir, asset.file)]);
       asset.bytes = fs.statSync(path.join(dir, asset.file)).size;
-      console.log(`  ${release.version}/${asset.file} (${Math.round(asset.bytes / 1024)} KiB)`);
+      console.log(`  ${idOf(release)}/${asset.file} (${Math.round(asset.bytes / 1024)} KiB)`);
     }
   });
 }
@@ -92,9 +107,12 @@ function buildRedline(release, dir) {
   const out = path.join(dir, 'redline.html');
   // redline.py drives its own worktree for the base revision.
   run('node', ['tools/redline.mjs', '--base', release.reviewBase, '--out', out,
-    '--title', `XMILE ${release.reviewBase.replace(/^v/, '')} to ${release.version} — redline`]);
+    // ASCII only. A non-ASCII title is mangled crossing into the Python
+    // process on Windows, where argv is not handed over as UTF-8, and an em
+    // dash came out as a replacement character in the page title.
+    '--title', `Redline: XMILE ${baseName(release)} to XMILE ${labelOf(release)}`]);
   release.redlineBytes = fs.statSync(out).size;
-  console.log(`  ${release.version}/redline.html (${Math.round(release.redlineBytes / 1024)} KiB)`);
+  console.log(`  ${idOf(release)}/redline.html (${Math.round(release.redlineBytes / 1024)} KiB)`);
 }
 
 function renderNotes(release) {
@@ -186,12 +204,12 @@ main{max-width:none;padding:0}body{font-size:11pt}}
 function versionNav(active) {
   const items = releases.map((r) => {
     const tone = STATUS[r.status].tone;
-    const label = `XMILE ${escape(r.version)}`;
+    const label = `XMILE ${escape(labelOf(r))}`;
     const dot = `<span class="dot ${tone}" aria-hidden="true"></span>`;
-    if (r.version === active) {
+    if (idOf(r) === active) {
       return `<span class="here" aria-current="page">${dot}${label}</span>`;
     }
-    return `<a href="../${escape(r.version)}/">${dot}${label}</a>`;
+    return `<a href="../${escape(idOf(r))}/">${dot}${label}</a>`;
   });
   return `<nav class="versions" aria-label="Releases">${items.join('')}</nav>`;
 }
@@ -200,11 +218,11 @@ function pager(index) {
   const older = releases[index - 1];
   const newer = releases[index + 1];
   const left = older
-    ? `<a href="../${escape(older.version)}/">&larr; XMILE ${escape(older.version)}
+    ? `<a href="../${escape(idOf(older))}/">&larr; XMILE ${escape(labelOf(older))}
        <span class="size">${escape(STATUS[older.status].label)}</span></a>`
     : '<span class="none">&larr; no earlier release</span>';
   const right = newer
-    ? `<a href="../${escape(newer.version)}/">XMILE ${escape(newer.version)}
+    ? `<a href="../${escape(idOf(newer))}/">XMILE ${escape(labelOf(newer))}
        <span class="size">${escape(STATUS[newer.status].label)}</span> &rarr;</a>`
     : '<span class="none">no later release &rarr;</span>';
   return `<div class="pager">${left}${right}</div>`;
@@ -219,23 +237,31 @@ function releasePage(release, index) {
   const notes = renderNotes(release);
   const review = release.status === 'under-review';
 
+  const base = baseOf(release);
+  // Name the base as a reader knows it, and link to it, because the reviews
+  // form a chain: the errata corrections are measured against the approved
+  // 1.1, and 1.2 against those corrections rather than against 1.1 itself.
+  const againstLink = base
+    ? `<a href="../${escape(idOf(base))}/">XMILE ${escape(labelOf(base))}</a>`
+    : `XMILE ${escape(baseName(release))}`;
+
   const callout = review
     ? `<div class="callout review">
          <h2>This version is under review</h2>
-         <p>XMILE ${escape(release.version)} is a working draft. It is not approved
+         <p>XMILE ${escape(labelOf(release))} is a working draft. It is not approved
             and it is not the current standard. The current standard is
-            <a href="../${escape(current.version)}/">XMILE ${escape(current.version)}</a>.</p>
-         <p><a href="redline.html"><strong>Read the redline against
-            ${escape(release.reviewBase.replace(/^v/, ''))}</strong></a>${
+            <a href="../${escape(idOf(current))}/">XMILE ${escape(labelOf(current))}</a>.</p>
+         <p><a href="redline.html"><strong>Read the redline</strong></a>${
               release.redlineBytes ? ` <span class="size">(${kib(release.redlineBytes)})</span>` : ''
-            } &mdash; every change marked, grouped by section.</p>
+            } &mdash; every change against ${againstLink}, marked and grouped by
+            section.</p>
        </div>`
     : release.status === 'superseded'
       ? `<div class="callout">
            <h2>Superseded</h2>
            <p>A later version of this specification exists. Unless you have a
               reason to work from this one, use
-              <a href="../${escape(current.version)}/">XMILE ${escape(current.version)}</a>.</p>
+              <a href="../${escape(idOf(current))}/">XMILE ${escape(labelOf(current))}</a>.</p>
          </div>`
       : '';
 
@@ -245,17 +271,18 @@ function releasePage(release, index) {
       ${asset.note ? `<p class="note">${escape(asset.note)}</p>` : ''}</li>`).join('');
 
   const redlineFile = review && release.redlineBytes ? `
-    <li><div class="row"><a href="redline.html">Redline against ${escape(release.reviewBase.replace(/^v/, ''))}</a>
+    <li><div class="row"><a href="redline.html">Redline against XMILE ${escape(baseName(release))}</a>
       <span class="size">redline.html &middot; ${kib(release.redlineBytes)}</span></div>
-      <p class="note">Every change against the previous version, marked and grouped by section.</p></li>` : '';
+      <p class="note">Every change marked and grouped by section, showing the rendered
+      prose so cross-references appear as the section numbers to cite.</p></li>` : '';
 
   return `<!doctype html>
 <html lang="en">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>XMILE ${escape(release.version)} &mdash; ${escape(config.title)}</title>
-<meta name="description" content="XMILE version ${escape(release.version)}, ${escape(release.designation)}, ${escape(release.date)}.">
-<link rel="canonical" href="${escape(config.canonical)}/${escape(release.version)}/">
+<title>XMILE ${escape(labelOf(release))} &mdash; ${escape(config.title)}</title>
+<meta name="description" content="XMILE ${escape(labelOf(release))}, ${escape(release.designation)}, ${escape(release.date)}.">
+<link rel="canonical" href="${escape(config.canonical)}/${escape(idOf(release))}/">
 <style>${CSS}</style>
 <a class="skip" href="#main">Skip to content</a>
 <header class="site">
@@ -263,11 +290,11 @@ function releasePage(release, index) {
     <span class="name"><a href="../">${escape(config.title)}</a></span>
     <span class="tagline">${escape(config.tagline)}</span>
   </div>
-  ${versionNav(release.version)}
+  ${versionNav(idOf(release))}
 </header>
 <main id="main">
   <span class="badge ${status.tone}">${escape(status.label)}</span>
-  <h1>XMILE Version ${escape(release.version)}</h1>
+  <h1>${escape(release.heading)}</h1>
   <p class="desig">${escape(release.designation)} &mdash; ${escape(release.date)}</p>
   ${callout}
   ${notes}
@@ -286,7 +313,7 @@ function releasePage(release, index) {
 }
 
 function indexPage() {
-  const target = `${current.version}/`;
+  const target = `${idOf(current)}/`;
   return `<!doctype html>
 <html lang="en">
 <meta charset="utf-8">
@@ -297,8 +324,8 @@ function indexPage() {
 <style>${CSS}</style>
 <main id="main">
   <h1>${escape(config.title)}</h1>
-  <p>Redirecting to the current release, XMILE ${escape(current.version)}.</p>
-  <p><a href="${escape(target)}">Continue to XMILE ${escape(current.version)}</a></p>
+  <p>Redirecting to the current release, XMILE ${escape(labelOf(current))}.</p>
+  <p><a href="${escape(target)}">Continue to XMILE ${escape(labelOf(current))}</a></p>
 </main>
 <script>location.replace(${JSON.stringify(target)});</script>
 </html>
@@ -311,7 +338,7 @@ fs.rmSync(outRoot, { recursive: true, force: true });
 fs.mkdirSync(outRoot, { recursive: true });
 
 for (const release of releases) {
-  const dir = path.join(outRoot, release.version);
+  const dir = path.join(outRoot, idOf(release));
   fs.mkdirSync(dir, { recursive: true });
   if (!skipAssets) {
     buildAssets(release, dir);
@@ -320,10 +347,10 @@ for (const release of releases) {
 }
 
 releases.forEach((release, index) => {
-  fs.writeFileSync(path.join(outRoot, release.version, 'index.html'),
+  fs.writeFileSync(path.join(outRoot, idOf(release), 'index.html'),
     releasePage(release, index), 'utf8');
 });
 fs.writeFileSync(path.join(outRoot, 'index.html'), indexPage(), 'utf8');
 
 const pages = releases.length + 1;
-console.log(`site OK -> ${outRoot} (${pages} pages, current is ${current.version})`);
+console.log(`site OK -> ${outRoot} (${pages} pages, current is ${labelOf(current)})`);

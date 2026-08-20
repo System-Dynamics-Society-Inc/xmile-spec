@@ -6,7 +6,9 @@
   "repository": "https://github.com/System-Dynamics-Society-Inc/xmile-spec",
   "releases": [
     {
-      "version": "1.0",
+      "id": "1.0",
+      "label": "1.0",
+      "heading": "XMILE Version 1.0",
       "designation": "Candidate OASIS Standard 01",
       "date": "29 July 2015",
       "status": "superseded",
@@ -22,7 +24,9 @@
       ]
     },
     {
-      "version": "1.1",
+      "id": "1.1",
+      "label": "1.1",
+      "heading": "XMILE Version 1.1",
       "designation": "SDS Candidate Standard 02",
       "date": "20 August 2024",
       "status": "current",
@@ -40,17 +44,45 @@
           "source": "errata",
           "sourcePath": "ERRATA-v1.1.adoc",
           "label": "Errata",
-          "note": "Every broken and silently redirected cross-reference, with its intended target."
+          "note": "Every broken and silently redirected cross-reference, with its intended target. Not corrected in this release."
         }
       ]
     },
     {
-      "version": "1.2",
+      "id": "1.1-errata",
+      "label": "1.1 + errata",
+      "heading": "XMILE Version 1.1 with the errata corrected",
+      "designation": "Proposed errata to SDS Candidate Standard 02",
+      "date": "in review",
+      "status": "under-review",
+      "ref": "origin/main",
+      "reviewBase": "v1.1",
+      "notes": "1.1-errata.adoc",
+      "assets": [
+        {
+          "file": "xmile-v1.1-corrected.html",
+          "source": "spec",
+          "label": "Corrected specification",
+          "note": "Version 1.1 with the errata applied, one self-contained file. Proposed, not approved."
+        },
+        {
+          "file": "xmile-v1.1-errata.html",
+          "source": "errata",
+          "sourcePath": "ERRATA-v1.1.adoc",
+          "label": "Errata, with what was done",
+          "note": "The same inventory, extended to record the correction made for each item and the questions it raises."
+        }
+      ]
+    },
+    {
+      "id": "1.2",
+      "label": "1.2",
+      "heading": "XMILE Version 1.2",
       "designation": "SDS Working Draft 01",
       "date": "in progress",
       "status": "under-review",
       "ref": "HEAD",
-      "reviewBase": "v1.1",
+      "reviewBase": "origin/main",
       "notes": "1.2.adoc",
       "assets": [
         {
