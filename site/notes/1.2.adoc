@@ -1,0 +1,43 @@
+Version 1.2 is *under review* and is not approved. It extends the specification
+to record the use of AI in model construction, so that someone opening a model
+can determine reliably whether, and where, AI was used.
+
+Nothing on this page is normative until the Technical Committee approves it.
+Implementers should expect changes.
+
+== Added
+
+* *AI information.* A new root-level `<ai_information>` tag carrying the AI
+usage status, the interaction log, an agentic interaction log, software-specific
+settings, and a testing block. Section 2.3.
+
+* *Signed AI provenance.* An ed25519 signature over the AI status, the variable
+equations, the per-variable AI states and the log, so that a reader can tell
+whether the recorded provenance has been altered. Section 2.3.3.
+
+* *Per-variable AI status.* An `ai_state` attribute on each variable, recording
+whether it was created by a person, by AI, or edited by both. Section 2.3.4.
+
+== Changed
+
+* The specification version is raised to 1.2 throughout.
+
+* The XML Schema gains `<ai_information>` and `ai_state`, and accepts
+`version="1.2"`. It also corrects `max_dimensions` to `maximum_dimensions`,
+which the text has always named that way.
+
+== Open questions for the Technical Committee
+
+The draft carries one question in the text, marked as an editor's question in
+Section 2.3.2: whether a message's `content` should remain an attribute or
+become element content. Attributes require the markup inside them to be XML
+escaped, and because the agentic signature covers `content`, two producers that
+escape identically-rendered markup differently would produce different
+signatures. Deciding this after approval would be a breaking change.
+
+== Review
+
+The redline linked below marks every change against version 1.1. It shows the
+rendered prose rather than the source, so cross-references appear as the section
+numbers to cite in comments, and blocks that changed only because a heading,
+footnote or reference was renumbered are separated from the editorial changes.

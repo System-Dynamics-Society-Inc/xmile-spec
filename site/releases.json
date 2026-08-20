@@ -1,0 +1,65 @@
+{
+  "title": "XMILE Specification",
+  "tagline": "XML Interchange Language for System Dynamics",
+  "steward": "System Dynamics Society",
+  "canonical": "https://xmile.systemdynamics.org",
+  "repository": "https://github.com/System-Dynamics-Society-Inc/xmile-spec",
+  "releases": [
+    {
+      "version": "1.0",
+      "designation": "Candidate OASIS Standard 01",
+      "date": "29 July 2015",
+      "status": "superseded",
+      "ref": "v1.0",
+      "notes": "1.0.adoc",
+      "assets": [
+        {
+          "file": "xmile-v1.0.html",
+          "source": "spec",
+          "label": "Specification",
+          "note": "The complete specification, one self-contained file."
+        }
+      ]
+    },
+    {
+      "version": "1.1",
+      "designation": "SDS Candidate Standard 02",
+      "date": "20 August 2024",
+      "status": "current",
+      "ref": "v1.1",
+      "notes": "1.1.adoc",
+      "assets": [
+        {
+          "file": "xmile-v1.1.html",
+          "source": "spec",
+          "label": "Specification",
+          "note": "The complete specification, one self-contained file."
+        },
+        {
+          "file": "xmile-v1.1-errata.html",
+          "source": "errata",
+          "sourcePath": "ERRATA-v1.1.adoc",
+          "label": "Errata",
+          "note": "Every broken and silently redirected cross-reference, with its intended target."
+        }
+      ]
+    },
+    {
+      "version": "1.2",
+      "designation": "SDS Working Draft 01",
+      "date": "in progress",
+      "status": "under-review",
+      "ref": "HEAD",
+      "reviewBase": "v1.1",
+      "notes": "1.2.adoc",
+      "assets": [
+        {
+          "file": "xmile-v1.2.html",
+          "source": "spec",
+          "label": "Draft specification",
+          "note": "The working draft, one self-contained file. Not approved."
+        }
+      ]
+    }
+  ]
+}

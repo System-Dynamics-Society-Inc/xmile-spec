@@ -14,7 +14,8 @@ released the way code is.
 | `spec/` | The specification. `xmile.adoc` is the master file; one file per chapter. |
 | `spec/images/` | Figures. |
 | `spec/schema/` | `xmile.xsd.xml`, the XML Schema for XMILE documents. XSD 1.1. |
-| `tools/` | The one-time Word conversion, plus the build, lint, validate, verify and redline used day to day. |
+| `site/` | Website content: the release manifest and the release notes. |
+| `tools/` | The one-time Word conversion, plus the build, lint, validate, verify, redline and site used day to day. |
 | `archive/` | The original Word documents, kept for provenance. Not edited. |
 
 ## Building
@@ -142,6 +143,62 @@ dropped, because they are the evidence that every reference followed its anchor
 — exactly the failure recorded in `ERRATA-v1.1.adoc`, where renumbering silently
 changed what 13 references pointed at.
 
+## Website
+
+`tools/site.mjs` builds the specification website, published at
+https://xmile.systemdynamics.org.
+
+```sh
+npm run site                       # build to build/site
+npm run site -- --skip-assets      # pages only, for a quick look at the layout
+npm run site -- --out /tmp/site    # somewhere else
+```
+
+The output is a plain static tree with no build step of its own and no external
+requests, so it can be served from anywhere:
+
+```
+index.html      redirects to whichever release is current
+1.0/index.html  release page, and its specification file
+1.1/index.html  ...
+1.2/index.html  a release under review, and a link to its redline
+```
+
+Every internal link is relative, so the tree works under any prefix. Each page
+also carries a `rel="canonical"` built from the `canonical` field in
+`site/releases.json`, which is the only place the domain appears.
+
+The GitHub release page is a fine place to read one release and a poor place to
+move between them: no prior or next link, no way to see a draft beside the
+standard it will replace, and a URL nobody wants to cite in a committee paper.
+This publishes the same content at stable paths, with every version reachable in
+one click from any other, and a draft marked as a draft rather than looking like
+the standard.
+
+### Content
+
+| Path | What it holds |
+| --- | --- |
+| `site/releases.json` | The releases, in order: version, designation, date, status, and the git ref each is built from. |
+| `site/notes/<version>.adoc` | The release notes for that version. |
+
+`status` drives the page: `current` gets the plain treatment, `superseded` gets a
+notice pointing at the current release, and `under-review` gets a draft warning
+and a redline link. Exactly one release should be `current`; that is what
+`index.html` redirects to.
+
+Adding a release means adding an entry and a notes file. Nothing else changes.
+
+### Assets
+
+Specification files are rendered from each release's **git ref**, not copied from
+somewhere, so what the site serves is whatever that tag actually says. A release
+under review is built from `HEAD` and gets a redline against the ref named by
+`reviewBase`, which is how a reviewer sees what changed without reading the whole
+document again.
+
+That means a full build checks out each tag in turn, so it is slower than the
+other tools. Use `--skip-assets` when iterating on the layout.
 ## History
 
 Version 1.0 is the first commit and is tagged `v1.0`. The changes that produced
