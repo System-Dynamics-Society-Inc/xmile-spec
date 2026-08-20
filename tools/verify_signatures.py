@@ -47,13 +47,36 @@ VARIABLE_TAGS = ('stock', 'flow', 'aux')
 # and all underbar characters removed".
 SQUASH = re.compile(r'[\s_]')
 
+# Chapter 4: a name or equation writes non-printable characters as XMILE
+# identifier escapes, so a newline inside a variable name is the two characters
+# backslash and n rather than a newline. Those escapes have to be resolved to
+# the characters they stand for before whitespace is removed, otherwise a name
+# such as "excess deaths\nfrom crowding" keeps a stray backslash-n in the signed
+# message and the signature fails for a reason nothing in the file reveals.
+ESCAPES = {'n': '\n', 't': '\t', '\\': '\\'}
+
+
+def unescape(text):
+    out = []
+    index = 0
+    text = text or ''
+    while index < len(text):
+        char = text[index]
+        if char == '\\' and index + 1 < len(text) and text[index + 1] in ESCAPES:
+            out.append(ESCAPES[text[index + 1]])
+            index += 2
+            continue
+        out.append(char)
+        index += 1
+    return ''.join(out)
+
 # The {note:signature} prefix. The note may be any text without a colon or a
 # closing brace, which is what makes this greedy-free match unambiguous.
 LOG_PREFIX = re.compile(r'^\{([^:}]*):([A-Za-z0-9+/=]+)\}')
 
 
 def squash(text):
-    return SQUASH.sub('', text or '')
+    return SQUASH.sub('', unescape(text))
 
 
 class Problem(Exception):
@@ -141,7 +164,10 @@ def collect_variables(root):
                 squash(equation.text if equation is not None else ''),
                 child.get('ai_state') or '',
             ))
-        found.sort(key=lambda item: item[0])
+        # Case-insensitive: producers sort "births" before "Rabbit Population",
+        # which a plain sort would not, since every capital letter precedes
+        # every lower-case one in code point order.
+        found.sort(key=lambda item: item[0].lower())
         # A model with no name attribute is the root module.
         groups.append((model.get('name') is not None, found))
     groups.sort(key=lambda item: item[0])
@@ -176,11 +202,24 @@ def build_message(root):
     return message[:-1] if message.endswith(' ') else message
 
 
-def agentic_message(ai):
+def agentic_candidates(ai):
+    """What the agentic signature might cover, most-specified first.
+
+    Chapter 2 says the message is the collated content of every <message>. An
+    earlier draft said it was the collated type, and files in circulation were
+    signed that way, so both are tried and the report says which one matched.
+    Producers and the specification currently disagree here, and a tool that
+    only tried the specified rule would report "signature does not match" for a
+    file that is internally consistent under the other one.
+    """
     log = ai.find(X + 'agentic_log')
     if log is None:
         return None
-    return ''.join(m.get('content', '') for m in log.findall(X + 'message'))
+    messages = log.findall(X + 'message')
+    return [
+        ('content', ''.join(m.get('content', '') for m in messages)),
+        ('type', ''.join(m.get('type', '') for m in messages)),
+    ]
 
 
 def agentic_signature(ai):
@@ -270,18 +309,30 @@ def check_file(path, keys, show_message):
     lines.append('main signature       %s' % ('verified' if good else 'FAILED: %s' % why))
     failed = failed or not good
 
-    body = agentic_message(ai)
-    if body is not None:
+    candidates = agentic_candidates(ai)
+    if candidates is not None:
         sig = agentic_signature(ai)
         if sig is None:
             failed = True
             lines.append('agentic signature    FAILED: <agentic_log> present but <log> '
                          'carries no {note:signature} prefix')
         else:
-            good, why = verify(sig, body, key)
-            lines.append('agentic signature    %s'
-                         % ('verified' if good else 'FAILED: %s' % why))
-            failed = failed or not good
+            matched = None
+            for label, body in candidates:
+                good, _ = verify(sig, body, key)
+                if good:
+                    matched = label
+                    break
+            if matched == 'content':
+                lines.append('agentic signature    verified (over collated content)')
+            elif matched == 'type':
+                lines.append('agentic signature    verified, but over collated TYPE, not '
+                             'content as Chapter 2 requires')
+                failed = True
+            else:
+                lines.append('agentic signature    FAILED: matches neither collated '
+                             'content nor collated type')
+                failed = True
 
     return ('failed' if failed else 'ok'), lines
 
