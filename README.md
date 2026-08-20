@@ -21,7 +21,7 @@ released the way code is.
 
 ```sh
 npm install
-npm run check          # lint, build, and compile the schema
+npm run check          # lint, build, compile the schema, verify signatures
 npm run build:release  # single self-contained file, figures embedded
 ```
 
@@ -102,8 +102,11 @@ Verification needs the same Python environment as validation, plus the
 public key named by each file's `keyurl`, so it needs network access unless you
 pass `--key` with a local copy or `--offline` to skip the signature checks.
 
-This is deliberately not part of `npm run check`, because whether a given sample
-verifies depends on the sample rather than on the repository being correct.
+`npm run check` runs this too, so CI verifies every sample on each push. All
+four currently reproduce their `signed_message_body` exactly and both their
+signatures verify, which makes the check meaningful: a change that breaks the
+message construction, or a sample re-saved with a stale signature, fails the
+build rather than being noticed later.
 
 ## History
 

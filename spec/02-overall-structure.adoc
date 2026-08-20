@@ -236,7 +236,7 @@ The following attributes are supported on `+<status>+`. Additional attributes MA
 
 |`+keyurl+`
 |https URL
-|A web address that returns, in response to a GET, the base 64 encoded public key for verifying the signature.
+|A web address that returns, in response to a GET, the base 64 encoded public key for verifying the signature. The encoded value is an OpenSSH `+ssh-ed25519+` key blob, that is the algorithm name and the 32 byte key each preceded by its length as a four byte big-endian count, and not the 32 key bytes on their own.
 
 |`+want_var_info+`
 |true/false
@@ -336,11 +336,11 @@ before 1.2 is approved rather than after.
 
 Signing is done using the ed25519 signature algorithmfootnote:[https://datatracker.ietf.org/doc/html/rfc8032[RFC 8032]] against a message constructed by combining the attributes above with the additional information indicated below. The private key used MUST correspond to the public key returned by `+keyurl+`. Software vendors MAY choose which public keys they trust; an untrusted key SHALL be treated as an unsigned model, though checking for tampering MAY still occur. Software providers SHOULD communicate amongst themselves to determine bilateral standards for key trust.
 
-The text to be signed MUST have all whitespace (space, tab, line feed, carriage return) and all underbar characters removed. It consists of:
+The text to be signed MUST have all whitespace (space, tab, line feed, carriage return) and all underbar characters removed. Where a name or an equation writes a character as an XMILE identifier escape, as described in <<sec-common-variable-properties>>, that escape MUST first be resolved to the character it stands for, and only then is the whitespace removed. A variable named `+excess deaths\nfrom crowding+` therefore contributes `+excessdeathsfromcrowding+`: the escape becomes a line feed and is removed with the rest of the whitespace, rather than surviving as a backslash followed by an `+n+`. The text consists of:
 
-* All key/value pairs from the `+<status>+` tag, sorted alphabetically by key. There MUST be an equals sign between the key and the value, and a space after the value, with no spaces within either the key or the value. Attribute values MUST NOT be quoted, so for example `+log_truncated="true"+` in the XML becomes `+logtruncated=true+`.
+* All key/value pairs from the `+<status>+` tag other than `+signature+` itself, which is the result and so cannot be part of what is signed, sorted alphabetically by key. There MUST be an equals sign between the key and the value, and a space after the value, with no spaces within either the key or the value. Attribute values MUST NOT be quoted, so for example `+log_truncated="true"+` in the XML becomes `+logtruncated=true+`.
 
-* If `+want_var_info+` is true, the variable name followed by an equals sign followed by its equation, for the model variables sorted alphabetically by variable name. For models containing modules, variables in the root module appear first, followed by the module variables with the variable names module qualified. Modules and sectors, and any content other than stocks, flows and auxiliaries, MUST be excluded from the list. For arrays with non-apply-to-all equations, all equations are listed from the first to the last element with no separation between them. This content MAY be partial, based on the value of `+sampling+`. Each equation, or equation list for non-apply-to-all equations, appears as it does in the XML, noting that there are no spaces within either the equation list or the variable name. Equations using cross level ghosts MUST use the local variable name. The equations for cross level inputs appear as they do in the XML, even when such equations are empty or invalid.
+* If `+want_var_info+` is true, the variable name followed by an equals sign followed by its equation, for the model variables sorted alphabetically by variable name. Names MUST be compared without regard to case, and MUST be compared as they are written in the XML rather than after the removal described above. Both matter: comparing after removal would order `+low cost housing constr des+` before `+low cost hous prog+`, because the space that separates the words is gone, whereas comparing the written names orders them the other way round. For models containing modules, variables in the root module appear first, followed by the module variables, each qualified by its module name and a full stop, as in `+City.population+`. The module name has the same characters removed as everything else, so a module named `+Premium_Housing1+` qualifies its variables as `+PremiumHousing1.+`. Modules and sectors, and any content other than stocks, flows and auxiliaries, MUST be excluded from the list. For arrays with non-apply-to-all equations, all equations are listed from the first to the last element with no separation between them. This content MAY be partial, based on the value of `+sampling+`. Each equation, or equation list for non-apply-to-all equations, appears as it does in the XML, noting that there are no spaces within either the equation list or the variable name. Equations using cross level ghosts MUST use the local variable name. The equations for cross level inputs appear as they do in the XML, even when such equations are empty or invalid.
 
 * If `+want_var_status+` is true, the AI status information for each variable, ignoring `+sampling+`, where the status is a single letter from <<sec-ai-variable-status>>. The full list of status values MUST be followed by a space, but there is no space within the list.
 
@@ -351,7 +351,9 @@ If there is a terminal space on the constructed message string, which happens wh
 [[sec-agentic-log-signing]]
 ===== Signing the Agentic Log
 
-When the file includes an agentic log, a second signature is created for it. The message to be signed is formed by collating the `+content+` attribute of every `+<message>+` in `+<agentic_log>+`, in document order, and is signed with the same algorithm and keys described above.
+When the file includes an agentic log, a second signature is created for it. The message to be signed is formed by collating the `+content+` attribute of every `+<message>+` in `+<agentic_log>+`, in document order, with no separator between them, and is signed with the same algorithm and keys described above.
+
+The collated content MUST have whitespace and underbar characters removed, exactly as the main message does. Nothing else about the messages is signed: `+type+`, `+is_thinking+` and `+agent_name+` are all excluded, as is the order in which the messages appear beyond its effect on the collated content.
 
 That signature is embedded at the beginning of the content of the `+<log>+` tag, in the form
 

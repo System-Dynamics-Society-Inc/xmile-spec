@@ -8,7 +8,7 @@
     "build:release": "node tools/release-build.mjs spec/xmile.adoc build/xmile-release.html",
     "lint": "node tools/lint.mjs spec",
     "validate": "node tools/validate.mjs",
-    "check": "npm run lint && npm run build && npm run validate",
+    "check": "npm run lint && npm run build && npm run validate && npm run verify",
     "verify": "node tools/verify_signatures.mjs"
   },
   "devDependencies": {
