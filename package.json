@@ -9,7 +9,8 @@
     "lint": "node tools/lint.mjs spec",
     "validate": "node tools/validate.mjs",
     "check": "npm run lint && npm run build && npm run validate && npm run verify",
-    "verify": "node tools/verify_signatures.mjs"
+    "verify": "node tools/verify_signatures.mjs",
+    "redline": "node tools/redline.mjs"
   },
   "devDependencies": {
     "@asciidoctor/core": "^3.0.4"

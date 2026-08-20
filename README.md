@@ -14,7 +14,7 @@ released the way code is.
 | `spec/` | The specification. `xmile.adoc` is the master file; one file per chapter. |
 | `spec/images/` | Figures. |
 | `spec/schema/` | `xmile.xsd.xml`, the XML Schema for XMILE documents. XSD 1.1. |
-| `tools/` | The one-time Word conversion, plus the build, lint, validate and verify used day to day. |
+| `tools/` | The one-time Word conversion, plus the build, lint, validate, verify and redline used day to day. |
 | `archive/` | The original Word documents, kept for provenance. Not edited. |
 
 ## Building
@@ -107,6 +107,40 @@ four currently reproduce their `signed_message_body` exactly and both their
 signatures verify, which makes the check meaningful: a change that breaks the
 message construction, or a sample re-saved with a stale signature, fails the
 build rather than being noticed later.
+
+## Redline for review
+
+`tools/redline.py` produces a reviewable redline of the specification prose,
+for circulation to the Technical Committee.
+
+```sh
+npm run redline                                # HEAD against origin/main
+npm run redline -- --base v1.1                 # against a tag
+npm run redline -- --out build/tc-review.html  # choose the output file
+```
+
+The result is one self-contained HTML file: no scripts, no external assets, so
+it can be attached to an email or opened from a file share. It prints and reads
+in light or dark mode.
+
+The 1.0 and 1.1 revisions were reviewed as Word *Compare Documents* output. A
+git diff is not a substitute: it shows AsciiDoc source rather than prose, splits
+a paragraph across hunks, and cannot say which numbered section a change lands
+in. So both revisions are rendered through Asciidoctor first and the *rendered*
+text is compared. Cross-references therefore appear as the section numbers a
+reviewer will cite, and markup never reaches the page.
+
+Changes are grouped under the section they belong to, with word-level marking
+inside a reworded block. Unchanged material is omitted, so the reviewer reads
+only what moved.
+
+One thing is deliberately held back. Inserting a single section makes
+Asciidoctor renumber every heading, footnote and cross-reference after it, which
+in the 1.1 to 1.2 comparison is around sixty blocks that nobody edited. Those
+are separated into an "Automatic renumbering" section at the end rather than
+dropped, because they are the evidence that every reference followed its anchor
+— exactly the failure recorded in `ERRATA-v1.1.adoc`, where renumbering silently
+changed what 13 references pointed at.
 
 ## History
 
