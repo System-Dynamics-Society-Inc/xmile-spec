@@ -195,7 +195,11 @@ function buildAssets(release, dir) {
 function buildRedline(release, dir) {
   const out = path.join(dir, 'redline.html');
   // redline.py drives its own worktree for the base revision.
-  run('node', ['tools/redline.mjs', '--base', release.reviewBase, '--out', out,
+  // --target matters as much as --base. Without it the revised side is the
+  // working tree whatever the release says, so the errata redline rendered the
+  // 1.2 branch against v1.1 and carried the whole AI extension with it.
+  run('node', ['tools/redline.mjs', '--base', release.reviewBase,
+    '--target', release.ref, '--out', out,
     // ASCII only. A non-ASCII title is mangled crossing into the Python
     // process on Windows, where argv is not handed over as UTF-8, and an em
     // dash came out as a replacement character in the page title.

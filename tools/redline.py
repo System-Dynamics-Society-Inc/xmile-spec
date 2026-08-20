@@ -15,9 +15,15 @@ grouped under the section it belongs to, with word-level marking inside changed
 paragraphs. Unchanged material is omitted rather than reproduced, so the
 reviewer reads only what moved.
 
+Both sides are named explicitly. --base is what you compare against and
+--target is what you compare; --target defaults to HEAD, meaning the working
+tree, which is what you want when reviewing your own branch and not what you
+want when rendering one historical revision against another.
+
 Usage:
-  python tools/redline.py --base origin/main --out build/redline.html
-  python tools/redline.py --base v1.1 --title "XMILE 1.1 to 1.2"
+  python tools/redline.py --base origin/main
+  python tools/redline.py --base v1.1 --target origin/main
+  python tools/redline.py --base v1.1 --out build/redline.html
 """
 import argparse
 import difflib
@@ -362,24 +368,59 @@ def git_describe(ref):
     return out
 
 
+class Checkout:
+    """A worktree for `ref`, or the working tree when the ref is HEAD or absent.
+
+    Both sides of the comparison need this. The revised side used to be the
+    working tree unconditionally, which is right when reviewing your own branch
+    and wrong for anything else: asked for main against the v1.1 tag it rendered
+    the current branch against v1.1 instead, so a redline of the errata
+    corrections carried the whole of the 1.2 work as well.
+    """
+
+    def __init__(self, ref, work, name):
+        self.ref = ref
+        self.work = work
+        self.name = name
+        self.tree = None
+
+    def __enter__(self):
+        if not self.ref or self.ref == 'HEAD':
+            return '.'
+        self.tree = os.path.join(self.work, self.name)
+        run(['git', 'worktree', 'add', '--detach', self.tree, self.ref])
+        return self.tree
+
+    def __exit__(self, *exc):
+        if self.tree:
+            try:
+                run(['git', 'worktree', 'remove', '--force', self.tree])
+            except Exception:                                  # noqa: BLE001
+                pass
+        return False
+
+
 def main(argv=None):
     parser = argparse.ArgumentParser(prog='redline.py',
                                      description='Render a reviewable redline of the spec.')
     parser.add_argument('--base', default='origin/main',
                         help='revision to compare against (default: origin/main)')
+    parser.add_argument('--target', default='HEAD',
+                        help='revision to compare, and the one whose numbering the '
+                             'report uses (default: HEAD, meaning the working tree)')
     parser.add_argument('--out', default='build/redline.html', help='output HTML file')
     parser.add_argument('--title', default=None, help='page title')
     parser.add_argument('--source', default='spec/xmile.adoc', help='master AsciiDoc file')
     args = parser.parse_args(argv)
 
     work = tempfile.mkdtemp(prefix='redline-')
-    tree = os.path.join(work, 'base')
     try:
-        run(['git', 'worktree', 'add', '--detach', tree, args.base])
         base_html = os.path.join(work, 'base.html')
         head_html = os.path.join(work, 'head.html')
-        run(['node', 'tools/build.mjs', os.path.join(tree, args.source), base_html])
-        run(['node', 'tools/build.mjs', args.source, head_html])
+        with Checkout(args.base, work, 'base') as base_tree, \
+             Checkout(args.target, work, 'target') as head_tree:
+            run(['node', 'tools/build.mjs', os.path.join(base_tree, args.source), base_html])
+            run(['node', 'tools/build.mjs', os.path.join(head_tree, args.source), head_html])
 
         old_blocks = extract(base_html)
         new_blocks = extract(head_html)
@@ -394,7 +435,7 @@ def main(argv=None):
 
         meta = [
             ('Base', '%s (%s)' % (args.base, git_describe(args.base))),
-            ('Revised', git_describe('HEAD')),
+            ('Revised', '%s (%s)' % (args.target, git_describe(args.target))),
             ('Base blocks', str(len(old_blocks))),
             ('Revised blocks', str(len(new_blocks))),
         ]
@@ -407,10 +448,7 @@ def main(argv=None):
                  os.path.getsize(args.out) // 1024))
         return 0
     finally:
-        try:
-            run(['git', 'worktree', 'remove', '--force', tree])
-        except Exception:                                      # noqa: BLE001
-            pass
+        # Checkout removes its own worktrees; only the scratch directory is left.
         shutil.rmtree(work, ignore_errors=True)
 
 
