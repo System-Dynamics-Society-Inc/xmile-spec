@@ -21,7 +21,7 @@
  * Usage:
  *   node tools/site.mjs [--out build/site] [--skip-assets]
  */
-import { execFileSync } from 'node:child_process';
+import { execFileSync, spawnSync } from 'node:child_process';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
@@ -85,8 +85,97 @@ function withTree(ref, fn) {
   }
 }
 
+const SCHEMA_DIR = path.join('spec', 'schema');
+const SCHEMA_FILE = 'xmile.xsd.xml';
+
+/**
+ * Publish the schema and the sample models as they exist at this release's ref.
+ *
+ * Discovered rather than listed in the manifest, so that adding a sample to the
+ * repository publishes it without anyone remembering to register it, and so a
+ * release whose ref predates the schema simply has none. The 1.0 and 1.1 tags
+ * are in that position: the schema was committed after 1.1 was tagged.
+ *
+ * Only *.xmile counts as a sample. The directory also collects vendor working
+ * files, an .isdb among them, which are not examples of anything.
+ */
+function publishSchema(release, tree, dir) {
+  const src = path.join(tree, SCHEMA_DIR);
+  if (!fs.existsSync(src)) return;
+  const entries = fs.readdirSync(src);
+
+  if (entries.includes(SCHEMA_FILE)) {
+    const to = path.join(dir, SCHEMA_FILE);
+    fs.copyFileSync(path.join(src, SCHEMA_FILE), to);
+    release.schema = { file: SCHEMA_FILE, bytes: fs.statSync(to).size };
+    console.log(`  ${idOf(release)}/${SCHEMA_FILE} (${Math.round(release.schema.bytes / 1024)} KiB)`);
+  }
+
+  const samples = entries.filter((f) => f.endsWith('.xmile')).sort();
+  if (samples.length === 0) return;
+  const examples = path.join(dir, 'examples');
+  fs.mkdirSync(examples, { recursive: true });
+  release.samples = samples.map((name) => {
+    const to = path.join(examples, name);
+    fs.copyFileSync(path.join(src, name), to);
+    return { name, file: `examples/${name}`, bytes: fs.statSync(to).size };
+  });
+  console.log(`  ${idOf(release)}/examples/ (${samples.length}: ${samples.join(', ')})`);
+}
+
+/**
+ * Validate the published samples against the published schema, and record what
+ * happened.
+ *
+ * The page could simply assert that the samples validate, and be wrong: on main
+ * the samples already carry <ai_information> and ai_state while main's schema
+ * predates both, so three of them do not validate against the schema sitting
+ * beside them. Running the check and reporting the result means the page cannot
+ * make a claim the files do not support.
+ *
+ * Silent when the validator cannot run, which needs Python and xmlschema. No
+ * claim is better than an unverified one.
+ */
+function validateSamples(release, dir) {
+  if (!release.schema || !release.samples) return;
+  const result = spawnSync('node', ['tools/validate.mjs', '--schema',
+    path.join(dir, release.schema.file),
+    ...release.samples.map((s) => path.join(dir, s.file))],
+  { encoding: 'utf8', windowsHide: true });
+  if (result.error || result.stdout == null) return;
+  const lines = result.stdout.split('\n');
+  if (!lines.some((l) => l.startsWith('schema OK'))) return;
+
+  // Three outcomes, not two. A sample can also fail to parse at all: main's
+  // WithArrays.xmile carries a stray ? where a > belongs, so it is not
+  // well-formed XML and never reaches the schema. Counting that as valid, which
+  // is what checking only for the word "error" did, overstated the state of the
+  // samples on that branch.
+  let seen = 0;
+  for (const sample of release.samples) {
+    const line = lines.find((l) => l.includes(sample.name)
+      && /: (valid|\d+ error|not well-formed)/.test(l));
+    if (!line) continue;
+    seen += 1;
+    const errors = line.match(/: (\d+) error/);
+    if (/: not well-formed/.test(line)) {
+      sample.status = 'malformed';
+    } else if (errors) {
+      sample.status = 'invalid';
+      sample.errors = Number(errors[1]);
+    } else {
+      sample.status = 'valid';
+    }
+  }
+  if (seen === release.samples.length) release.samplesChecked = true;
+  const good = release.samples.filter((s) => s.status === 'valid').length;
+  console.log(`  ${idOf(release)}/examples/ validated: ${good} of ${release.samples.length}`
+    + ` valid against ${release.schema.file}`);
+}
+
 function buildAssets(release, dir) {
   withTree(release.ref, (tree) => {
+    publishSchema(release, tree, dir);
     for (const asset of release.assets) {
       const source = asset.source === 'errata'
         ? path.join(tree, asset.sourcePath)
@@ -232,6 +321,53 @@ function kib(bytes) {
   return bytes ? `${Math.round(bytes / 1024)} KiB` : '';
 }
 
+function schemaSection(release) {
+  if (!release.schema && !release.samples) return '';
+
+  const schema = release.schema ? `
+    <li><div class="row"><a href="${escape(release.schema.file)}">XML Schema</a>
+      <span class="size">${escape(release.schema.file)} &middot; ${kib(release.schema.bytes)}</span></div>
+      <p class="note">Validates a XMILE document against this version. Requires an
+      <strong>XSD 1.1</strong> processor: expressing the specification's provision for
+      vendor extensions needs open content and schema-level default attributes, neither
+      of which exists in XSD 1.0. xmllint and the .NET validator implement 1.0 only and
+      will reject it rather than skip it; Xerces-J and Saxon-EE read it.</p></li>` : '';
+
+  let verdict = '';
+  if (release.samples && release.samplesChecked && release.schema) {
+    const total = release.samples.length;
+    const good = release.samples.filter((s) => s.status === 'valid').length;
+    const invalid = release.samples.filter((s) => s.status === 'invalid');
+    const malformed = release.samples.filter((s) => s.status === 'malformed');
+    const names = (list) => list.map((s) => escape(s.name)).join(', ');
+    const detail = [
+      invalid.length ? `${names(invalid)} use${invalid.length === 1 ? 's' : ''} constructs
+        this version of the schema does not declare` : '',
+      malformed.length ? `${names(malformed)} ${malformed.length === 1 ? 'is' : 'are'}
+        not well-formed XML, so ${malformed.length === 1 ? 'it' : 'they'} never
+        reach${malformed.length === 1 ? 'es' : ''} the schema` : '',
+    ].filter(Boolean).join('; ');
+    verdict = good === total
+      ? `<p class="note">All ${total} validate against the schema above.</p>`
+      : `<p class="note"><strong>${good} of ${total} validate against the schema
+         above.</strong> ${detail}.</p>`;
+  }
+
+  const MARK = { invalid: 'does not validate', malformed: 'not well-formed' };
+  const samples = release.samples ? `
+    <li><div class="row"><span><strong>Example models</strong></span>
+      <span class="size">${release.samples.length} file(s)</span></div>
+      <p class="note">${release.samples.map((s) => {
+        const mark = MARK[s.status] ? ` <span class="size">(${MARK[s.status]})</span>` : '';
+        return `<a href="${escape(s.file)}">${escape(s.name)}</a>
+          <span class="size">${kib(s.bytes)}</span>${mark}`;
+      }).join(' &middot; ')}</p>
+      <p class="note">Documents that exercise the schema.</p>
+      ${verdict}</li>` : '';
+
+  return `<h2>Schema and examples</h2>\n  <ul class="files">${schema}${samples}</ul>`;
+}
+
 function releasePage(release, index) {
   const status = STATUS[release.status];
   const notes = renderNotes(release);
@@ -300,6 +436,7 @@ function releasePage(release, index) {
   ${notes}
   <h2>Files</h2>
   <ul class="files">${files}${redlineFile}</ul>
+  ${schemaSection(release)}
   ${pager(index)}
 </main>
 <footer class="site">
@@ -342,6 +479,7 @@ for (const release of releases) {
   fs.mkdirSync(dir, { recursive: true });
   if (!skipAssets) {
     buildAssets(release, dir);
+    validateSamples(release, dir);
     if (release.status === 'under-review' && release.reviewBase) buildRedline(release, dir);
   }
 }

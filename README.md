@@ -203,6 +203,17 @@ under review is built from `HEAD` and gets a redline against the ref named by
 `reviewBase`, which is how a reviewer sees what changed without reading the whole
 document again.
 
+The XML Schema and the sample models are published the same way, discovered
+rather than listed, so adding a sample to the repository publishes it without
+anyone registering it. A release whose ref predates the schema simply has none,
+which is the case for the 1.0 and 1.1 tags.
+
+The samples are then validated against the schema published beside them, and the
+page reports the result. That matters because the answer is not always yes: on
+`main` the samples already carry `<ai_information>` and `ai_state` while `main`'s
+schema predates both, so the page says so rather than claiming a conformance
+nobody checked.
+
 That means a full build checks out each tag in turn, so it is slower than the
 other tools. Use `--skip-assets` when iterating on the layout.
 ## History
