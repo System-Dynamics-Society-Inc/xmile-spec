@@ -10,7 +10,8 @@
 		<product version="4.4" isee:build_number="4016" isee:saved_by_v1="true" lang="en">Stella Architect</product>
 	</header>
 	<ai_information>
-		<status verified="false" mixed="true" trusted="true" tampered="false" uses="false" analyzed="false" log_truncated="false" timestamp="1787096051" algorithm="ed25519" keyurl="https://iseesystems.com/keys/stella01.txt" want_var_info="true" want_var_status="false" want_log="false" sampling="1" signature="bXbFIM6sIBtUZRQ89VQcZpmAquQqqUOrUnZUHd2XOHqc7N8fZ7H50mhJ1inGHmMrNY2dWXuQHdFTJj+aittVBg=="/>
+		<status verified="false" mixed="true" trusted="true" tampered="false" uses="false" analyzed="false" log_truncated="false" timestamp="1787187807" algorithm="ed25519" keyurl="https://iseesystems.com/keys/stella01.txt" want_var_info="true" want_var_status="false" want_log="false" sampling="1" signature="mXXDwXkd7f1FQopSKGZTKoLqFwDe+I1tTlNlU9GxbhdW88ylAdHW5Psj5VvqMdIInJgZdp+eAQukyye8sOqTDQ=="/>
+		<testing signed_message_body="algorithm=ed25519 analyzed=false keyurl=https://iseesystems.com/keys/stella01.txt logtruncated=false mixed=true sampling=1 tampered=false timestamp=1787187807 trusted=true uses=false verified=false wantlog=false wantvarinfo=true wantvarstatus=false consumption=ALLOCATE(supply,Location,demand[Location.*],priority[Location.*],width) demand=201012 priority=1028 supply=TIME width=5"/>
 	</ai_information>
 	<sim_specs isee:sim_duration="0" isee:run_prefix="Run" isee:simulation_delay="0" isee:restore_on_start="false" method="Euler" time_units="Month" isee:instantaneous_flows="false" isee:ignore_module_errors="false" isee:strict_units="false" isee:loop_scores="true" isee:loop_exhaustive_allowed="1000">
 		<start>0</start>
