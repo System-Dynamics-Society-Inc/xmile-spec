@@ -143,36 +143,66 @@ class KeyStore:
 
 # ------------------------------------------------------------ message build --
 
+def variable_equation(variable):
+    """The equation as it enters the message.
+
+    A non-apply-to-all array carries no <eqn> of its own. Its equations sit in
+    one <element> per array entry, and Chapter 2 wants them "listed from the
+    first to the last element with no separation between them", so three
+    elements of 20, 10 and 12 contribute 201012.
+    """
+    elements = variable.findall(X + 'element')
+    if elements:
+        parts = []
+        for element in elements:
+            equation = element.find(X + 'eqn')
+            parts.append(squash(equation.text if equation is not None else ''))
+        return ''.join(parts)
+    equation = variable.find(X + 'eqn')
+    return squash(equation.text if equation is not None else '')
+
+
 def collect_variables(root):
     """Stocks, flows and auxiliaries, in the order Chapter 2 prescribes.
 
-    Root module first, then the remaining modules, each sorted by name. Anything
-    that is not a stock, flow or auxiliary is excluded.
+    "variables in the root module appear first, followed by the module variables
+    with the variable names module qualified". A <model> with no name attribute
+    is the root; every named one is a module, and its variables are qualified
+    with that name and a dot. The name is squashed like everything else, so a
+    module called Premium_Housing1 qualifies as PremiumHousing1.
+
+    Anything that is not a stock, flow or auxiliary is excluded, which is why a
+    root holding nothing but <module> entries contributes no variables at all.
     """
-    groups = []
+    root_variables = []
+    module_variables = []
     for model in root.iter(X + 'model'):
         variables = model.find(X + 'variables')
         if variables is None:
             continue
-        found = []
+        name = model.get('name')
+        prefix = '%s.' % squash(name) if name else ''
+        target = module_variables if name else root_variables
         for child in variables:
             if child.tag[len(X):] not in VARIABLE_TAGS:
                 continue
-            equation = child.find(X + 'eqn')
-            found.append((
-                squash(child.get('name')),
-                squash(equation.text if equation is not None else ''),
+            # The sort key is the name as written, not the squashed form.
+            # "low cost hous prog" precedes "low cost housing constr des"
+            # because a space precedes "i", while their squashed forms sort the
+            # other way round. Producers order on the written name.
+            target.append((
+                (squash(name).lower() if name else '', child.get('name').lower()),
+                prefix + squash(child.get('name')),
+                variable_equation(child),
                 child.get('ai_state') or '',
             ))
-        # Case-insensitive: producers sort "births" before "Rabbit Population",
-        # which a plain sort would not, since every capital letter precedes
-        # every lower-case one in code point order.
-        found.sort(key=lambda item: item[0].lower())
-        # A model with no name attribute is the root module.
-        groups.append((model.get('name') is not None, found))
-    groups.sort(key=lambda item: item[0])
-    return [entry for _is_module, entries in groups for entry in entries]
 
+    # Case-insensitive: producers sort "births" before "Rabbit Population",
+    # which a plain sort would not, since every capital letter precedes every
+    # lower-case one in code point order.
+    root_variables.sort(key=lambda item: item[0])
+    module_variables.sort(key=lambda item: item[0])
+    return [entry[1:] for entry in root_variables + module_variables]
 
 def build_message(root):
     ai = root.find(X + 'ai_information')
