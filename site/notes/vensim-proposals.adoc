@@ -2,10 +2,19 @@ Ventana Systems has contributed a set of proposals against version 1.1 with the
 errata corrected, together with a corpus of models to validate readers against
 and the tooling used to produce both.
 
-This is *not* a draft of the specification. It proposes no edit to the
-specification text: the redline below is empty, and that is expected rather than
-a mistake. Each item is a separate document making a case, so the Technical
-Committee can accept, reject or defer them one at a time.
+*This is not the standard, and the wording in it is nobody's approved language.*
+The contribution as received proposes no edit to the specification text: each
+item is a separate document making a case, so the Technical Committee can accept,
+reject or defer them one at a time. A redline of the contribution alone would
+therefore have been empty.
+
+To make the proposals reviewable in the place each would land, the ask in every
+item that makes one has been drafted into the specification text, and the redline
+below shows those drafts. Twenty-two passages across eleven items are marked with
+the item that proposed them, as _(Ventana item NN)_. The words were written to
+give the arguments a concrete form to react to, not to anticipate the Committee's
+decision. Six items have no drafted text because they ask rather than propose;
+the front matter of the draft lists them.
 
 == What it contains
 
