@@ -57,6 +57,9 @@ const escape = (s) => String(s).replace(/[&<>"']/g, (c) => (
 // still version 1.1, so "1.1 + errata" names them without implying otherwise.
 const idOf = (r) => r.id;
 const labelOf = (r) => r.label ?? r.id;
+// Nav chips and prose read "XMILE <label>", which is right for a version number
+// and wrong for a contribution that is not one. A chip overrides it outright.
+const chipOf = (r) => r.chip ?? `XMILE ${labelOf(r)}`;
 
 /** The release a review is measured against, so the page can name and link it. */
 const baseOf = (r) => (r.reviewBase
@@ -173,9 +176,56 @@ function validateSamples(release, dir) {
     + ` valid against ${release.schema.file}`);
 }
 
+/**
+ * Publish a directory of contributed files, listed in the manifest.
+ *
+ * Not every proposal arrives as an edit to the specification. The Vensim
+ * contribution changes no prose at all: it is sixteen numbered proposal
+ * documents, a corpus of models to validate against, and tooling. A page built
+ * only from a redline would show nothing and imply there was nothing, so the
+ * material itself is published and listed.
+ *
+ * A markdown title is the first ATX heading, which is what these documents use.
+ */
+function publishCollections(release, tree, dir) {
+  for (const collection of release.collections ?? []) {
+    const from = path.join(tree, collection.dir);
+    if (!fs.existsSync(from)) continue;
+    const suffixes = collection.suffixes ?? ['.md'];
+    const found = [];
+
+    const walk = (rel) => {
+      for (const entry of fs.readdirSync(path.join(from, rel), { withFileTypes: true })) {
+        const next = rel ? path.posix.join(rel, entry.name) : entry.name;
+        if (entry.isDirectory()) walk(next);
+        else if (suffixes.some((s) => entry.name.endsWith(s))) found.push(next);
+      }
+    };
+    walk('');
+    if (found.length === 0) continue;
+
+    collection.items = found.sort().map((rel) => {
+      const src = path.join(from, rel);
+      const to = path.join(dir, collection.dir, rel);
+      fs.mkdirSync(path.dirname(to), { recursive: true });
+      fs.copyFileSync(src, to);
+      let title = null;
+      if (rel.endsWith('.md')) {
+        const heading = fs.readFileSync(src, 'utf8').split('\n')
+          .find((line) => line.startsWith('# '));
+        if (heading) title = heading.slice(2).trim();
+      }
+      return { rel, file: path.posix.join(collection.dir, rel.split(path.sep).join('/')),
+        title, bytes: fs.statSync(to).size };
+    });
+    console.log(`  ${idOf(release)}/${collection.dir}/ (${collection.items.length} file(s))`);
+  }
+}
+
 function buildAssets(release, dir) {
   withTree(release.ref, (tree) => {
     publishSchema(release, tree, dir);
+    publishCollections(release, tree, dir);
     for (const asset of release.assets) {
       const source = asset.source === 'errata'
         ? path.join(tree, asset.sourcePath)
@@ -297,7 +347,7 @@ main{max-width:none;padding:0}body{font-size:11pt}}
 function versionNav(active) {
   const items = releases.map((r) => {
     const tone = STATUS[r.status].tone;
-    const label = `XMILE ${escape(labelOf(r))}`;
+    const label = escape(chipOf(r));
     const dot = `<span class="dot ${tone}" aria-hidden="true"></span>`;
     if (idOf(r) === active) {
       return `<span class="here" aria-current="page">${dot}${label}</span>`;
@@ -311,11 +361,11 @@ function pager(index) {
   const older = releases[index - 1];
   const newer = releases[index + 1];
   const left = older
-    ? `<a href="../${escape(idOf(older))}/">&larr; XMILE ${escape(labelOf(older))}
+    ? `<a href="../${escape(idOf(older))}/">&larr; ${escape(chipOf(older))}
        <span class="size">${escape(STATUS[older.status].label)}</span></a>`
     : '<span class="none">&larr; no earlier release</span>';
   const right = newer
-    ? `<a href="../${escape(idOf(newer))}/">XMILE ${escape(labelOf(newer))}
+    ? `<a href="../${escape(idOf(newer))}/">${escape(chipOf(newer))}
        <span class="size">${escape(STATUS[newer.status].label)}</span> &rarr;</a>`
     : '<span class="none">no later release &rarr;</span>';
   return `<div class="pager">${left}${right}</div>`;
@@ -323,6 +373,29 @@ function pager(index) {
 
 function kib(bytes) {
   return bytes ? `${Math.round(bytes / 1024)} KiB` : '';
+}
+
+function collectionSections(release) {
+  return (release.collections ?? []).filter((c) => c.items?.length).map((collection) => {
+    // A titled document gets its title as the link text, with the filename
+    // beside it, because "01-extension-mechanism.md" says less than "An
+    // extension mechanism". Untitled files are just listed.
+    const titled = collection.items.filter((i) => i.title);
+    const rows = titled.length
+      ? collection.items.map((item) => `
+          <li><div class="row"><a href="${escape(item.file)}">${
+            escape(item.title ?? item.rel)}</a>
+            <span class="size">${escape(item.rel)} &middot; ${kib(item.bytes)}</span></div></li>`)
+        .join('')
+      : `<li><div class="row"><span><strong>${escape(collection.label)}</strong></span>
+           <span class="size">${collection.items.length} file(s)</span></div>
+           <p class="note">${collection.items.map((item) =>
+             `<a href="${escape(item.file)}">${escape(item.rel)}</a>
+              <span class="size">${kib(item.bytes)}</span>`).join(' &middot; ')}</p></li>`;
+    return `<h2>${escape(collection.label)}</h2>
+      ${collection.note ? `<p>${escape(collection.note)}</p>` : ''}
+      <ul class="files">${rows}</ul>`;
+  }).join('\n  ');
 }
 
 function schemaSection(release) {
@@ -382,13 +455,13 @@ function releasePage(release, index) {
   // form a chain: the errata corrections are measured against the approved
   // 1.1, and 1.2 against those corrections rather than against 1.1 itself.
   const againstLink = base
-    ? `<a href="../${escape(idOf(base))}/">XMILE ${escape(labelOf(base))}</a>`
+    ? `<a href="../${escape(idOf(base))}/">${escape(chipOf(base))}</a>`
     : `XMILE ${escape(baseName(release))}`;
 
   const callout = review
     ? `<div class="callout review">
          <h2>This version is under review</h2>
-         <p>XMILE ${escape(labelOf(release))} is a working draft. It is not approved
+         <p>${escape(chipOf(release))} is a working draft. It is not approved
             and it is not the current standard. The current standard is
             <a href="../${escape(idOf(current))}/">XMILE ${escape(labelOf(current))}</a>.</p>
          <p><a href="redline.html"><strong>Read the redline</strong></a>${
@@ -441,6 +514,7 @@ function releasePage(release, index) {
   <h2>Files</h2>
   <ul class="files">${files}${redlineFile}</ul>
   ${schemaSection(release)}
+  ${collectionSections(release)}
   ${pager(index)}
 </main>
 <footer class="site">

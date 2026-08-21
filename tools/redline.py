@@ -26,6 +26,7 @@ Usage:
   python tools/redline.py --base v1.1 --out build/redline.html
 """
 import argparse
+import collections
 import difflib
 import html
 import os
@@ -171,14 +172,32 @@ def heading_renumbering(old_blocks, new_blocks):
     These do not come out of the block alignment, because headings align on
     their title so that an inserted section does not appear to rename its
     neighbour. The number change is still worth listing.
+
+    Eighteen titles occur more than once in the specification, "Arrays" three
+    times, so a title is not a key. Keeping one heading per title paired the nth
+    "Arrays" against whichever came last and reported a renumbering for each,
+    which showed up as nineteen renumbered headings in a comparison of two
+    identical documents. Occurrences are matched in order instead.
     """
-    old_by_title = {b.title: b for b in old_blocks if b.kind == 'heading'}
+    buckets = collections.defaultdict(list)
+    for block in old_blocks:
+        if block.kind == 'heading':
+            buckets[block.title].append(block)
+
+    used = collections.Counter()
     out = []
     for new in new_blocks:
         if new.kind != 'heading':
             continue
-        old = old_by_title.get(new.title)
-        if old is not None and ' '.join(old.text.split()) != ' '.join(new.text.split()):
+        bucket = buckets.get(new.title)
+        if not bucket:
+            continue
+        index = used[new.title]
+        used[new.title] += 1
+        if index >= len(bucket):
+            continue
+        old = bucket[index]
+        if ' '.join(old.text.split()) != ' '.join(new.text.split()):
             out.append(('renumbered', old, new))
     return out
 

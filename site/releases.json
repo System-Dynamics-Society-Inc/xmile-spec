@@ -92,6 +92,38 @@
           "note": "The working draft, one self-contained file. Not approved."
         }
       ]
+    },
+    {
+      "id": "vensim-proposals",
+      "label": "Vensim proposals",
+      "chip": "Vensim proposals",
+      "heading": "Ventana Systems: proposals and model corpus",
+      "designation": "Contributed for consideration, not a draft of the specification",
+      "date": "in review",
+      "status": "under-review",
+      "ref": "vensim-pr1",
+      "reviewBase": "origin/main",
+      "notes": "vensim-proposals.adoc",
+      "assets": [],
+      "collections": [
+        {
+          "dir": "proposals",
+          "suffixes": [
+            ".md"
+          ],
+          "label": "Proposals",
+          "note": "Sixteen numbered proposals and a suggested process, as contributed. Markdown, so a browser may show them as plain text or offer them for download."
+        },
+        {
+          "dir": "models",
+          "suffixes": [
+            ".xmile",
+            ".stmx"
+          ],
+          "label": "Model corpus",
+          "note": "Models contributed to validate readers against, sorted into those pending review, one deliberately malformed, and one exercising the 1.0 to 1.1 transition."
+        }
+      ]
     }
   ]
 }

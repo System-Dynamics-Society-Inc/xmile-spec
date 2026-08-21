@@ -1,0 +1,60 @@
+Ventana Systems has contributed a set of proposals against version 1.1 with the
+errata corrected, together with a corpus of models to validate readers against
+and the tooling used to produce both.
+
+This is *not* a draft of the specification. It proposes no edit to the
+specification text: the redline below is empty, and that is expected rather than
+a mistake. Each item is a separate document making a case, so the Technical
+Committee can accept, reject or defer them one at a time.
+
+== What it contains
+
+* *Sixteen numbered proposals*, listed below, each stating a problem and a
+proposed remedy. Several are questions rather than proposals.
+
+* *A suggested process* for handling proposals, which is itself up for
+discussion.
+
+* *A model corpus* of nine models, sorted into those pending review, one
+deliberately malformed for testing readers against bad input, and one
+exercising the 1.0 to 1.1 transition.
+
+* *Proposal schemas*, three variant XSDs demonstrating what the proposed
+extension mechanism would look like in practice, plus NVDL scripts for
+validating vendor extensions.
+
+* *Tooling* under `tools/v-generate` and `tools/v-validate` for generating and
+checking those schemas.
+
+== Where it overlaps work already in hand
+
+Two of the proposals name problems this repository has independently recorded,
+which is worth noting because agreement from two directions is a stronger
+signal than either alone.
+
+* *The schema and the specification have drifted apart* (proposal 05). The same
+drift was found while updating the schema for 1.2: `polarity` was documented on
+connectors but absent from the schema, `maximum_dimensions` was named that way
+in the text and `max_dimensions` in the schema, and a `<unit>` could not carry
+both an equation and aliases even though the specification's own example does.
+
+* *`<smile>`: the element every file has and no document describes* (proposal
+11). The same tag was found in vendor files while validating them, and rejected,
+because nothing in the specification defines it.
+
+Proposal 00 also validates a corpus against the 1.0 schema, which is the same
+exercise as the sample validation reported on the other pages here.
+
+== One correction already applied
+
+The contribution repairs `WithArrays.xmile`, which on the current main branch is
+not well-formed XML: a `?` stands where a `>` belongs. The same defect was found
+and fixed independently on the 1.2 branch. Whichever lands first, main should not
+keep publishing a sample no parser will read.
+
+A note on the sample validation reported further down this page. The schema and
+the `spec/schema` samples here are main's, carried over unchanged apart from that
+repair, so the reported failures belong to main rather than to this contribution.
+They are the drift proposal 05 describes: the samples use `<ai_information>` and
+`ai_state`, and write `maximum_dimensions` as the text specifies, while main's
+schema declares none of the first two and requires `max_dimensions`.
