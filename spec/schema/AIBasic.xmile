@@ -51,7 +51,7 @@
 		<variables>
 			<aux name="birth rate" ai_state="C">
 				<doc>Fractional rate at which new individuals are born per year.</doc>
-				<eqn>0.03</eqn>
+				<eqn isee:test="true">0.03</eqn>
 				<units>1/year</units>
 			</aux>
 			<aux name="death rate" ai_state="C">

@@ -26,6 +26,10 @@ To conform to the XMILE base level, an implementation:
 
 * MUST include a `+<header>+` tag (<<sec-overall-structure>>) with sub-tags `+<vendor>+` and `+<product>+` with its version number (<<sec-header-section>>)
 
+* MUST ignore any element or attribute in a namespace it does not recognise, and MUST continue to read the rest of the file (<<sec-vendor-extensions>>)
+
+* MUST NOT treat a standard element or attribute written under a vendor prefix as though it were the standard one (<<sec-vendor-extensions>>)
+
 * MUST include at least one `+<model>+` tag (<<sec-overall-structure>>)
 
 * MUST name models beyond the root model (<<sec-model-equation-xml-encoding>>)

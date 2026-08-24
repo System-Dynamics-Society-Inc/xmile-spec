@@ -42,7 +42,7 @@ When an XMILE file includes references to models contained in separate files or 
 
 There are four categories of namespaces in play in a XMILE whole-model - XML tag namespaces, Variable namespace, Function namespace and Unit namespaces. XML tag namespaces and Unit namespaces are independent, but Variable and Function namespaces interact.
 
-XML tag namespaces are global. Unadorned tags are described in detail in the various sections of this document and provision for vendor specific additions are also detailed.
+XML tag namespaces are global. Unadorned tags are described in detail in the various sections of this document, and provision for vendor specific additions is made in <<sec-vendor-extensions>>.
 
 Each XMILE whole-model has a single Unit namespace against which all Unit Definitions and Equation Units are resolved. The Unit namespace is separate from any other namespaces and this means that the variables of units and variable or function names can overlap (for example someone might use Ounce/Min and define Min as an alias of Minute even though MIN is a reserved function name). Because this namespace crosses models Unit Definitions contained in separate files must be combined into this namespace.
 
@@ -51,6 +51,30 @@ The Function namespace combines global definitions (all functions defined here a
 Variable names are resolved within models, but in the same context as functions and therefore can't overlap. It is not, for example, possible to have a variable named MIN as this is a reserved function name. Similarly, if the  macro BIGGEST has been defined, no variable may be given the name BIGGEST. It is, however, possible, to have the same variable name appear in different models.  For example if you have a project with one model MyCompany and another model Competitors, both could contain the variable profit (with MyCompany.profit and Competitors.profit the way to refer to that variable from different models).
 
 One final subtlety in namespaces is that Dimension names, in turn, define their own Element namespace. Thus, even though Array Dimension names must be unique, they can have overlapping Element names and the Element names can be the same as Variable names. Element names are resolved by context when they appear inside square brackets of a variable and can be used in context by prefixing them with the array dimension name (as in Location.Boston, where Location is a Dimension name with element Boston).
+
+[[sec-vendor-extensions]]
+=== Vendor Extensions
+
+Consistent with <<sec-namespaces>>, a vendor MAY add elements and attributes of its own to an XMILE file, and a reader that encounters one has a defined obligation towards it.
+
+*Where an extension goes.* A vendor extension MUST be in an XML namespace of the vendor's own, declared on the file as an attribute of the `+<xmile>+` tag and distinct from the XMILE namespace. A vendor MUST NOT place an extension in the XMILE namespace, and MUST NOT write an unprefixed element or attribute that this specification does not define. Both rules exist so that a name without a prefix always means what this document says it means.
+
+A vendor MUST NOT respell a standard element or attribute in its own namespace. Where this specification defines an attribute, a conforming file writes it unprefixed; the same attribute written again under a vendor prefix produces two spellings of the same thing, and there is no rule to resolve which prevails.
+
+*Where an extension may appear.* A vendor attribute MAY appear on any element this specification defines, and a vendor element MAY appear wherever child elements are permitted. To clarify, if an element does not have children (for example `+<eqn>+`, `+<doc>+`, `+<units>+`) vendor specific child elements are not allowed.
+
+[source,xml]
+----
+<eqn vendor:origin="imported">rate * elapsed</eqn>
+----
+
+The value of such an element is unchanged by the presence of the attribute, and a reader that does not recognise the attribute reads the equation exactly as it would have without it. This is stated because a schema written the obvious way forbids it: an element declared with a simple type can carry no attributes at all, so a vendor cannot annotate the very elements most worth annotating. A schema for this specification MUST therefore declare such elements with a complex type over the same value, and the schema published with this specification does so.
+
+*What a reader does.* A reader MUST ignore any element or attribute in a namespace it does not recognise, and MUST continue to process the rest of the file. Ignoring means exactly that: the content is neither an error nor a reason to reject the document. A reader MAY preserve such content when rewriting a file it has read, and SHOULD do so where it can, since discarding another tool's extensions on a round trip is the outcome this provision exists to prevent.
+
+A reader MUST NOT honour a standard element or attribute that appears under a vendor prefix. Such a name is a vendor extension by the rule above, and treating `+vendor:show_pages+` as though it were `+show_pages+` would make the meaning of a file depend on which reader opened it.
+
+*What this does not license.* An extension MUST NOT change the meaning of the standard content around it. A file whose behaviour differs when its extensions are ignored is not a conforming file, because a conforming reader is required to ignore them.
 
 [[sec-header-section]]
 === Header Section
