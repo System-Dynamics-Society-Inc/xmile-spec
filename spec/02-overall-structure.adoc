@@ -182,7 +182,7 @@ A sample options block appears below:
 ----
 <options namespace="std, isee">
 <uses_conveyors leak="true"/>  <!-- has conveyors, some leak -->
-<uses_arrays maximum_dimensions=”2”/>   <!-- has 2D arrays -->
+<uses_arrays maximum_dimensions="2"/>   <!-- has 2D arrays -->
 <has_model_views/>    <!-- has diagram of model -->
 </options>
 ----
@@ -660,7 +660,7 @@ These changes can also be applied directly to objects (again as a child to a `+<
 [source,xml]
 ----
 <style color="blue" background="white">
-<connector color="magenta">
+<connector color="magenta"/>
 </style>
 ----
 
@@ -704,15 +704,15 @@ Macro tags define macros that can be used in model entity equations. Chapter 4 c
 
 XMILE files MAY link to other XMILE files by using includes. Support for includes is REQUIRED. This serves the following use cases:
 
-[source,xml]
-----
-A whole-model can be split across multiple files, allowing submodels and other components to be individually edited or versioned.
-A modeler may create a common library of submodels or macros and use them for multiple whole-models.
-A modeler may create a common style for models and include a common file for such style in different whole-models.
-A vendor may create a common library of macros with specific functionality used by all whole-models produced by that vendor's software.
-----
+* A whole-model can be split across multiple files, allowing submodels and other components to be individually edited or versioned.
 
-Included files are specified with an `+<includes>+` tag which goes inside of <header>
+* A modeler may create a common library of submodels or macros and use them for multiple whole-models.
+
+* A modeler may create a common style for models and include a common file for such style in different whole-models.
+
+* A vendor may create a common library of macros with specific functionality used by all whole-models produced by that vendor's software.
+
+Included files are specified with an `+<includes>+` tag which goes inside of `+<header>+`.
 
 [source,xml]
 ----
@@ -727,22 +727,27 @@ Included files are specified with an `+<includes>+` tag which goes inside of <he
 
 The included resource can be specified in multiple ways. Specifically, the resource attribute can be specified with:
 
-[source,xml]
-----
-URLs. By convention, a file retrieved from a URL is assumed to be an unchanging resource and may be cached. The file may also be provided automatically by the simulation software.
-----
-
-Example:
-
+* *URLs.* By convention, a file retrieved from a URL is assumed to be an unchanging resource and may be cached. The file may also be provided automatically by the simulation software.
++
 [source,xml]
 ----
 <include resource="http://systemdynamics.org/xmile/macros/standard-1.0.xml" />
-Relative file paths. Search relative to the location of the XMILE file. This allows modelers to distribute their whole-models as a folder of related files. This is a machine-independent path specification using "/" to separate directories. The "*" indicates a wildcard. Files are not cached.
+----
+
+* *Relative file paths.* Search relative to the location of the XMILE file. This allows modelers to distribute their whole-models as a folder of related files. This is a machine-independent path specification using `+"/"+` to separate directories. The `+"*"+` indicates a wildcard. Files are not cached.
++
+[source,xml]
+----
 <include resource="my-macro-library.xml" />
 <include resource="macros/my-macro-library.xml" />
 <include resource="macros/*" />
 <include resource="macros/supplychain-*.xml" />
-Absolute file paths. Similar to relative file paths except that the resource starts with "/" or "file://". In such cases, the file path is loaded from an absolute location on the local machine. Application programs may choose to limit file access or base the root directory in a particular location (e.g. a home directory) for security reasons. A platform-specific volume name (e.g. "D:") may not be specified.
+----
+
+* *Absolute file paths.* Similar to relative file paths except that the resource starts with `+"/"+` or `+"file://"+`. In such cases, the file path is loaded from an absolute location on the local machine. Application programs may choose to limit file access or base the root directory in a particular location (e.g. a home directory) for security reasons. A platform-specific volume name (e.g. `+"D:"+`) may not be specified.
++
+[source,xml]
+----
 <include resource="/library/my-macro-library.xml" />
 <include resource="file://library/my-macro-library.xml" />
 ----

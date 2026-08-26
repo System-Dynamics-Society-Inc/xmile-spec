@@ -37,7 +37,7 @@ Views which have the optional type “interface” are assumed to contain displa
 
 XMILE views also contain an OPTIONAL `+order+` attribute which represents the order that views should be presented within the application. The `+order+` pass:c[attribute is an integer starting from 0 and counting up. The lower the order number the earlier it appears in the list. Views with the type “stock_flow” are ordered separately from views with the type “interface”. If any view does not contain an order number it is RECOMMENDED that one is be assigned based on its position within the] `+<views>+` tag.
 
-XMILE views are also REQUIRED to have a `+width+` and a `+height+` measured in pixels.  These properties describe the size of a view.  Views are REQUIRED to be rectangular.   Views may also have an OPTIONAL `+zoom+` specified as a double where 100 is default, 200 is 2x bigger by a factor of 2 and 50 is smaller by a factor of 2. In addition views can also have OPTIONAL attributes for storing the scroll position called `+scroll_x+` and `+scroll_y+`.  The scroll position is the origin (top left corner) of the screen in model coordinates (that is, when zoom has not been applied).  Also, views may contain an OPTIONAL `+background+` attribute that may be specified either as a color or as an external image resource using a file://url.
+XMILE views are also REQUIRED to have a `+width+` and a `+height+` measured in pixels.  These properties describe the size of a view.  Views are REQUIRED to be rectangular.   Views may also have an OPTIONAL `+zoom+` specified as a double where 100 is default, 200 is 2x bigger by a factor of 2 and 50 is smaller by a factor of 2. In addition views can also have OPTIONAL attributes for storing the scroll position called `+scroll_x+` and `+scroll_y+`.  The scroll position is the origin (top left corner) of the screen in model coordinates (that is, when zoom has not been applied).  Also, views may contain an OPTIONAL `+background+` attribute that may be specified either as a color or as an external image resource using a `+file://url+`.
 
 In order for XMILE views to be printed each view is REQUIRED to specify its paging.  Therefore the following attributes are REQUIRED:
 
@@ -228,7 +228,7 @@ Simple XMILE style tag example:
 
 [source,xml]
 ----
-<style font_color=”blue” font_size=”10”>
+<style font_color="blue" font_size="10">
 <stock font_weight="bold" font_color="black"/>
 <flow font_size="12"/>
 </style>

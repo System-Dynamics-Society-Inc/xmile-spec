@@ -8,16 +8,16 @@ The overall structure of a `+<model>+` tag appears below (sub-tags MUST appear i
 [source,xml]
 ----
 <model>
-<sim_specs>   <!-- OPTIONAL – see Chapter 2 -->
+<sim_specs>   <!-- OPTIONAL - see Chapter 2 -->
 ...
 </sim_specs>
-<behavior>   <!-- OPTIONAL – see Chapter 2 -->
+<behavior>   <!-- OPTIONAL - see Chapter 2 -->
 ...
 </behavior>
 <variables>   <!-- REQUIRED -->
 ...
 </variables>
-<views>    <!-- OPTIONAL – see Chapters 5 & 6 -->
+<views>    <!-- OPTIONAL - see Chapters 5 & 6 -->
 ...
 </views>
 </model>
@@ -647,7 +647,7 @@ Below is an example showing the inclusion of a module sharing data with the root
 <?xml version="1.0" encoding="utf-8" ?>
 <xmile version="1.0" xmlns="http://docs.oasis-open.org/xmile/ns/XMILE/v1.0">
 <header>
-<product version=”1.0”>Product</product>
+<product version="1.0">Product</product>
 <vendor>sample</vendor>
 <options>
 <uses_submodels/>
@@ -684,7 +684,7 @@ If saved in separate files this same model would look like this:
 <?xml version="1.0" encoding="utf-8" ?>
 <xmile version="1.0" xmlns="http://docs.oasis-open.org/xmile/ns/XMILE/v1.0">
 <header>
-<product version=”1.0”>Product</product>
+<product version="1.0">Product</product>
 <vendor>sample</vendor>
 <options>
 <uses_submodels/>
@@ -697,7 +697,7 @@ If saved in separate files this same model would look like this:
 </sim_specs>
 <model>
 <variables>
-<module name="Sub_Model" resource=”module.xml”>
+<module name="Sub_Model" resource="module.xml">
 <connect to="Input" from=".Root_Model_Output"/>
 <connect to=".Root_Model_Input" from="Sub_Model.Output"/>
 </module>
@@ -715,7 +715,7 @@ And in file “module.xml”:
 <?xml version="1.0" encoding="utf-8" ?>
 <xmile version="1.0" xmlns="http://docs.oasis-open.org/xmile/ns/XMILE/v1.0">
 <header>
-<product version=”1.0”>Product</product>
+<product version="1.0">Product</product>
 <vendor>sample</vendor>
 <options/>
 </header>
@@ -835,7 +835,7 @@ Macros can be used to implement simple functions that either extend the availabl
 
 Within an XMILE expression, this function could be used to, for example, find the base-2 logarithm of 256:
 
-[source,xml]
+[source,text]
 ----
 LOG(256, 2)
 ----
@@ -846,7 +846,7 @@ Recursion MAY be used to implement simple functions, for example, to calculate t
 ----
 <macro name="FACT">
 <parm>x</parm>
-<eqn>IF x <= 1 THEN 1 ELSE FACT(x – 1)</eqn>
+<eqn>IF x <= 1 THEN 1 ELSE FACT(x - 1)</eqn>
 </macro>
 ----
 
@@ -856,7 +856,7 @@ Nested loops – or nested recursion – can be implemented by calling another r
 ----
 <macro name="FACTSUM">
 <parm>x</parm>
-<eqn>IF x <= 1 THEN 1 ELSE FACT(x) + FACTSUM(x – 1)</eqn>
+<eqn>IF x <= 1 THEN 1 ELSE FACT(x) + FACTSUM(x - 1)</eqn>
 </macro>
 ----
 
@@ -867,7 +867,7 @@ By using default parameter values to implement optional parameters, more complex
 <macro name="FIND">
  <parm>A</parm>
 <parm>value</parm>
-<parm default=”1”>i</parm>
+<parm default="1">i</parm>
 <eqn>IF i > SIZE(A) THEN 0 ELSE
 IF A[i] = value THEN i ELSE FIND(A, value, i + 1)</eqn>
 <format>FIND(<array>, <value>[, <starting index>])</format>
@@ -906,7 +906,7 @@ Now imagine XMILE does not have a first-order smooth function. In this case, we 
 <inflow>change_in_smooth</inflow>
 </stock>
 <flow name="change_in_smooth">
-<eqn>(input – Smooth_of_Input)/averaging_time</eqn>
+<eqn>(input - Smooth_of_Input)/averaging_time</eqn>
 </flow>
 </variables>
 </macro>
@@ -1111,7 +1111,7 @@ Non-negative stocks can also be implemented with an option filter, though it’s
 <parm>outflow_sum</parm>
 <eqn>
 IF value
-THEN MAX(stock/DT – outflow_sum, flow)
+THEN MAX(stock/DT - outflow_sum, flow)
 ELSE flow
 </eqn>
 </macro>

@@ -799,7 +799,7 @@ The exact format used for defining macros is described in Chapter 4.
 
 Macro support in XMILE implementations is OPTIONAL. However, if an implementation does not support them, it cannot simulate models that use vendor-specific functions. Macros can use all of the syntax of XMILE to achieve their result. The simplest kind of macro is a single expression using existing functions and operators. In this regard, its value is specified in the same way as an auxiliary. The change of base formula above is a good example:
 
-[source,xml]
+[source,text]
 ----
 LOG(x, y):
 LN(x)/LN(y)
@@ -810,12 +810,12 @@ Macros can be recursive, so a slightly more complicate macro would call itself:
 [source,xml]
 ----
 FACT(x):
-IF x <= 1 THEN 1 ELSE x*FACT(x – 1)
+IF x <= 1 THEN 1 ELSE x*FACT(x - 1)
 ----
 
 More complicated macros can use stocks, flows, and auxiliaries to define their behavior. This would be the approach, for example, to implement a smooth function if one did not already exist:
 
-[source,xml]
+[source,text]
 ----
 SMOOTH1(input, averaging_time) returns Smooth_of_Input:
 ----
@@ -829,7 +829,7 @@ SMOOTH1(input, averaging_time) returns Smooth_of_Input:
 
 Macros can also run with their own simulation specifications, which can be calculated from the passed parameters. Such macros are, in fact, independent models that run to completion each time they are invoked. The factorial function, defined recursively above, can also be defined using stocks and flows, provided the simulation specifications are given to run from 1 to __x__ with the default DT of one:
 
-[source,xml]
+[source,text]
 ----
 FACT(x) returns Current_Factorial:
 ----
@@ -914,23 +914,23 @@ There are two ways to define equations for arrays in XMILE:
 
 Within the equations of Apply-to-All arrays only, dimension names MAY be used in subscripts. A dimension name is a placeholder for the subscript index used by the element in which the equation appears. For example, an array `+profit[Location, Product]+` could have the single equation:
 
-[source,xml]
+[source,text]
 ----
-revenue[Location, Product] – sales[Location, Product]
+revenue[Location, Product] - sales[Location, Product]
 ----
 
 However, when all indices are dimension names, they can be omitted as usually found in languages that support matrix arithmetic.  The following equation is identical to the above equation and is preferred:
 
-[source,xml]
+[source,text]
 ----
-revenue – sales
+revenue - sales
 ----
 
 When dimension names are used (or omitted when allowed), the equation for each element of the array SHALL have the dimension name bound to (replaced by) their index in that dimension. For example, when the equation for __profit__pass:c[[]__Boston__, __blouses__pass:c[\] is evaluated, it gets bound to the above equation as follows:]
 
-[source,xml]
+[source,text]
 ----
-revenue[Boston, blouses] – sales[Boston, blouses]
+revenue[Boston, blouses] - sales[Boston, blouses]
 ----
 
 Clearly, for dimension names to be used in this way, the array containing the equation MUST itself be sized using those dimension names, though not necessarily in the same order (e.g., the same equation could be used for profit defined with dimensions in the opposite order as in `+profit[Product, Location]+`).
@@ -940,7 +940,7 @@ Clearly, for dimension names to be used in this way, the array containing the eq
 
 If an implementor of this specification wishes to support sub-range functionality the restriction that all dimensions used on the right-hand side of an equation MUST appear on the left-hand side is relaxed.  Sub-range functionality allows the user to use an array dimension which is specified either a strict sub-set or super-set on the left-hand side of the equation of any dimension used on the right-hand side.  In the case where an array element is encountered on the right-hand side which is not present in the dimension for the variable it is used with a 0 MUST be returned, `+NaN+` is not allowed.
 
-[source,xml]
+[source,text]
 ----
 Location: Boston, Chicago, LA
 LocationTotal: Boston, Chicago, LA, Total
