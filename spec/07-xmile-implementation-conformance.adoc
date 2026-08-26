@@ -57,7 +57,7 @@ To conform to the XMILE base level, an implementation:
 
 To support the optional conveyor features of XMILE, an implementation:
 
-* MUST include the `+<uses_conveyor>+` tag in the `+<options>+` block (<<sec-xmile-options>>)
+* MUST include the `+<uses_conveyors>+` tag in the `+<options>+` block (<<sec-xmile-options>>)
 
 * MUST support the `+<conveyor>+` block with all of its options (<<sec-stocks-4-2>> and <<sec-conveyor-options>>)
 
@@ -68,7 +68,7 @@ To support the optional conveyor features of XMILE, an implementation:
 
 To support the optional queue features of XMILE, an implementation:
 
-* MUST include the `+<uses_queue>+` tag in the `+<options>+` block (<<sec-xmile-options>>)
+* MUST include the `+<uses_queues>+` tag in the `+<options>+` block (<<sec-xmile-options>>)
 
 * MUST support the `+<queue/>+` tag in the stock (<<sec-normative-references>>)
 
@@ -79,7 +79,7 @@ To support the optional queue features of XMILE, an implementation:
 
 To support the optional array features of XMILE, an implementation:
 
-* MUST include the `+<uses_array>+` tag in the `+<options>+` block with the correct number of dimensions (<<sec-xmile-options>>)
+* MUST include the `+<uses_arrays>+` tag in the `+<options>+` block with the correct number of dimensions (<<sec-xmile-options>>)
 
 * MUST include a `+<dimensions>+` tag (<<sec-dimensions-section>>)
 
@@ -146,7 +146,7 @@ To support the optional event poster features of XMILE, an implementation:
 
 To support the optional features of XMILE to represent a model view, an implementation:
 
-* MUST include the `+<has_model_view>+` tag in the `+<options>+` block (<<sec-xmile-options>>)
+* MUST include the `+<has_model_views>+` tag in the `+<options>+` block (<<sec-xmile-options>>)
 
 * MUST support styles (<<sec-style-section>>)
 

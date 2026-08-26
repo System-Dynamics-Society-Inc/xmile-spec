@@ -219,13 +219,13 @@
     </xs:annotation>
     <xs:complexType>
       <xs:all>
-        <xs:element name="uses_conveyor" minOccurs="0">
+        <xs:element name="uses_conveyors" minOccurs="0">
           <xs:complexType>
             <xs:attribute name="arrest" type="xs:boolean" use="optional"/>
             <xs:attribute name="leak" type="xs:boolean" use="optional"/>
           </xs:complexType>
         </xs:element>
-        <xs:element name="uses_queue" minOccurs="0">
+        <xs:element name="uses_queues" minOccurs="0">
           <xs:complexType>
             <xs:attribute name="overflow" type="xs:boolean" use="optional"/>
           </xs:complexType>
@@ -242,7 +242,7 @@
             <xs:attribute name="messages" type="xs:boolean" use="optional"/>
           </xs:complexType>
         </xs:element>
-        <xs:element name="has_model_view" type="empty_type" minOccurs="0"/>
+        <xs:element name="has_model_views" type="empty_type" minOccurs="0"/>
         <!--
           v1.1: the lamp and gauge flags went with the withdrawal of Lamps and
           Gauges. numeric_display remains, per Section 2 (XMILE Options): "The
@@ -260,7 +260,7 @@
           "The <uses_inputs> tag implies sliders are included."
         -->
         <xs:element name="uses_inputs" type="empty_type" minOccurs="0"/>
-        <xs:element name="uses_annotation" type="empty_type" minOccurs="0"/>
+        <xs:element name="uses_annotations" type="empty_type" minOccurs="0"/>
         <xs:element name="uses_arrays" minOccurs="0">
           <xs:complexType>
             <!--

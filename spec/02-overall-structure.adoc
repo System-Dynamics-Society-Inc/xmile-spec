@@ -124,16 +124,16 @@ The XMILE options appear under the tag `+<options>+`. This is a list of function
 
 [source,xml]
 ----
-<uses_conveyor/>
-<uses_queue/>
+<uses_conveyors/>
+<uses_queues/>
 <uses_arrays/>
 <uses_submodels/>
 <uses_macros/>
 <uses_event_posters/>
-<has_model_view/>
+<has_model_views/>
 <uses_outputs/>
 <uses_inputs/>
-<uses_annotation/>
+<uses_annotations/>
 ----
 
 There is one OPTIONAL attribute for the `+<options>+` tag:
@@ -152,13 +152,13 @@ The `+<uses_macros>+` tag has two REQUIRED attributes:
 
 * Defines option filters:  `+option_filters="…"+` with true/false.
 
-The `+<uses_conveyor>+` tag has two OPTIONAL attributes:
+The `+<uses_conveyors>+` tag has two OPTIONAL attributes:
 
 * Has conveyors that arrest:  `+arrest="…"+` with true/false (default: false)
 
 * Has conveyor leakages:  `+leak="…"+` with true/false (default: false)
 
-The `+<uses_queue>+` tag has one OPTIONAL attribute:
+The `+<uses_queues>+` tag has one OPTIONAL attribute:
 
 * Has queue overflows:  `+overflow="…"+` with true/false (default: false)
 
@@ -166,7 +166,7 @@ The `+<uses_event_posters>+` tag has one OPTIONAL attribute:
 
 * Has messages:  `+messages="…"+` with true/false (default: false)
 
-The `+<has_model_view>+` tag notes whether the XMILE file contains one or more <`+view+`> sections containing a visual representation of one or more models. Note that any software which supports XMILE should be able to simulate all whole-models, even those without diagrams.
+The `+<has_model_views>+` tag notes whether the XMILE file contains one or more <`+view+`> sections containing a visual representation of one or more models. Note that any software which supports XMILE should be able to simulate all whole-models, even those without diagrams.
 
 The `+<uses_outputs>+` tag implies both time-series graphs and tables are included. It has one OPTIONAL attribute:
 
@@ -174,7 +174,7 @@ The `+<uses_outputs>+` tag implies both time-series graphs and tables are includ
 
 The `+<uses_inputs>+` tag implies sliders are included.
 
-The `+<uses_annotation>+` tag implies text boxes are included.
+The `+<uses_annotations>+` tag implies text boxes are included.
 
 A sample options block appears below:
 
@@ -183,7 +183,7 @@ A sample options block appears below:
 <options namespace="std, isee">
 <uses_conveyors leak="true"/>  <!-- has conveyors, some leak -->
 <uses_arrays maximum_dimensions=”2”/>   <!-- has 2D arrays -->
-<has_model_view/>    <!-- has diagram of model -->
+<has_model_views/>    <!-- has diagram of model -->
 </options>
 ----
 
@@ -630,7 +630,7 @@ Only stocks or only flows can also be set to non-negative by default (flows in t
 [[sec-style-section]]
 === Style Section
 
-Every XMILE file MAY include style information to set default options for display objects. When `+<has_model_view>+` is set in the `+<options>+` block, support for styles is REQUIRED. Being style information, this mostly belongs to the Presentation section (5.3), which describes the display and layout of XMILE files.
+Every XMILE file MAY include style information to set default options for display objects. When `+<has_model_views>+` is set in the `+<options>+` block, support for styles is REQUIRED. Being style information, this mostly belongs to the Presentation section (5.3), which describes the display and layout of XMILE files.
 
 The style information is cascading across five levels from the entity outwards, with the actual entity style defined by the first occurrence of a style definition for that style property:
 
@@ -793,7 +793,7 @@ The format of the included files is a simplified version of the format of the fu
 
 Software packages MUST process included files before simulation is started, and the content of included files MUST be merged into the whole-model environment before simulation. Specifically:
 
-* The `+<options>+` tag options will be merged with the `+<options>+` from the primary model. This means that if an included file specifies an option such as `+<uses_conveyor/>+`, then the simulation SHOULD assume the whole-model has the `+<uses_conveyor/>+` option specified. When merging XMILE `+<options>+` the most specific of each option will take priority.
+* The `+<options>+` tag options will be merged with the `+<options>+` from the primary model. This means that if an included file specifies an option such as `+<uses_conveyors/>+`, then the simulation SHOULD assume the whole-model has the `+<uses_conveyors/>+` option specified. When merging XMILE `+<options>+` the most specific of each option will take priority.
 
 * When an included file only contains `+<behavior>+` and/or `+<style>+` optionsfootnote:[This separation is necessary because an included file can contain behavior and style options specific to the models and macros in that file – and which should not override or be merged with those in the file that includes those models and macros, as they’re unrelated. Furthermore, the intent of including behavior and style information is so that vendors can create, and include in all their models, a file with all of their defaults when they differ from the XMILE defaults.], those `+<behavior>+` and `+<style>+` options in the included file will be merged into the default styles of the file including them. This allows behaviors and styles to be included from other files. When merging `+<behavior>+` and `+<style>+` options, any behaviors and styles specified in the file that included them will take priority. (This allows the file that included them to override styles specified in the included file).
 
