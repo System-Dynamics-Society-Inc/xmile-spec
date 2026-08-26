@@ -398,6 +398,87 @@ function collectionSections(release) {
   }).join('\n  ');
 }
 
+/**
+ * What a sample demonstrates, read from the sample rather than described in the
+ * manifest, so the description cannot drift from the file.
+ */
+function sampleFeatures(file) {
+  let xml = '';
+  try { xml = fs.readFileSync(file, 'utf8'); } catch { return []; }
+  const has = (tag) => new RegExp(`<(?:\\w+:)?${tag}[\\s/>]`).test(xml);
+  const features = [];
+  if (has('ai_information')) features.push('AI information');
+  if (has('agentic_log')) features.push('agentic log');
+  if (has('testing')) features.push('signed message body');
+  if (has('element')) features.push('non-apply-to-all arrays');
+  else if (has('dimensions')) features.push('arrays');
+  if (has('module')) features.push('modules');
+  if (has('macro')) features.push('macros');
+  const vars = (xml.match(/<(?:stock|flow|aux)\s/g) || []).length;
+  if (vars) features.push(`${vars} variable${vars === 1 ? '' : 's'}`);
+  return features;
+}
+
+const VERDICT = { valid: 'validates', invalid: 'does not validate',
+                  malformed: 'not well-formed XML' };
+
+function examplesPage(release, dir) {
+  const rows = release.samples.map((sample) => {
+    const features = sampleFeatures(path.join(dir, sample.file));
+    const status = VERDICT[sample.status];
+    return `
+      <li><div class="row"><a href="${escape(sample.file)}">${escape(sample.name)}</a>
+        <span class="size">${kib(sample.bytes)}${status ? ` &middot; ${escape(status)}` : ''}</span></div>
+        ${features.length
+          ? `<p class="note">${features.map(escape).join(' &middot; ')}</p>` : ''}</li>`;
+  }).join('');
+
+  const schema = release.schema
+    ? `<p>Each is a complete XMILE document. They are validated against
+       <a href="${escape(release.schema.file)}">${escape(release.schema.file)}</a>, the schema
+       published with this version, and the result is shown beside each one.</p>`
+    : '<p>Each is a complete XMILE document.</p>';
+
+  return `<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Examples &mdash; XMILE ${escape(labelOf(release))}</title>
+<meta name="description" content="Example XMILE documents published with version ${escape(labelOf(release))}.">
+<link rel="canonical" href="${escape(config.canonical)}/${escape(idOf(release))}/examples.html">
+<style>${CSS}</style>
+<a class="skip" href="#main">Skip to content</a>
+<header class="site">
+  <div class="bar">
+    <span class="name"><a href="../">${escape(config.title)}</a></span>
+    <span class="tagline">${escape(config.tagline)}</span>
+  </div>
+  ${versionNav(idOf(release))}
+</header>
+<main id="main">
+  <span class="badge ${STATUS[release.status].tone}">${escape(STATUS[release.status].label)}</span>
+  <h1>Examples</h1>
+  <p class="desig">${escape(release.heading)} &mdash; ${escape(release.designation)}</p>
+  ${schema}
+  <h2>Example documents</h2>
+  <ul class="files">${rows}</ul>
+  <div class="pager">
+    <a href="./">&larr; XMILE ${escape(labelOf(release))}
+      <span class="size">${escape(STATUS[release.status].label)}</span></a>
+    ${release.schema ? `<a href="${escape(release.schema.file)}">XML Schema
+      <span class="size">${kib(release.schema.bytes)}</span> &rarr;</a>` : ''}
+  </div>
+</main>
+<footer class="site">
+  <div class="bar">
+    <p>${escape(config.title)}, maintained by the ${escape(config.steward)}.</p>
+    <p>Source and issue tracker: <a href="${escape(config.repository)}">${escape(config.repository)}</a></p>
+  </div>
+</footer>
+</html>
+`;
+}
+
 function schemaSection(release) {
   if (!release.schema && !release.samples) return '';
 
@@ -439,7 +520,8 @@ function schemaSection(release) {
         return `<a href="${escape(s.file)}">${escape(s.name)}</a>
           <span class="size">${kib(s.bytes)}</span>${mark}`;
       }).join(' &middot; ')}</p>
-      <p class="note">Documents that exercise the schema.</p>
+      <p class="note">Documents that exercise the schema. See
+      <a href="examples.html">examples.html</a> for what each one demonstrates.</p>
       ${verdict}</li>` : '';
 
   return `<h2>Schema and examples</h2>\n  <ul class="files">${schema}${samples}</ul>`;
@@ -563,8 +645,14 @@ for (const release of releases) {
 }
 
 releases.forEach((release, index) => {
-  fs.writeFileSync(path.join(outRoot, idOf(release), 'index.html'),
-    releasePage(release, index), 'utf8');
+  const dir = path.join(outRoot, idOf(release));
+  fs.writeFileSync(path.join(dir, 'index.html'), releasePage(release, index), 'utf8');
+  // The specification's front matter links to examples.html relative to itself,
+  // so the page has to exist beside the rendered specification.
+  if (release.samples?.length) {
+    fs.writeFileSync(path.join(dir, 'examples.html'), examplesPage(release, dir), 'utf8');
+    console.log(`  ${idOf(release)}/examples.html (${release.samples.length} example(s))`);
+  }
 });
 fs.writeFileSync(path.join(outRoot, 'index.html'), indexPage(), 'utf8');
 

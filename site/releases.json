@@ -78,8 +78,8 @@
       "id": "1.2",
       "label": "1.2",
       "heading": "XMILE Version 1.2",
-      "designation": "SDS Working Draft 01",
-      "date": "in progress",
+      "designation": "SDS Working Draft 02",
+      "date": "26 August 2026",
       "status": "under-review",
       "ref": "HEAD",
       "reviewBase": "origin/main",
@@ -90,6 +90,13 @@
           "source": "spec",
           "label": "Draft specification",
           "note": "The working draft, one self-contained file. Not approved."
+        },
+        {
+          "file": "xmile-v1.2-errata.html",
+          "source": "errata",
+          "sourcePath": "ERRATA-v1.2.adoc",
+          "label": "Errata",
+          "note": "Four style attributes with two documented spellings each, where the schema recognises one and every Chapter 6 example writes the other. Records what should be cleaned up."
         }
       ]
     },
