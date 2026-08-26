@@ -263,12 +263,6 @@
         <xs:element name="uses_annotations" type="empty_type" minOccurs="0"/>
         <xs:element name="uses_arrays" minOccurs="0">
           <xs:complexType>
-            <!--
-              Was max_dimensions. Chapter 2 names this attribute
-              maximum_dimensions, in the prose and in its example, and files in
-              circulation write maximum_dimensions, so the schema was rejecting
-              conforming documents over the spelling of a required attribute.
-            -->
             <xs:attribute name="maximum_dimensions" type="xs:integer" use="required"/>
             <xs:attribute name="invalid_index_value" default="0" use="optional">
               <xs:simpleType>
