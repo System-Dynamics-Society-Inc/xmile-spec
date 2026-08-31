@@ -90,6 +90,7 @@
       <xs:sequence>
         <xs:element ref="header"/>
         <xs:choice maxOccurs="unbounded">
+          <xs:element ref="ai_information" minOccurs="0" maxOccurs="1"/>
           <xs:element ref="sim_specs" minOccurs="0" maxOccurs="1"/>
           <xs:element ref="model_units" minOccurs="0" maxOccurs="1"/>
           <xs:element ref="behavior" minOccurs="0" maxOccurs="1"/>
@@ -135,6 +136,7 @@
           <xs:restriction base="xs:decimal">
             <xs:enumeration value="1.0"/>
             <xs:enumeration value="1.1"/>
+            <xs:enumeration value="1.2"/>
           </xs:restriction>
         </xs:simpleType>
       </xs:attribute>
@@ -154,23 +156,17 @@
     </xs:annotation>
     <xs:complexType>
       <xs:all>
-        <xs:element name="vendor" type="xs:string" minOccurs="0"/>
-        <xs:element name="name" type="xs:string" minOccurs="0"/>
-        <xs:element name="version" type="xs:string" minOccurs="0"/>
-        <xs:element name="caption" type="xs:string" minOccurs="0"/>
-        <xs:element name="author" type="xs:string" minOccurs="0"/>
-        <xs:element name="affiliation" type="xs:string" minOccurs="0"/>
-        <xs:element name="client" type="xs:string" minOccurs="0"/>
-        <xs:element name="copyright" type="xs:string" minOccurs="0"/>
-        <xs:element name="created" type="xs:date" minOccurs="0"/>
-        <xs:element name="modified" type="xs:date" minOccurs="0"/>
-        <xs:element name="uuid" minOccurs="0">
-          <xs:simpleType>
-            <xs:restriction base="xs:string">
-              <xs:pattern value="[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}"/>
-            </xs:restriction>
-          </xs:simpleType>
-        </xs:element>
+        <xs:element name="vendor" type="string_element_type" minOccurs="0"/>
+        <xs:element name="name" type="string_element_type" minOccurs="0"/>
+        <xs:element name="version" type="string_element_type" minOccurs="0"/>
+        <xs:element name="caption" type="string_element_type" minOccurs="0"/>
+        <xs:element name="author" type="string_element_type" minOccurs="0"/>
+        <xs:element name="affiliation" type="string_element_type" minOccurs="0"/>
+        <xs:element name="client" type="string_element_type" minOccurs="0"/>
+        <xs:element name="copyright" type="string_element_type" minOccurs="0"/>
+        <xs:element name="created" type="date_element_type" minOccurs="0"/>
+        <xs:element name="modified" type="date_element_type" minOccurs="0"/>
+        <xs:element name="uuid" type="uuid_element_type" minOccurs="0"/>
         <xs:element ref="image" minOccurs="0"/>
         <xs:element ref="options" minOccurs="0"/>
         <xs:element ref="product" minOccurs="0"/>
@@ -206,11 +202,11 @@
   <xs:element name="contact">
     <xs:complexType>
       <xs:choice minOccurs="0" maxOccurs="unbounded">
-        <xs:element name="address" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
-        <xs:element name="phone" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
-        <xs:element name="fax" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
-        <xs:element name="email" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
-        <xs:element name="website" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+        <xs:element name="address" type="string_element_type" minOccurs="0" maxOccurs="unbounded"/>
+        <xs:element name="phone" type="string_element_type" minOccurs="0" maxOccurs="unbounded"/>
+        <xs:element name="fax" type="string_element_type" minOccurs="0" maxOccurs="unbounded"/>
+        <xs:element name="email" type="string_element_type" minOccurs="0" maxOccurs="unbounded"/>
+        <xs:element name="website" type="string_element_type" minOccurs="0" maxOccurs="unbounded"/>
       </xs:choice>
     </xs:complexType>
   </xs:element>
@@ -223,13 +219,13 @@
     </xs:annotation>
     <xs:complexType>
       <xs:all>
-        <xs:element name="uses_conveyor" minOccurs="0">
+        <xs:element name="uses_conveyors" minOccurs="0">
           <xs:complexType>
             <xs:attribute name="arrest" type="xs:boolean" use="optional"/>
             <xs:attribute name="leak" type="xs:boolean" use="optional"/>
           </xs:complexType>
         </xs:element>
-        <xs:element name="uses_queue" minOccurs="0">
+        <xs:element name="uses_queues" minOccurs="0">
           <xs:complexType>
             <xs:attribute name="overflow" type="xs:boolean" use="optional"/>
           </xs:complexType>
@@ -246,7 +242,7 @@
             <xs:attribute name="messages" type="xs:boolean" use="optional"/>
           </xs:complexType>
         </xs:element>
-        <xs:element name="has_model_view" type="empty_type" minOccurs="0"/>
+        <xs:element name="has_model_views" type="empty_type" minOccurs="0"/>
         <!--
           v1.1: the lamp and gauge flags went with the withdrawal of Lamps and
           Gauges. numeric_display remains, per Section 2 (XMILE Options): "The
@@ -264,10 +260,10 @@
           "The <uses_inputs> tag implies sliders are included."
         -->
         <xs:element name="uses_inputs" type="empty_type" minOccurs="0"/>
-        <xs:element name="uses_annotation" type="empty_type" minOccurs="0"/>
+        <xs:element name="uses_annotations" type="empty_type" minOccurs="0"/>
         <xs:element name="uses_arrays" minOccurs="0">
           <xs:complexType>
-            <xs:attribute name="max_dimensions" type="xs:integer" use="required"/>
+            <xs:attribute name="maximum_dimensions" type="xs:integer" use="required"/>
             <xs:attribute name="invalid_index_value" default="0" use="optional">
               <xs:simpleType>
                 <xs:restriction base="xs:double">
@@ -319,8 +315,8 @@
     </xs:annotation>
     <xs:complexType>
       <xs:all>
-        <xs:element name="stop" type="xs:double" minOccurs="1"/>
-        <xs:element name="start" type="xs:double" minOccurs="1"/>
+        <xs:element name="stop" type="double_element_type" minOccurs="1"/>
+        <xs:element name="start" type="double_element_type" minOccurs="1"/>
         <xs:element name="dt" minOccurs="0" default="1">
           <xs:complexType>
             <xs:simpleContent>
@@ -426,8 +422,8 @@
         <xs:element name="unit" minOccurs="0" maxOccurs="unbounded">
           <xs:complexType>
             <xs:sequence>
-              <xs:element name="eqn" type="xs:string" minOccurs="0" maxOccurs="1"/>
-              <xs:element name="alias" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+              <xs:element name="eqn" type="string_element_type" minOccurs="0" maxOccurs="1"/>
+              <xs:element name="alias" type="string_element_type" minOccurs="0" maxOccurs="unbounded"/>
             </xs:sequence>
             <xs:attribute name="name" type="xs:string" use="required"/>
             <xs:attribute name="disabled" type="xs:boolean" use="optional" default="false"/>
@@ -509,10 +505,10 @@
     <xs:complexType>
       <xs:choice maxOccurs="unbounded">
         <!-- common child elements -->
-        <xs:element name="eqn" type="xs:string" minOccurs="0" maxOccurs="1"/>
-        <xs:element name="mathml" type="xs:string" minOccurs="0" maxOccurs="1"/>
-        <xs:element name="units" type="xs:string" minOccurs="0" maxOccurs="1"/>
-        <xs:element name="doc" type="xs:string" minOccurs="0" maxOccurs="1"/>
+        <xs:element name="eqn" type="string_element_type" minOccurs="0" maxOccurs="1"/>
+        <xs:element name="mathml" type="string_element_type" minOccurs="0" maxOccurs="1"/>
+        <xs:element name="units" type="string_element_type" minOccurs="0" maxOccurs="1"/>
+        <xs:element name="doc" type="string_element_type" minOccurs="0" maxOccurs="1"/>
         <xs:element ref="gf" minOccurs="0" maxOccurs="1"/>
         <xs:element ref="dimensions" minOccurs="0" maxOccurs="1"/>
         <xs:element ref="event_poster" minOccurs="0" maxOccurs="1"/>
@@ -521,8 +517,8 @@
         <xs:element ref="format" minOccurs="0" maxOccurs="1"/>
 
         <!-- specific child elements for stock -->
-        <xs:element name="inflow" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
-        <xs:element name="outflow" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+        <xs:element name="inflow" type="string_element_type" minOccurs="0" maxOccurs="unbounded"/>
+        <xs:element name="outflow" type="string_element_type" minOccurs="0" maxOccurs="unbounded"/>
         <xs:element name="queue" type="empty_type" minOccurs="0" maxOccurs="1"/>
         <xs:element name="non_negative" type="boolean_or_empty_type" minOccurs="0" maxOccurs="1"/>
         <xs:element ref="conveyor" minOccurs="0" maxOccurs="1"/>
@@ -531,12 +527,12 @@
         <xs:element name="element" maxOccurs="unbounded">
           <xs:complexType>
             <xs:choice maxOccurs="unbounded">
-              <xs:element name="eqn" type="xs:string" minOccurs="0" maxOccurs="1"/>
-              <xs:element name="mathml" type="xs:string" minOccurs="0" maxOccurs="1"/>
+              <xs:element name="eqn" type="string_element_type" minOccurs="0" maxOccurs="1"/>
+              <xs:element name="mathml" type="string_element_type" minOccurs="0" maxOccurs="1"/>
               <xs:element ref="gf" minOccurs="0" maxOccurs="1"/>
               <xs:element ref="event_poster" minOccurs="0" maxOccurs="1"/>
-              <xs:element name="inflow" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
-              <xs:element name="outflow" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+              <xs:element name="inflow" type="string_element_type" minOccurs="0" maxOccurs="unbounded"/>
+              <xs:element name="outflow" type="string_element_type" minOccurs="0" maxOccurs="unbounded"/>
               <xs:element name="queue" type="empty_type" minOccurs="0" maxOccurs="1"/>
               <xs:element name="non_negative" type="boolean_or_empty_type" minOccurs="0" maxOccurs="1"/>
               <xs:element ref="conveyor" minOccurs="0" maxOccurs="1"/>
@@ -551,6 +547,8 @@
       <xs:attribute name="access" type="access_type" use="optional"/>
       <xs:attribute name="autoexport" type="xs:boolean" use="optional" default="false"/>
       <xs:attribute name="subscript" type="xs:string" use="optional"/>
+      <!-- Chapter 4, Common Variable Properties. -->
+      <xs:attribute name="ai_state" type="ai_state_type" use="optional"/>
     </xs:complexType>
   </xs:element>
 
@@ -563,11 +561,11 @@
     </xs:annotation>
     <xs:complexType>
       <xs:all>
-        <xs:element name="len" type="xs:string" minOccurs="0"/>
-        <xs:element name="capacity" type="xs:string" minOccurs="0"/>
-        <xs:element name="in_limit" type="xs:string" minOccurs="0"/>
-        <xs:element name="sample" type="xs:string" minOccurs="0"/>
-        <xs:element name="arrest" type="xs:string" minOccurs="0"/>
+        <xs:element name="len" type="string_element_type" minOccurs="0"/>
+        <xs:element name="capacity" type="string_element_type" minOccurs="0"/>
+        <xs:element name="in_limit" type="string_element_type" minOccurs="0"/>
+        <xs:element name="sample" type="string_element_type" minOccurs="0"/>
+        <xs:element name="arrest" type="string_element_type" minOccurs="0"/>
       </xs:all>
       <xs:attribute name="discrete" type="xs:boolean" use="optional" default="false"/>
       <xs:attribute name="batch_integrity" type="xs:boolean" use="optional" default="false"/>
@@ -587,10 +585,10 @@
     <xs:complexType>
       <xs:choice maxOccurs="unbounded">
         <!-- common child elements -->
-        <xs:element name="eqn" type="xs:string" minOccurs="0" maxOccurs="1"/>
-        <xs:element name="mathml" type="xs:string" minOccurs="0" maxOccurs="1"/>
-        <xs:element name="units" type="xs:string" minOccurs="0" maxOccurs="1"/>
-        <xs:element name="doc" type="xs:string" minOccurs="0" maxOccurs="1"/>
+        <xs:element name="eqn" type="string_element_type" minOccurs="0" maxOccurs="1"/>
+        <xs:element name="mathml" type="string_element_type" minOccurs="0" maxOccurs="1"/>
+        <xs:element name="units" type="string_element_type" minOccurs="0" maxOccurs="1"/>
+        <xs:element name="doc" type="string_element_type" minOccurs="0" maxOccurs="1"/>
         <xs:element ref="gf" minOccurs="0" maxOccurs="1"/>
         <xs:element ref="dimensions" minOccurs="0" maxOccurs="1"/>
         <xs:element ref="event_poster" minOccurs="0" maxOccurs="1"/>
@@ -599,7 +597,7 @@
         <xs:element ref="format" minOccurs="0" maxOccurs="1"/>
 
         <!-- specific child elements elements for flow -->
-        <xs:element name="multiplier" type="xs:string" minOccurs="0" maxOccurs="1"/>
+        <xs:element name="multiplier" type="string_element_type" minOccurs="0" maxOccurs="1"/>
         <xs:element name="non_negative" type="boolean_or_empty_type" minOccurs="0" maxOccurs="1"/>
         <xs:element name="overflow" type="empty_type"/>
         <xs:element name="leak" type="empty_type"/>
@@ -609,11 +607,11 @@
         <xs:element name="element" maxOccurs="unbounded">
           <xs:complexType>
             <xs:choice maxOccurs="unbounded">
-              <xs:element name="eqn" type="xs:string" minOccurs="0" maxOccurs="1"/>
-              <xs:element name="mathml" type="xs:string" minOccurs="0" maxOccurs="1"/>
+              <xs:element name="eqn" type="string_element_type" minOccurs="0" maxOccurs="1"/>
+              <xs:element name="mathml" type="string_element_type" minOccurs="0" maxOccurs="1"/>
               <xs:element ref="gf" minOccurs="0" maxOccurs="1"/>
               <xs:element ref="event_poster" minOccurs="0" maxOccurs="1"/>
-              <xs:element name="multiplier" type="xs:string" minOccurs="0" maxOccurs="1"/>
+              <xs:element name="multiplier" type="string_element_type" minOccurs="0" maxOccurs="1"/>
               <xs:element name="non_negative" type="boolean_or_empty_type" minOccurs="0" maxOccurs="1"/>
               <xs:element name="overflow" type="empty_type"/>
               <xs:element name="leak" type="empty_type"/>
@@ -628,6 +626,8 @@
       <xs:attribute name="access" type="access_type" use="optional"/>
       <xs:attribute name="autoexport" type="xs:boolean" use="optional" default="false"/>
       <xs:attribute name="subscript" type="xs:string" use="optional"/>
+      <!-- Chapter 4, Common Variable Properties. -->
+      <xs:attribute name="ai_state" type="ai_state_type" use="optional"/>
 
       <!-- specific attributes for flow -->
       <xs:attribute name="leak_start" type="xs:double" default="0"/>
@@ -648,10 +648,10 @@
     <xs:complexType>
       <xs:choice maxOccurs="unbounded">
         <!-- common -->
-        <xs:element name="eqn" type="xs:string" minOccurs="0" maxOccurs="1"/>
-        <xs:element name="mathml" type="xs:string" minOccurs="0" maxOccurs="1"/>
-        <xs:element name="units" type="xs:string" minOccurs="0" maxOccurs="1"/>
-        <xs:element name="doc" type="xs:string" minOccurs="0" maxOccurs="1"/>
+        <xs:element name="eqn" type="string_element_type" minOccurs="0" maxOccurs="1"/>
+        <xs:element name="mathml" type="string_element_type" minOccurs="0" maxOccurs="1"/>
+        <xs:element name="units" type="string_element_type" minOccurs="0" maxOccurs="1"/>
+        <xs:element name="doc" type="string_element_type" minOccurs="0" maxOccurs="1"/>
         <xs:element ref="gf" minOccurs="0" maxOccurs="1"/>
         <xs:element ref="dimensions" minOccurs="0" maxOccurs="1"/>
         <xs:element ref="event_poster" minOccurs="0" maxOccurs="1"/>
@@ -663,8 +663,8 @@
         <xs:element name="element" maxOccurs="unbounded">
           <xs:complexType>
             <xs:choice maxOccurs="unbounded">
-              <xs:element name="eqn" type="xs:string" minOccurs="0" maxOccurs="1"/>
-              <xs:element name="mathml" type="xs:string" minOccurs="0" maxOccurs="1"/>
+              <xs:element name="eqn" type="string_element_type" minOccurs="0" maxOccurs="1"/>
+              <xs:element name="mathml" type="string_element_type" minOccurs="0" maxOccurs="1"/>
               <xs:element ref="gf" minOccurs="0" maxOccurs="1"/>
               <xs:element ref="event_poster" minOccurs="0" maxOccurs="1"/>
             </xs:choice>
@@ -677,6 +677,8 @@
       <xs:attribute name="access" type="access_type" use="optional"/>
       <xs:attribute name="autoexport" type="xs:boolean" use="optional" default="false"/>
       <xs:attribute name="subscript" type="xs:string" use="optional"/>
+      <!-- Chapter 4, Common Variable Properties. -->
+      <xs:attribute name="ai_state" type="ai_state_type" use="optional"/>
 
       <!-- specific attributes for aux -->
       <xs:attribute name="flow_concept" type="xs:boolean" default="false"/>
@@ -798,7 +800,7 @@
     </xs:annotation>
     <xs:complexType>
       <xs:choice minOccurs="0" maxOccurs="unbounded">
-        <xs:element name="doc" type="xs:string" minOccurs="0" maxOccurs="1"/>
+        <xs:element name="doc" type="string_element_type" minOccurs="0" maxOccurs="1"/>
         <!-- this entity use does not allow an index only the name as an attribute -->
         <xs:element name="entity" minOccurs="0" maxOccurs="unbounded">
           <xs:complexType>
@@ -1075,7 +1077,7 @@
                 </xs:all>
               </xs:complexType>
             </xs:element>
-            <xs:element name="to" type="xs:string" minOccurs="1"/>
+            <xs:element name="to" type="string_element_type" minOccurs="1"/>
           </xs:all>
           <xs:attribute name="uid" type="xs:int"/>
           <xs:attribute name="x" type="xs:double"/>
@@ -1114,7 +1116,7 @@
         <xs:complexType>
           <xs:all>
             <xs:element ref="shape" minOccurs="0"/>
-            <xs:element name="of" type="xs:string" minOccurs="1"/>
+            <xs:element name="of" type="string_element_type" minOccurs="1"/>
           </xs:all>
           <xs:attribute name="uid" type="xs:int"/>
           <xs:attributeGroup ref="style_attributes"/>
@@ -1459,10 +1461,10 @@
     </xs:annotation>
     <xs:complexType>
       <xs:choice maxOccurs="unbounded">
-        <xs:element name="parm" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
-        <xs:element name="eqn" type="xs:string" minOccurs="1" maxOccurs="1"/>
-        <xs:element name="format" type="xs:string" minOccurs="0" maxOccurs="1"/>
-        <xs:element name="doc" type="xs:string" minOccurs="0" maxOccurs="1"/>
+        <xs:element name="parm" type="string_element_type" minOccurs="0" maxOccurs="unbounded"/>
+        <xs:element name="eqn" type="string_element_type" minOccurs="1" maxOccurs="1"/>
+        <xs:element name="format" type="string_element_type" minOccurs="0" maxOccurs="1"/>
+        <xs:element name="doc" type="string_element_type" minOccurs="0" maxOccurs="1"/>
         <xs:element ref="sim_specs" minOccurs="0" maxOccurs="1"/>
         <xs:element ref="variables" minOccurs="0" maxOccurs="1"/>
         <xs:element ref="views" minOccurs="0" maxOccurs="1"/>
@@ -1948,8 +1950,214 @@
     cannot also take vendor_attributes. Declaring the empty content model
     directly says the same thing and lets vendor attributes through.
   -->
+  <!--
+    Element content types.
+
+    An element declared with a simple type carries no attributes, so the
+    schema-wide defaultAttributes group cannot reach it and no vendor markup is
+    possible on it: <eqn isee:note="..."> is rejected however the extension
+    mechanism is written elsewhere. Each of these is that same simple type wrapped
+    so that the element has somewhere to hang an attribute, and the value space is
+    unchanged: an <eqn> is still a string, a <start> still a double, a <created>
+    still a date.
+
+    Attributes are deliberately not treated this way. An attribute cannot itself
+    carry attributes, so a simple type is the right shape there and the twenty-six
+    named simple types below serve them unchanged.
+  -->
+  <xs:complexType name="string_element_type">
+    <xs:simpleContent>
+      <xs:extension base="xs:string"/>
+    </xs:simpleContent>
+  </xs:complexType>
+
+  <xs:complexType name="date_element_type">
+    <xs:simpleContent>
+      <xs:extension base="xs:date"/>
+    </xs:simpleContent>
+  </xs:complexType>
+
+  <xs:complexType name="double_element_type">
+    <xs:simpleContent>
+      <xs:extension base="xs:double"/>
+    </xs:simpleContent>
+  </xs:complexType>
+
+  <!-- Hoisted out of the uuid element declaration, which held it inline. -->
+  <xs:simpleType name="uuid_type">
+    <xs:restriction base="xs:string">
+      <xs:pattern value="[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:complexType name="uuid_element_type">
+    <xs:simpleContent>
+      <xs:extension base="uuid_type"/>
+    </xs:simpleContent>
+  </xs:complexType>
+
   <xs:complexType name="empty_type"/>
 
   <xs:complexType name="boolean_or_empty_type"/>
+
+  <!--
+    AI information, new in v1.1's successor. See Chapter 2, AI Information
+    Section.
+
+    xs:all rather than xs:sequence: Chapter 2 does not fix an order for these,
+    and files in circulation differ, some writing status then testing then log
+    then settings, others status then agentic_log then log. XSD 1.1 lifts the
+    1.0 restrictions on xs:all, so this is expressible without inventing an
+    order the specification never required.
+  -->
+  <xs:element name="ai_information">
+    <xs:annotation>
+      <xs:documentation>
+        Status and settings relating to the use of AI in creating the model, so
+        that a reader can determine whether, and where, AI was used.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:all>
+        <xs:element ref="status"/>
+        <xs:element ref="log" minOccurs="0"/>
+        <xs:element ref="agentic_log" minOccurs="0"/>
+        <xs:element ref="settings" minOccurs="0"/>
+        <xs:element ref="testing" minOccurs="0"/>
+      </xs:all>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="status">
+    <xs:annotation>
+      <xs:documentation>
+        Whether AI has been used and where. Attributes only, no child elements.
+        Additional attributes MAY be present provided they follow the rules for
+        signature generation, which is why this carries the vendor attribute
+        wildcard like everything else.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <!--
+        verified and trusted are REQUIRED. Everything else is optional: when
+        verified is false the chapter licenses omitting the rest, so requiring
+        any further attribute would reject a file the chapter permits.
+      -->
+      <xs:attribute name="verified" type="xs:boolean" use="required"/>
+      <xs:attribute name="trusted" type="xs:boolean" use="required"/>
+      <xs:attribute name="mixed" type="xs:boolean" use="optional"/>
+      <xs:attribute name="tampered" type="xs:boolean" use="optional"/>
+      <xs:attribute name="uses" type="xs:boolean" use="optional"/>
+      <xs:attribute name="analyzed" type="xs:boolean" use="optional"/>
+      <xs:attribute name="log_truncated" type="xs:boolean" use="optional"/>
+      <xs:attribute name="timestamp" type="xs:integer" use="optional"/>
+      <xs:attribute name="algorithm" use="optional">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:enumeration value="ed25519"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+      <!-- Chapter 2 requires an https URL, which xs:anyURI alone would not. -->
+      <xs:attribute name="keyurl" use="optional">
+        <xs:simpleType>
+          <xs:restriction base="xs:anyURI">
+            <xs:pattern value="https://.+"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+      <xs:attribute name="want_var_info" type="xs:boolean" use="optional"/>
+      <xs:attribute name="want_var_status" type="xs:boolean" use="optional"/>
+      <xs:attribute name="skip_module_files" type="xs:boolean" use="optional"/>
+      <xs:attribute name="sampling" type="xs:positiveInteger" use="optional" default="1"/>
+      <xs:attribute name="want_log" type="xs:boolean" use="optional"/>
+      <xs:attribute name="signature" type="xs:base64Binary" use="optional"/>
+    </xs:complexType>
+  </xs:element>
+
+  <!--
+    The log is plain text, markup or markdown, so its content is unconstrained.
+    When an agentic log is present it begins with the {note:signature} prefix
+    described in Chapter 2; that is a lexical convention inside the text and is
+    not expressible here.
+  -->
+  <xs:element name="log" type="string_element_type"/>
+
+  <xs:element name="agentic_log">
+    <xs:annotation>
+      <xs:documentation>
+        The record of an interaction with an agentic AI agent, one message per
+        exchange, in document order. The order is significant: the agentic
+        signature is taken over the collated content in this order.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <!--
+          The message itself is the element's content, not an attribute. An
+          attribute value has to carry its markup escaped which is verbose
+		  and unreadable.
+        -->
+        <xs:element name="message" minOccurs="0" maxOccurs="unbounded">
+          <xs:complexType>
+            <xs:simpleContent>
+              <xs:extension base="xs:string">
+                <!--
+                  type is deliberately unconstrained. Chapter 2 says the text
+                  "should be human readable and short, but can take any value",
+                  so an enumeration here would reject conforming files. The
+                  samples use user_text, agent_text and agent_complete.
+                -->
+                <xs:attribute name="type" type="xs:string" use="required"/>
+                <xs:attribute name="is_thinking" type="xs:boolean" use="optional" default="false"/>
+                <xs:attribute name="agent_name" type="xs:string" use="optional"/>
+              </xs:extension>
+            </xs:simpleContent>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <!--
+    Software specific, so nothing is declared. Chapter 2: "No sub-tags or
+    attributes are specified, as the nature of these settings is expected to be
+    software specific." Vendor content arrives through the schema-wide open
+    content, so <isee:setting .../> children validate without this schema
+    knowing about them.
+  -->
+  <xs:element name="settings">
+    <xs:complexType/>
+  </xs:element>
+
+  <xs:element name="testing">
+    <xs:annotation>
+      <xs:documentation>
+        The constructed message string, so that one vendor can check its
+        assembly against another's. Not expected in production artifacts.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:attribute name="signed_message_body" type="xs:string" use="required"/>
+    </xs:complexType>
+  </xs:element>
+
+  <!--
+    How AI contributed to one variable. See Chapter 2, Variable AI Status. This
+    is a closed list: unlike the message type above, Chapter 2 enumerates
+    exactly these eight codes and gives each a meaning.
+  -->
+  <xs:simpleType name="ai_state_type">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="A"/>
+      <xs:enumeration value="B"/>
+      <xs:enumeration value="C"/>
+      <xs:enumeration value="D"/>
+      <xs:enumeration value="E"/>
+      <xs:enumeration value="F"/>
+      <xs:enumeration value="G"/>
+      <xs:enumeration value="H"/>
+    </xs:restriction>
+  </xs:simpleType>
 
 </xs:schema>

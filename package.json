@@ -8,7 +8,10 @@
     "build:release": "node tools/release-build.mjs spec/xmile.adoc build/xmile-release.html",
     "lint": "node tools/lint.mjs spec",
     "validate": "node tools/validate.mjs",
-    "check": "npm run lint && npm run build && npm run validate"
+    "check": "npm run lint && npm run build && npm run validate && npm run verify",
+    "verify": "node tools/verify_signatures.mjs",
+    "redline": "node tools/redline.mjs",
+    "site": "node tools/site.mjs"
   },
   "devDependencies": {
     "@asciidoctor/core": "^3.0.4"

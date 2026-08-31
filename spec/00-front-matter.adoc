@@ -1,54 +1,36 @@
-XML Interchange Language for System Dynamics (XMILE) Version 1.1
+XML Interchange Language for System Dynamics (XMILE) Version 1.2
 
-Candidate SDS Standard 02
+SDS Working Draft 02
 
-20 August 2024
+26 August 2026
 
 Specification URIs
 
 This version:
 
-http://docs.oasis-open.org/xmile/xmile/v1.0/cos01/xmile-v1.0-cos01.doc[http://docs.oasis-open.org/xmile/xmile/v1.0/cos01/xmile-v1.0-cos01.doc] (Authoritative)
-
-http://docs.oasis-open.org/xmile/xmile/v1.0/cos01/xmile-v1.0-cos01.html[http://docs.oasis-open.org/xmile/xmile/v1.0/cos01/xmile-v1.0-cos01.html]
-
-http://docs.oasis-open.org/xmile/xmile/v1.0/cos01/xmile-v1.0-cos01.pdf[http://docs.oasis-open.org/xmile/xmile/v1.0/cos01/xmile-v1.0-cos01.pdf]
+https://xmile.systemdynamics.org/1.2/xmile-v1.2.html[https://xmile.systemdynamics.org/1.2/xmile-v1.2.html] (Authoritative)
 
 Previous version:
 
-http://docs.oasis-open.org/xmile/xmile/v1.0/csprd01/xmile-v1.0-csprd01.doc[http://docs.oasis-open.org/xmile/xmile/v1.0/csprd01/xmile-v1.0-csprd01.doc] (Authoritative)
-
-http://docs.oasis-open.org/xmile/xmile/v1.0/csprd01/xmile-v1.0-csprd01.html[http://docs.oasis-open.org/xmile/xmile/v1.0/csprd01/xmile-v1.0-csprd01.html]
-
-http://docs.oasis-open.org/xmile/xmile/v1.0/csprd01/xmile-v1.0-csprd01.pdf[http://docs.oasis-open.org/xmile/xmile/v1.0/csprd01/xmile-v1.0-csprd01.pdf]
+https://xmile.systemdynamics.org/1.1/xmile-v1.1.html[https://xmile.systemdynamics.org/1.1/xmile-v1.1.html] (Authoritative)
 
 Latest version:
 
-http://docs.oasis-open.org/xmile/xmile/v1.0/xmile-v1.0.doc[http://docs.oasis-open.org/xmile/xmile/v1.0/xmile-v1.0.doc] (Authoritative)
-
-http://docs.oasis-open.org/xmile/xmile/v1.0/xmile-v1.0.html[http://docs.oasis-open.org/xmile/xmile/v1.0/xmile-v1.0.html]
-
-http://docs.oasis-open.org/xmile/xmile/v1.0/xmile-v1.0.pdf[http://docs.oasis-open.org/xmile/xmile/v1.0/xmile-v1.0.pdf]
+https://xmile.systemdynamics.org[https://xmile.systemdynamics.org]
 
 Technical Committee:
 
-https://www.oasis-open.org/committees/xmile/[OASIS XML Interchange Language (XMILE) for System Dynamics TC]
+https://systemdynamics.org/committees[SDS XML Interchange Language (XMILE) for System Dynamics TC]
 
-Chairs:
+Chair:
 
 Karim Chichakly (mailto:kchichakly@iseesystems.com[kchichakly@iseesystems.com]), http://www.iseesystems.com[isee systems inc.]
-
-Steven Adler (mailto:adler1@us.ibm.com[adler1@us.ibm.com]), http://www.ibm.com[IBM]
 
 Editors:
 
 Karim Chichakly (mailto:kchichakly@iseesystems.com[kchichakly@iseesystems.com]), http://www.iseesystems.com[isee systems inc.]
 
-Gary Baxter (mailto:garyrbaxter@yahoo.com[garyrbaxter@yahoo.com]), Individual
-
 Robert Eberlein (mailto:bob@astutesd.com[bob@astutesd.com]), http://www.systemdynamics.org[System Dynamics Society, Inc.]
-
-Will Glass-Husain (mailto:wglass@forio.com[wglass@forio.com]), Individual
 
 Robert Powers (mailto:bobbypowers@gmail.com[bobbypowers@gmail.com]), Individual
 
@@ -58,13 +40,15 @@ Additional artifacts:
 
 * This prose specification is one component of a Work Product that also includes:
 
-XML schemas: http://docs.oasis-open.org/xmile/xmile/v1.0/cos01/schemas/[http://docs.oasis-open.org/xmile/xmile/v1.0/cos01/schemas/]
+XML schema: link:xmile.xsd.xml[xmile.xsd.xml]
 
-Examples: http://docs.oasis-open.org/xmile/xmile/v1.0/cos01/examples/[http://docs.oasis-open.org/xmile/xmile/v1.0/cos01/examples/]
+Examples: link:examples.html[examples.html]
 
 Related work:
 
-This specification replaces or supersedes:
+This specification replaces or supersedes previous versions as well as:
+
+http://docs.oasis-open.org/xmile/xmile/v1.0/cos01/xmile-v1.0-cos01.doc[http://docs.oasis-open.org/xmile/xmile/v1.0/cos01/xmile-v1.0-cos01.doc] (Authoritative)
 
 __XMILE: An XML Interchange Language for System Dynamics__. 7 June 2013. Karim Chichakly. http://www.iseesystems.com/community/support/XMILEv4.pdf[http://www.iseesystems.com/community/support/XMILEv4.pdf].
 
@@ -92,15 +76,15 @@ Citation format:
 
 When referencing this specification the following citation format should be used:
 
-**pass:c[[xmile-v1.0\]]**
+**pass:c[[xmile-v1.2\]]**
 
-__XML Interchange Language for System Dynamics (XMILE) Version 1.0__. Edited by Karim Chichakly, Gary Baxter, Robert Eberlein, Will Glass-Husain, Robert Powers, and William Schoenberg. 29 July 2015. Candidate OASIS Standard 01. http://docs.oasis-open.org/xmile/xmile/v1.0/cos01/xmile-v1.0-cos01.html[http://docs.oasis-open.org/xmile/xmile/v1.0/cos01/xmile-v1.0-cos01.html]. Latest version: http://docs.oasis-open.org/xmile/xmile/v1.0/xmile-v1.0.html[http://docs.oasis-open.org/xmile/xmile/v1.0/xmile-v1.0.html].
+__XML Interchange Language for System Dynamics (XMILE) Version 1.2__. Edited by Karim Chichakly, Robert Eberlein, Robert Powers, and William Schoenberg. 26 August 2026. SDS Working Draft 02. https://xmile.systemdynamics.org/1.2/xmile-v1.2.html[https://xmile.systemdynamics.org/1.2/xmile-v1.2.html]. Latest version: https://xmile.systemdynamics.org[https://xmile.systemdynamics.org].
 
 Notices
 
-Copyright © OASIS Open 2015. All Rights Reserved.
+Copyright © System Dynamics Society, Inc. 2026.  All Rights Reserved. 
 
-All capitalized terms in the following text have the meanings assigned to them in the OASIS Intellectual Property Rights Policy (the "OASIS IPR Policy"). The full https://www.oasis-open.org/policies-guidelines/ipr[Policy] may be found at the OASIS website.
+Copyright © OASIS Open 2015. All Rights Reserved.
 
 This document and translations of it may be copied and furnished to others, and derivative works that comment on or otherwise explain it or assist in its implementation may be prepared, copied, published, and distributed, in whole or in part, without restriction of any kind, provided that the above copyright notice and this section are included on all such copies and derivative works. However, this document itself may not be modified in any way, including by removing the copyright notice or references to OASIS, except as needed for the purpose of developing any document or deliverable produced by an OASIS Technical Committee (in which case the rules applicable to copyrights, as set forth in the OASIS IPR Policy, must be followed) or as required to translate it into languages other than English.
 

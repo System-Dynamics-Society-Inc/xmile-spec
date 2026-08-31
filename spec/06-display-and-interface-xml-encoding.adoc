@@ -451,7 +451,7 @@ When an image is embedded directly within the XMILE file, the data is started by
 
 The `+<sound>+` tag gives a sound to play:
 
-* Sound:  `+<sound>+` with URL-format pathname (default protocol is file://)
+* Sound:  `+<sound>+` with URL-format pathname (default protocol is `+file://+`)
 
 An object that navigates includes a `+<link>+`.  The OPTIONAL `+<link>+` tag has several attributes:
 

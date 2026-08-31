@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<xmile version="1.1" xmlns="http://docs.oasis-open.org/xmile/ns/XMILE/v1.0" xmlns:isee="http://iseesystems.com/XMILE">
+<xmile version="1.2" xmlns="http://docs.oasis-open.org/xmile/ns/XMILE/v1.0" xmlns:isee="http://iseesystems.com/XMILE">
 	<header>
-		<options namespace="std, isee"?
-		<uses_arrays/>
+		<options namespace="std, isee">
+		<uses_arrays maximum_dimensions="1"/>
 		</options>
 		<name>WithArrays.xmile</name>
 		<uuid>a771bc1f-bfcc-4d00-9bf1-0c5e5a06150c</uuid>
@@ -10,7 +10,8 @@
 		<product version="4.4" isee:build_number="4016" isee:saved_by_v1="true" lang="en">Stella Architect</product>
 	</header>
 	<ai_information>
-		<status verified="false" mixed="true" trusted="true" tampered="false" uses="false" analyzed="false" log_truncated="false" timestamp="1787096051" algorithm="ed25519" keyurl="https://iseesystems.com/keys/stella01.txt" want_var_info="true" want_var_status="false" want_log="false" sampling="1" signature="bXbFIM6sIBtUZRQ89VQcZpmAquQqqUOrUnZUHd2XOHqc7N8fZ7H50mhJ1inGHmMrNY2dWXuQHdFTJj+aittVBg=="/>
+		<status verified="false" mixed="true" trusted="true" tampered="false" uses="false" analyzed="false" log_truncated="false" timestamp="1787187807" algorithm="ed25519" keyurl="https://iseesystems.com/keys/stella01.txt" want_var_info="true" want_var_status="false" want_log="false" sampling="1" signature="mXXDwXkd7f1FQopSKGZTKoLqFwDe+I1tTlNlU9GxbhdW88ylAdHW5Psj5VvqMdIInJgZdp+eAQukyye8sOqTDQ=="/>
+		<testing signed_message_body="algorithm=ed25519 analyzed=false keyurl=https://iseesystems.com/keys/stella01.txt logtruncated=false mixed=true sampling=1 tampered=false timestamp=1787187807 trusted=true uses=false verified=false wantlog=false wantvarinfo=true wantvarstatus=false consumption=ALLOCATE(supply,Location,demand[Location.*],priority[Location.*],width) demand=201012 priority=1028 supply=TIME width=5"/>
 	</ai_information>
 	<sim_specs isee:sim_duration="0" isee:run_prefix="Run" isee:simulation_delay="0" isee:restore_on_start="false" method="Euler" time_units="Month" isee:instantaneous_flows="false" isee:ignore_module_errors="false" isee:strict_units="false" isee:loop_scores="true" isee:loop_exhaustive_allowed="1000">
 		<start>0</start>
@@ -126,7 +127,7 @@
 			</aux>
 		</variables>
 		<views>
-+			<view isee:show_pages="false" background="white" page_width="1122" page_height="793" isee:popup_graphs_are_comparative="true" isee:enable_non_negative_highlights="false" type="stock_flow">
+			<view isee:show_pages="false" background="white" page_width="1122" page_height="793" isee:popup_graphs_are_comparative="true" isee:enable_non_negative_highlights="false" type="stock_flow">
 				<aux x="216" y="127" name="supply"/>
 				<aux x="178" y="238" name="demand"/>
 				<aux x="423" y="171" name="consumption"/>

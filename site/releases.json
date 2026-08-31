@@ -1,0 +1,136 @@
+{
+  "title": "XMILE Specification",
+  "tagline": "XML Interchange Language for System Dynamics",
+  "steward": "System Dynamics Society",
+  "canonical": "https://xmile.systemdynamics.org",
+  "repository": "https://github.com/System-Dynamics-Society-Inc/xmile-spec",
+  "releases": [
+    {
+      "id": "1.0",
+      "label": "1.0",
+      "heading": "XMILE Version 1.0",
+      "designation": "Candidate OASIS Standard 01",
+      "date": "29 July 2015",
+      "status": "superseded",
+      "ref": "v1.0",
+      "notes": "1.0.adoc",
+      "assets": [
+        {
+          "file": "xmile-v1.0.html",
+          "source": "spec",
+          "label": "Specification",
+          "note": "The complete specification, one self-contained file."
+        }
+      ]
+    },
+    {
+      "id": "1.1",
+      "label": "1.1",
+      "heading": "XMILE Version 1.1",
+      "designation": "SDS Candidate Standard 02",
+      "date": "20 August 2024",
+      "status": "current",
+      "ref": "v1.1",
+      "notes": "1.1.adoc",
+      "assets": [
+        {
+          "file": "xmile-v1.1.html",
+          "source": "spec",
+          "label": "Specification",
+          "note": "The complete specification, one self-contained file."
+        },
+        {
+          "file": "xmile-v1.1-errata.html",
+          "source": "errata",
+          "sourcePath": "ERRATA-v1.1.adoc",
+          "label": "Errata",
+          "note": "Every broken and silently redirected cross-reference, with its intended target. Not corrected in this release."
+        }
+      ]
+    },
+    {
+      "id": "1.1-errata",
+      "label": "1.1 + errata",
+      "heading": "XMILE Version 1.1 with the errata corrected",
+      "designation": "Proposed errata to SDS Candidate Standard 02",
+      "date": "in review",
+      "status": "under-review",
+      "ref": "origin/main",
+      "reviewBase": "v1.1",
+      "notes": "1.1-errata.adoc",
+      "assets": [
+        {
+          "file": "xmile-v1.1-corrected.html",
+          "source": "spec",
+          "label": "Corrected specification",
+          "note": "Version 1.1 with the errata applied, one self-contained file. Proposed, not approved."
+        },
+        {
+          "file": "xmile-v1.1-errata.html",
+          "source": "errata",
+          "sourcePath": "ERRATA-v1.1.adoc",
+          "label": "Errata, with what was done",
+          "note": "The same inventory, extended to record the correction made for each item and the questions it raises."
+        }
+      ]
+    },
+    {
+      "id": "1.2",
+      "label": "1.2",
+      "heading": "XMILE Version 1.2",
+      "designation": "SDS Working Draft 02",
+      "date": "26 August 2026",
+      "status": "under-review",
+      "ref": "HEAD",
+      "reviewBase": "origin/main",
+      "notes": "1.2.adoc",
+      "assets": [
+        {
+          "file": "xmile-v1.2.html",
+          "source": "spec",
+          "label": "Draft specification",
+          "note": "The working draft, one self-contained file. Not approved."
+        },
+        {
+          "file": "xmile-v1.2-errata.html",
+          "source": "errata",
+          "sourcePath": "ERRATA-v1.2.adoc",
+          "label": "Errata",
+          "note": "Four style attributes with two documented spellings each, where the schema recognises one and every Chapter 6 example writes the other. Records what should be cleaned up."
+        }
+      ]
+    },
+    {
+      "id": "vensim-proposals",
+      "label": "Vensim proposals",
+      "chip": "Vensim proposals",
+      "heading": "Ventana Systems: proposals and model corpus",
+      "designation": "Contributed for consideration, not a draft of the specification",
+      "date": "in review",
+      "status": "under-review",
+      "ref": "vensim-pr1",
+      "reviewBase": "origin/main",
+      "notes": "vensim-proposals.adoc",
+      "assets": [],
+      "collections": [
+        {
+          "dir": "proposals",
+          "suffixes": [
+            ".md"
+          ],
+          "label": "Proposals",
+          "note": "Sixteen numbered proposals and a suggested process, as contributed. Markdown, so a browser may show them as plain text or offer them for download."
+        },
+        {
+          "dir": "models",
+          "suffixes": [
+            ".xmile",
+            ".stmx"
+          ],
+          "label": "Model corpus",
+          "note": "Models contributed to validate readers against, sorted into those pending review, one deliberately malformed, and one exercising the 1.0 to 1.1 transition."
+        }
+      ]
+    }
+  ]
+}

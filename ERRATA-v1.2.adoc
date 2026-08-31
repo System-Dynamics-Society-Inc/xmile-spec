@@ -1,0 +1,183 @@
+= Errata: XMILE Version 1.2
+:toc:
+:sectnums:
+
+Four common style attributes have two spellings each. The specification defines
+both, Chapter 5 and the schema recognise one, and every example in Chapter 6
+writes the other. A file that copies an example from the specification is
+rejected by the schema published with it.
+
+This file records what is inconsistent and what should be done about it. Nothing
+here has been corrected: the choice of which spelling survives is an editorial
+decision for the Technical Committee, and it is not a free choice, because files
+in circulation use both.
+
+[IMPORTANT]
+====
+This is a different kind of defect from the one recorded in `ERRATA-v1.1.adoc`.
+That was a broken reference: text pointing at a section that had been deleted,
+which a build can detect. This one is a duplicate name, where both spellings are
+documented and neither is wrong on its face. No build catches it, and no reader
+notices until two implementations exchange a file.
+====
+
+== How this happened
+
+Chapter 5, in Common styles associated with all XMILE display objects, defines
+the style attributes every display object may carry. Chapter 6 then opens with a
+list of the same attributes, most of which say only "defined in Chapter 5". Four
+of them say something else:
+
+[source,asciidoc]
+----
+* text_padding      - same as padding      as defined in Chapter 5
+* text_border_color - same as border_color as defined in Chapter 5
+* text_border_width - same as border_width as defined in Chapter 5
+* text_border_style - same as border_style as defined in Chapter 5
+----
+
+So the second name is deliberate, not a typographical slip. The likely reason is
+visible in the same list: `+text_align+`, `+text_background+`,
+`+text_decoration+` and `+vertical_text_align+` genuinely do carry the `+text_+`
+prefix in Chapter 5, so four neighbouring attributes were given a matching
+prefix. The difference is that those four are the names Chapter 5 defines, and
+these four are not.
+
+== The four attributes
+
+[cols="2,2,1,1,2",options="header"]
+|===
+| Chapter 5 defines | Chapter 6 also allows | Short name, uses in Ch 5 | Long name, uses in Ch 6 | Declared in the schema
+
+| `+padding+`
+| `+text_padding+`
+| 12
+| 10
+| `+padding+` only
+
+| `+border_color+`
+| `+text_border_color+`
+| 1
+| 10
+| `+border_color+` only
+
+| `+border_width+`
+| `+text_border_width+`
+| 1
+| 10
+| `+border_width+` only
+
+| `+border_style+`
+| `+text_border_style+`
+| 1
+| 10
+| `+border_style+` only
+|===
+
+The counts are occurrences in the current text. Of the ten uses of each long
+name in Chapter 6, one is the line that declares it and nine are element
+examples. Chapter 5 never writes a long name, and Chapter 6 writes a short name
+once, in the same declaring list. Neither chapter uses the other's spelling in
+an example.
+
+== Where the long names are written
+
+Every element example in Chapter 6 carries all four. None validates against the
+schema published with this specification.
+
+[cols="1,2",options="header"]
+|===
+| Example | Line
+
+| `+<stock>+`
+| 70
+
+| `+<flow>+`
+| 79
+
+| `+<aux>+`
+| 100
+
+| `+<module>+`
+| 109
+
+| `+<group>+`
+| 118
+
+| `+<connector>+`
+| 135
+
+| `+<slider>+`
+| 222
+
+| `+<numeric_display>+`
+| 250
+
+| `+<text_box>+`
+| 406
+|===
+
+== The same ambiguity in the table header attributes
+
+Chapter 6 describes the style of a table header in one sentence:
+
+[quote]
+____
+Header style: OPTIONAL Same attributes from <<Common styles>> prefixed with
+"`header_`"
+____
+
+Because four of those attributes have two names, that sentence has two readings,
+and it names no attribute explicitly. The schema resolved it one way, declaring
+seventeen attributes of which four are `+header_padding+`,
+`+header_border_color+`, `+header_border_width+` and `+header_border_style+`.
+Files in circulation resolved it the other way, writing
+`+header_text_padding+` and `+header_text_border_color+`.
+
+Neither can be called wrong from the text. Whatever is decided for the four
+attributes above must be decided for the header forms at the same time, and the
+seventeen header attributes should be enumerated rather than left to a prefix
+rule, since a rule that generates names from an ambiguous list generates
+ambiguous names.
+
+== What should be cleaned up
+
+. *Choose one spelling for each of the four attributes.* The short names have
+three things going for them: Chapter 5 defines them, the schema implements them,
+and they are consistent with `+border_color+` on every other object. The long
+names have one: every example a reader is likely to copy uses them.
+
+. *Keep the other spelling as a deprecated alias, or remove it outright.* Both
+are defensible and they differ in cost. Deprecating means the schema declares
+eight attributes where four would do, and two files that mean the same thing do
+not compare equal. Removing means files already written stop validating. This
+errata does not recommend one; it records that the decision cannot be avoided,
+because leaving both undeprecated is what produced the defect.
+
+. *Correct whichever set of names loses.* If the short names win, the nine
+examples in Chapter 6 need editing and the four alias lines removed from its
+attribute list. If the long names win, Chapter 5's definitions and the schema
+need renaming instead.
+
+. *Enumerate the `+header_+` attributes* in Chapter 6 rather than deriving them
+from a prefix rule, and make them follow whatever is decided above.
+
+. *Add a check.* This defect is mechanically detectable: every attribute name
+written in a specification example should be declared in the schema, and every
+attribute the schema declares should appear somewhere in the specification. A
+lint over the two would have caught this on the day the alias was introduced, as
+it would have caught `+max_dimensions+` against `+maximum_dimensions+`.
+
+== Open questions for the TC
+
+. Was the `+text_+` prefix intended to mean something? On `+text_align+` and
+`+text_background+` it distinguishes the label from the object it labels, which
+is a real distinction. If `+text_padding+` was meant to be the padding of the
+label rather than of the object, then these are not aliases at all and the
+specification is missing four attributes rather than carrying four duplicates.
+The text says "same as", so this errata reads them as aliases, but the question
+is worth asking before either spelling is deleted.
+
+. Do any of the four have different defaults under their two names? Chapter 5
+gives defaults for the short names. Chapter 6 gives none for the long ones, which
+under the "same as" reading is harmless and under the reading above is a gap.
