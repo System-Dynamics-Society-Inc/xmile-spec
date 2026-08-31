@@ -246,16 +246,21 @@ def agentic_candidates(ai):
     if log is None:
         return None
     messages = log.findall(X + 'message')
-    contents = ''.join(m.get('content', '') for m in messages)
+    # The message is the element's content. itertext rather than .text so that a
+    # CDATA section, which a parser may split across nodes, collates the same as
+    # the equivalent escaped text: the two forms must sign identically.
+    contents = ''.join(''.join(m.itertext()) for m in messages)
     return [
         # The collated content gets the same whitespace and underbar removal as
         # the main message. Chapter 2 states that rule in the Signing section
         # for "the text to be signed" but does not restate it here, and the
         # difference is the whole signature, so it is worth saying explicitly.
         ('content', squash(contents)),
-        # An earlier draft signed the collated type instead, and the type values
-        # were signed as written, underbars included. Files signed that way are
-        # in circulation, so it is tried second and reported distinctly.
+        # An earlier draft carried the message in a content attribute and, before
+        # that, signed the collated type instead. Files written to either are in
+        # circulation, so both are tried after the current rule and reported
+        # distinctly rather than as a bare mismatch.
+        ('content attribute', squash(''.join(m.get('content', '') for m in messages))),
         ('type', ''.join(m.get('type', '') for m in messages)),
     ]
 
@@ -363,13 +368,17 @@ def check_file(path, keys, show_message):
                     break
             if matched == 'content':
                 lines.append('agentic signature    verified (over collated content)')
+            elif matched == 'content attribute':
+                lines.append('agentic signature    verified, but over a content ATTRIBUTE; '
+                             'the message is the element content in this version')
+                failed = True
             elif matched == 'type':
                 lines.append('agentic signature    verified, but over collated TYPE, not '
                              'content as Chapter 2 requires')
                 failed = True
             else:
-                lines.append('agentic signature    FAILED: matches neither collated '
-                             'content nor collated type')
+                lines.append('agentic signature    FAILED: matches no form of the '
+                             'collated messages')
                 failed = True
 
     return ('failed' if failed else 'ok'), lines

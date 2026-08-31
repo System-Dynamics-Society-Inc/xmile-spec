@@ -11,11 +11,11 @@
 		<status verified="true" mixed="false" trusted="false" tampered="true" uses="true" analyzed="true" log_truncated="false" timestamp="1787188865" algorithm="ed25519" keyurl="https://iseesystems.com/keys/stella01.txt" want_var_info="true" want_var_status="true" want_log="true" sampling="1" signature="TSl8EkeKO85Edv9XR4y4ZwPg1u2PKSwwYIPR4FNkZnoUUr+nAMHPTa10ndqzvmUebG6DE1H390JW6tAapaFWCw=="/>
 		<testing signed_message_body="algorithm=ed25519 analyzed=true keyurl=https://iseesystems.com/keys/stella01.txt logtruncated=false mixed=false sampling=1 tampered=true timestamp=1787188865 trusted=false uses=true verified=true wantlog=true wantvarinfo=true wantvarstatus=true births=RabbitPopulation*fractionalbirthrate*effectofcrowdingonbirths carryingcapacity=50 crowdingratio=RabbitPopulation/carryingcapacity deaths=RabbitPopulation*fractionaldeathrate*effectofcrowdingondeaths effectofcrowdingonbirths=MAX(0,1-crowdingratio) effectofcrowdingondeaths=1+crowdingratio excessdeathsfromcrowding=deaths-RabbitPopulation*fractionaldeathrate fractionalbirthrate=0.2 fractionaldeathrate=0.05 RabbitPopulation=5 CCCCGCFCCG {Thismodelwascreatedoranalyzedbyanewerversionofthesoftwareusinganinteractiveagent:106HnQ924f/i6tbnK75VNQUlrsXl6you3FO5vzo7nygZC9qMmiUNR7lU5DbLGttJcbd9hJni4nOepiK/OKxcCQ==}"/>
 		<agentic_log>
-			<message type="agent_text" content="Merlin (Gemini) — What can I do for you today?" is_thinking="false" agent_name="Merlin"/>
-			<message type="user_text" content="build me a small population model for rabbits in a field what will feed up to 50 of them." is_thinking="false"/>
-			<message type="agent_text" content="Running model simulation..." is_thinking="false" agent_name="Merlin"/>
-			<message type="agent_text" content="Retrieving data for 3 variables from 1 run..." is_thinking="false" agent_name="Merlin"/>
-			<message type="agent_text" content="&lt;p&gt;A Stock Flow Diagram (SFD) simulation model of the rabbit population in a field has been constructed and validated.&lt;/p&gt;
+			<message type="agent_text" is_thinking="false" agent_name="Merlin">Merlin (Gemini) — What can I do for you today?</message>
+			<message type="user_text" is_thinking="false">build me a small population model for rabbits in a field what will feed up to 50 of them.</message>
+			<message type="agent_text" is_thinking="false" agent_name="Merlin">Running model simulation...</message>
+			<message type="agent_text" is_thinking="false" agent_name="Merlin">Retrieving data for 3 variables from 1 run...</message>
+			<message type="agent_text" is_thinking="false" agent_name="Merlin">&lt;p&gt;A Stock Flow Diagram (SFD) simulation model of the rabbit population in a field has been constructed and validated.&lt;/p&gt;
 &lt;h3&gt;Model Structure and Equations&lt;/h3&gt;
 &lt;p&gt;&lt;strong&gt;Stocks:&lt;/strong&gt;&lt;/p&gt;
 &lt;ul&gt;
@@ -55,8 +55,8 @@
 &lt;/ul&gt;
 &lt;p&gt;The baseline simulation has completed successfully without errors.&lt;/p&gt;
 &lt;p&gt;What would you like to explore next? We can run scenario analyses, visualize behavior over time, or conduct sensitivity tests.&lt;/p&gt;
-" is_thinking="false" agent_name="Merlin"/>
-			<message type="agent_complete" content="Task completed successfully" is_thinking="false" agent_name="Merlin"/>
+</message>
+			<message type="agent_complete" is_thinking="false" agent_name="Merlin">Task completed successfully</message>
 		</agentic_log>
 		<log>{This model was created or analyzed by a newer version of the software using an interactive agent:106HnQ924f/i6tbnK75VNQUlrsXl6you3FO5vzo7nygZC9qMmiUNR7lU5DbLGttJcbd9hJni4nOepiK/OKxcCQ==}
 </log>

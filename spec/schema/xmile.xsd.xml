@@ -2093,18 +2093,26 @@
     </xs:annotation>
     <xs:complexType>
       <xs:sequence>
+        <!--
+          The message itself is the element's content, not an attribute. An
+          attribute value has to carry its markup escaped which is verbose
+		  and unreadable.
+        -->
         <xs:element name="message" minOccurs="0" maxOccurs="unbounded">
           <xs:complexType>
-            <!--
-              type is deliberately unconstrained. Chapter 2 says the text
-              "should be human readable and short, but can take any value", so
-              an enumeration here would reject conforming files. The samples
-              use user_text, agent_text and agent_complete.
-            -->
-            <xs:attribute name="type" type="xs:string" use="required"/>
-            <xs:attribute name="content" type="xs:string" use="required"/>
-            <xs:attribute name="is_thinking" type="xs:boolean" use="optional" default="false"/>
-            <xs:attribute name="agent_name" type="xs:string" use="optional"/>
+            <xs:simpleContent>
+              <xs:extension base="xs:string">
+                <!--
+                  type is deliberately unconstrained. Chapter 2 says the text
+                  "should be human readable and short, but can take any value",
+                  so an enumeration here would reject conforming files. The
+                  samples use user_text, agent_text and agent_complete.
+                -->
+                <xs:attribute name="type" type="xs:string" use="required"/>
+                <xs:attribute name="is_thinking" type="xs:boolean" use="optional" default="false"/>
+                <xs:attribute name="agent_name" type="xs:string" use="optional"/>
+              </xs:extension>
+            </xs:simpleContent>
           </xs:complexType>
         </xs:element>
       </xs:sequence>

@@ -293,7 +293,11 @@ The following attributes are supported on `+<status>+`. Of these, `+verified+` a
 
 The `+<agentic_log>+` tag holds the record of an interaction with an agentic AI agent. Where `+<log>+` is a single block of text, the agentic log separates the exchange into individual messages, so that prompts, replies and status reports can be told apart.
 
-The tag consists of one or more `+<message>+` tags. Each `+<message>+` has the following REQUIRED attributes:
+The tag consists of one or more `+<message>+` tags. The message itself is the content of the tag. It MAY be plain text, markup or markdown, and MAY be carried in a CDATA section where that is more convenient than escaping it.
+
+Earlier drafts of this section carried the message in a `+content+` attribute. It is an element's content in this version, because an attribute value must have its markup escaped, and the agentic signature described in <<sec-agentic-log-signing>> is taken over that content: two producers escaping the same markup differently would sign different bytes for the same message.
+
+Each `+<message>+` has one REQUIRED attribute:
 
 [cols="2,2,5",options="header"]
 |===
@@ -304,10 +308,6 @@ The tag consists of one or more `+<message>+` tags. Each `+<message>+` has the f
 |`+type+`
 |text
 |The kind of message this is, which distinguishes a user prompt from an agent reply or a status report. The text should be human readable and short, but can take any value.
-
-|`+content+`
-|text
-|The message itself. All other attributes are plain text; `+content+` MAY also contain markup or markdown. Because it is an attribute value, any markup MUST be XML escaped.
 
 |===
 
@@ -334,26 +334,15 @@ An example of an agentic log, abbreviated:
 [source,xml]
 ----
 <agentic_log>
-  <message type="user_text" content="build me a small population model for rabbits"
-           is_thinking="false"/>
-  <message type="agent_text" content="Running model simulation..."
-           is_thinking="false" agent_name="Merlin"/>
-  <message type="agent_complete" content="Task completed successfully"
-           is_thinking="false" agent_name="Merlin"/>
+  <message type="user_text" is_thinking="false">build me a small population
+    model for rabbits</message>
+  <message type="agent_text" is_thinking="false" agent_name="Merlin">Running
+    model simulation...</message>
+  <message type="agent_complete" is_thinking="false" agent_name="Merlin"><![CDATA[
+    <p>Task completed successfully</p>]]></message>
 </agentic_log>
 ----
 
-
-[NOTE]
-====
-*EDITOR'S QUESTION (1.2 draft):* `+content+` is an attribute, so a multi-line
-HTML or markdown reply has to be XML escaped, and the sample files show
-substantial escaped HTML inside it. Should `+content+` instead be the element
-content of `+<message>+`, where a CDATA section could carry the markup
-unescaped, as `+<eqn>+` already does elsewhere in this specification? That would
-be a breaking change to files already in circulation, so it needs deciding
-before 1.2 is approved rather than after.
-====
 
 [[sec-ai-signing]]
 ==== Signing
@@ -375,9 +364,9 @@ If there is a terminal space on the constructed message string, which happens wh
 [[sec-agentic-log-signing]]
 ===== Signing the Agentic Log
 
-When the file includes an agentic log, a second signature is created for it. The message to be signed is formed by collating the `+content+` attribute of every `+<message>+` in `+<agentic_log>+`, in document order, with no separator between them, and is signed with the same algorithm and keys described above.
+When the file includes an agentic log, a second signature is created for it. The message to be signed is formed by collating the content of every `+<message>+` in `+<agentic_log>+`, in document order, with no separator between them, and is signed with the same algorithm and keys described above. The content is taken as it is after parsing, so a CDATA section and the equivalent escaped text sign identically, and neither the delimiters nor the escapes form part of what is signed.
 
-The collated content MUST have whitespace and underbar characters removed, exactly as the main message does. Nothing else about the messages is signed: `+type+`, `+is_thinking+` and `+agent_name+` are all excluded, as is the order in which the messages appear beyond its effect on the collated content.
+The collated content MUST have whitespace and underbar characters removed, exactly as the main message does. Nothing else about the messages is signed: `+type+`, `+is_thinking+` and `+agent_name+` are attributes and are all excluded, as is the order in which the messages appear beyond its effect on the collated content.
 
 That signature is embedded at the beginning of the content of the `+<log>+` tag, in the form
 
