@@ -52,7 +52,7 @@ definitions were moved into a new subsection under Annotations, carried over as
 written apart from wording that named buttons. The graphics frame and button
 container tags remain withdrawn.
 
-Afterwards nothing in the specification refers to a withdrawn feature, no
+Afterward nothing in the specification refers to a withdrawn feature, no
 reference is written as a literal section number, and the build resolves every
 cross-reference.
 

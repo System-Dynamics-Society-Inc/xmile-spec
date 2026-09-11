@@ -157,13 +157,13 @@ XREF = re.compile(r'Section\s+\d+(?:\.\d+)*')
 
 def numbering_only(old, new):
     """True when the two blocks differ solely by automatic numbering."""
-    def normalise(block):
+    def normalize(block):
         text = ' '.join(block.text.split())
         if block.kind == 'heading':
             text = HEAD_NUMBER.sub('', text)
         text = FOOTNOTE.sub('[#]', text)
         return XREF.sub('Section #', text)
-    return normalise(old) == normalise(new)
+    return normalize(old) == normalize(new)
 
 
 def heading_renumbering(old_blocks, new_blocks):
@@ -171,7 +171,7 @@ def heading_renumbering(old_blocks, new_blocks):
 
     These do not come out of the block alignment, because headings align on
     their title so that an inserted section does not appear to rename its
-    neighbour. The number change is still worth listing.
+    neighbor. The number change is still worth listing.
 
     Eighteen titles occur more than once in the specification, "Arrays" three
     times, so a title is not a key. Keeping one heading per title paired the nth
@@ -216,7 +216,7 @@ def changes(old_blocks, new_blocks):
             for b in new_blocks[j1:j2]:
                 yield ('added', None, b)
         else:
-            # Pair up blocks that are recognisably the same prose reworded, and
+            # Pair up blocks that are recognizably the same prose reworded, and
             # treat the rest as plain additions and removals. Without this a
             # reworded sentence shows as an unrelated delete plus insert.
             olds, news = list(old_blocks[i1:i2]), list(new_blocks[j1:j2])

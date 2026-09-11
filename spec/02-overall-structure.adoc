@@ -55,7 +55,7 @@ One final subtlety in namespaces is that Dimension names, in turn, define their 
 [[sec-vendor-extensions]]
 === Vendor Extensions
 
-Consistent with <<sec-namespaces>>, a vendor MAY add elements and attributes of its own to an XMILE file, and a reader that encounters one has a defined obligation towards it.
+Consistent with <<sec-namespaces>>, a vendor MAY add elements and attributes of its own to an XMILE file, and a reader that encounters one has a defined obligation toward it.
 
 *Where an extension goes.* A vendor extension MUST be in an XML namespace of the vendor's own, declared on the file as an attribute of the `+<xmile>+` tag and distinct from the XMILE namespace. A vendor MUST NOT place an extension in the XMILE namespace, and MUST NOT write an unprefixed element or attribute that this specification does not define. Both rules exist so that a name without a prefix always means what this document says it means.
 
@@ -68,13 +68,13 @@ A vendor MUST NOT respell a standard element or attribute in its own namespace. 
 <eqn vendor:origin="imported">rate * elapsed</eqn>
 ----
 
-The value of such an element is unchanged by the presence of the attribute, and a reader that does not recognise the attribute reads the equation exactly as it would have without it. This is stated because a schema written the obvious way forbids it: an element declared with a simple type can carry no attributes at all, so a vendor cannot annotate the very elements most worth annotating. A schema for this specification MUST therefore declare such elements with a complex type over the same value, and the schema published with this specification does so.
+The value of such an element is unchanged by the presence of the attribute, and a reader that does not recognize the attribute reads the equation exactly as it would have without it. This is stated because a schema written the obvious way forbids it: an element declared with a simple type can carry no attributes at all, so a vendor cannot annotate the very elements most worth annotating. A schema for this specification MUST therefore declare such elements with a complex type over the same value, and the schema published with this specification does so.
 
-*What a reader does.* A reader MUST ignore any element or attribute in a namespace it does not recognise, and MUST continue to process the rest of the file. Ignoring means exactly that: the content is neither an error nor a reason to reject the document. A reader MAY preserve such content when rewriting a file it has read, and SHOULD do so where it can, since discarding another tool's extensions on a round trip is the outcome this provision exists to prevent.
+*What a reader does.* A reader MUST ignore any element or attribute in a namespace it does not recognize, and MUST continue to process the rest of the file. Ignoring means exactly that: the content is neither an error nor a reason to reject the document. A reader MAY preserve such content when rewriting a file it has read, and SHOULD do so where it can, since discarding another tool's extensions on a round trip is the outcome this provision exists to prevent.
 
-A reader MUST NOT honour a standard element or attribute that appears under a vendor prefix. Such a name is a vendor extension by the rule above, and treating `+vendor:show_pages+` as though it were `+show_pages+` would make the meaning of a file depend on which reader opened it.
+A reader MUST NOT honor a standard element or attribute that appears under a vendor prefix. Such a name is a vendor extension by the rule above, and treating `+vendor:show_pages+` as though it were `+show_pages+` would make the meaning of a file depend on which reader opened it.
 
-*What this does not license.* An extension MUST NOT change the meaning of the standard content around it. A file whose behaviour differs when its extensions are ignored is not a conforming file, because a conforming reader is required to ignore them.
+*What this does not license.* An extension MUST NOT change the meaning of the standard content around it. A file whose behavior differs when its extensions are ignored is not a conforming file, because a conforming reader is required to ignore them.
 
 [[sec-header-section]]
 === Header Section
@@ -347,7 +347,7 @@ An example of an agentic log, abbreviated:
 [[sec-ai-signing]]
 ==== Signing
 
-Signing is done using the ed25519 signature algorithmfootnote:[https://datatracker.ietf.org/doc/html/rfc8032[RFC 8032]] against a message constructed by combining the attributes above with the additional information indicated below. The private key used MUST correspond to the public key returned by `+keyurl+`. Software vendors MAY choose which public keys they trust; an untrusted key SHALL be treated as an unsigned model, though checking for tampering MAY still occur. Software providers SHOULD communicate amongst themselves to determine bilateral standards for key trust.
+Signing is done using the ed25519 signature algorithmfootnote:[https://datatracker.ietf.org/doc/html/rfc8032[RFC 8032]] against a message constructed by combining the attributes above with the additional information indicated below. The private key used MUST correspond to the public key returned by `+keyurl+`. Software vendors MAY choose which public keys they trust; an untrusted key SHALL be treated as an unsigned model, though checking for tampering MAY still occur. Software providers SHOULD communicate among themselves to determine bilateral standards for key trust.
 
 The text to be signed MUST have all whitespace (space, tab, line feed, carriage return) and all underbar characters removed. Where a name or an equation writes a character as an XMILE identifier escape, as described in <<sec-common-variable-properties>>, that escape MUST first be resolved to the character it stands for, and only then is the whitespace removed. A variable named `+excess deaths\nfrom crowding+` therefore contributes `+excessdeathsfromcrowding+`: the escape becomes a line feed and is removed with the rest of the whitespace, rather than surviving as a backslash followed by an `+n+`. The text consists of:
 
@@ -375,7 +375,7 @@ That signature is embedded at the beginning of the content of the `+<log>+` tag,
 {note:signature}
 ----
 
-followed by a newline and then the regular log contents, if any. Any text not containing : or } can be substituted for note and the signature is described below. Software that recognises the agentic log MUST validate the signature and regenerate it on writing against the same key pair as described below. Software that does not recognise the agentic log can ignore the prefix, though it is RECOMMENDED that the prefix be stripped before the log is presented to a user. The prefix MUST be removed when the model is saved if the software does not write the agentic log. This prefix is inserted before the log is appended to the signature text and before the whitespace removal thereof.
+followed by a newline and then the regular log contents, if any. Any text not containing : or } can be substituted for note and the signature is described below. Software that recognizes the agentic log MUST validate the signature and regenerate it on writing against the same key pair as described below. Software that does not recognize the agentic log can ignore the prefix, though it is RECOMMENDED that the prefix be stripped before the log is presented to a user. The prefix MUST be removed when the model is saved if the software does not write the agentic log. This prefix is inserted before the log is appended to the signature text and before the whitespace removal thereof.
 
 For example, the `+<log>+` of a model carrying an agentic log begins:
 

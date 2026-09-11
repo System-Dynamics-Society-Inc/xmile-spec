@@ -3,7 +3,7 @@
 :sectnums:
 
 Four common style attributes have two spellings each. The specification defines
-both, Chapter 5 and the schema recognise one, and every example in Chapter 6
+both, Chapter 5 and the schema recognize one, and every example in Chapter 6
 writes the other. A file that copies an example from the specification is
 rejected by the schema published with it.
 
@@ -39,7 +39,7 @@ of them say something else:
 So the second name is deliberate, not a typographical slip. The likely reason is
 visible in the same list: `+text_align+`, `+text_background+`,
 `+text_decoration+` and `+vertical_text_align+` genuinely do carry the `+text_+`
-prefix in Chapter 5, so four neighbouring attributes were given a matching
+prefix in Chapter 5, so four neighboring attributes were given a matching
 prefix. The difference is that those four are the names Chapter 5 defines, and
 these four are not.
 

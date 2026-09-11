@@ -70,7 +70,7 @@
       ##local matters as much as ##targetNamespace here. Attributes are
       unqualified in this schema, so an unprefixed attribute is in NO namespace
       rather than in XMILE's. Excluding only ##targetNamespace would therefore
-      let the wildcard swallow every unrecognised bare attribute, and a
+      let the wildcard swallow every unrecognized bare attribute, and a
       withdrawn one such as lamp="true", or a vendor one that forgot its prefix
       such as ai_state="...", would validate silently. Excluding ##local too
       keeps unprefixed attributes closed to exactly what this schema declares.
@@ -1644,42 +1644,42 @@
     </xs:restriction>
   </xs:simpleType>
 
+  <xs:simpleType name="border_style_type">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="none"/>
+      <xs:enumeration value="solid"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="font_style_type">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="normal"/>
+      <xs:enumeration value="italic"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="font_weight_type">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="normal"/>
+      <xs:enumeration value="bold"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="text_decoration_type">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="normal"/>
+      <xs:enumeration value="underline"/>
+    </xs:restriction>
+  </xs:simpleType>
+
   <xs:attributeGroup name="style_attributes">
     <xs:attribute name="border_width" type="border_width_type"/>
     <xs:attribute name="border_color" type="color_type"/>
-    <xs:attribute name="border_style" default="none">
-      <xs:simpleType>
-        <xs:restriction base="xs:string">
-          <xs:enumeration value="none"/>
-          <xs:enumeration value="solid"/>
-        </xs:restriction>
-      </xs:simpleType>
-    </xs:attribute>
+    <xs:attribute name="border_style" type="border_style_type" default="none"/>
     <xs:attribute name="font_family" type="xs:string"/>
-    <xs:attribute name="font_style" default="normal">
-      <xs:simpleType>
-        <xs:restriction base="xs:string">
-          <xs:enumeration value="normal"/>
-          <xs:enumeration value="italic"/>
-        </xs:restriction>
-      </xs:simpleType>
-    </xs:attribute>
-    <xs:attribute name="font_weight" default="normal">
-      <xs:simpleType>
-        <xs:restriction base="xs:string">
-          <xs:enumeration value="normal"/>
-          <xs:enumeration value="bold"/>
-        </xs:restriction>
-      </xs:simpleType>
-    </xs:attribute>
-    <xs:attribute name="text_decoration" default="normal">
-      <xs:simpleType>
-        <xs:restriction base="xs:string">
-          <xs:enumeration value="normal"/>
-          <xs:enumeration value="underline"/>
-        </xs:restriction>
-      </xs:simpleType>
-    </xs:attribute>
+    <xs:attribute name="font_style" type="font_style_type" default="normal"/>
+    <xs:attribute name="font_weight" type="font_weight_type" default="normal"/>
+    <xs:attribute name="text_decoration" type="text_decoration_type" default="normal"/>
     <xs:attribute name="text_align" type="text_align" default="left"/>
     <xs:attribute name="vertical_text_align" type="vertical_text_align" default="center"/>
     <xs:attribute name="font_color" type="color_type"/>
@@ -1689,45 +1689,18 @@
     <xs:attribute name="color" type="color_type"/>
     <xs:attribute name="background" type="color_type"/>
     <xs:attribute name="z_index" type="xs:integer"/>
+    <xs:attributeGroup ref="prefixed_style_attributes"/>
   </xs:attributeGroup>
 
 
   <xs:attributeGroup name="header_style_attributes">
     <xs:attribute name="header_border_width" type="border_width_type"/>
     <xs:attribute name="header_border_color" type="color_type"/>
-    <xs:attribute name="header_border_style" default="none">
-      <xs:simpleType>
-        <xs:restriction base="xs:string">
-          <xs:enumeration value="none"/>
-          <xs:enumeration value="solid"/>
-        </xs:restriction>
-      </xs:simpleType>
-    </xs:attribute>
+    <xs:attribute name="header_border_style" type="border_style_type" default="none"/>
     <xs:attribute name="header_font_family" type="xs:string"/>
-    <xs:attribute name="header_font_style" default="normal">
-      <xs:simpleType>
-        <xs:restriction base="xs:string">
-          <xs:enumeration value="normal"/>
-          <xs:enumeration value="italic"/>
-        </xs:restriction>
-      </xs:simpleType>
-    </xs:attribute>
-    <xs:attribute name="header_font_weight" default="normal">
-      <xs:simpleType>
-        <xs:restriction base="xs:string">
-          <xs:enumeration value="normal"/>
-          <xs:enumeration value="bold"/>
-        </xs:restriction>
-      </xs:simpleType>
-    </xs:attribute>
-    <xs:attribute name="header_text_decoration" default="normal">
-      <xs:simpleType>
-        <xs:restriction base="xs:string">
-          <xs:enumeration value="normal"/>
-          <xs:enumeration value="underline"/>
-        </xs:restriction>
-      </xs:simpleType>
-    </xs:attribute>
+    <xs:attribute name="header_font_style" type="font_style_type" default="normal"/>
+    <xs:attribute name="header_font_weight" type="font_weight_type" default="normal"/>
+    <xs:attribute name="header_text_decoration" type="text_decoration_type" default="normal"/>
     <xs:attribute name="header_text_align" type="text_align" default="left"/>
     <xs:attribute name="header_vertical_text_align" type="vertical_text_align" default="center"/>
     <xs:attribute name="header_font_color" type="color_type"/>
@@ -1738,6 +1711,125 @@
     <xs:attribute name="header_background" type="color_type"/>
     <xs:attribute name="header_z_index" type="xs:integer"/>
   </xs:attributeGroup>
+
+
+  <!--
+    Every style attribute may also be written with a prefix naming the element
+    of the object it applies to, per Style Prefix Additions in Chapter 5.  The
+    prefixed forms carry no default: absence is what lets a value cascade down
+    from the more general attribute.  Names the two groups above already
+    declare are not repeated here.
+  -->
+  <xs:attributeGroup name="prefixed_style_attributes">
+    <!-- text_ -->
+    <xs:attribute name="text_border_width" type="border_width_type"/>
+    <xs:attribute name="text_border_color" type="color_type"/>
+    <xs:attribute name="text_border_style" type="border_style_type"/>
+    <xs:attribute name="text_font_family" type="xs:string"/>
+    <xs:attribute name="text_font_style" type="font_style_type"/>
+    <xs:attribute name="text_font_weight" type="font_weight_type"/>
+    <xs:attribute name="text_vertical_text_align" type="vertical_text_align"/>
+    <xs:attribute name="text_font_color" type="color_type"/>
+    <xs:attribute name="text_font_size" type="xs:string"/>
+    <xs:attribute name="text_padding" type="xs:string"/>
+    <xs:attribute name="text_color" type="color_type"/>
+    <xs:attribute name="text_z_index" type="xs:integer"/>
+
+    <!-- header_text_ -->
+    <xs:attribute name="header_text_border_width" type="border_width_type"/>
+    <xs:attribute name="header_text_border_color" type="color_type"/>
+    <xs:attribute name="header_text_border_style" type="border_style_type"/>
+    <xs:attribute name="header_text_font_family" type="xs:string"/>
+    <xs:attribute name="header_text_font_style" type="font_style_type"/>
+    <xs:attribute name="header_text_font_weight" type="font_weight_type"/>
+    <xs:attribute name="header_text_vertical_text_align" type="vertical_text_align"/>
+    <xs:attribute name="header_text_font_color" type="color_type"/>
+    <xs:attribute name="header_text_font_size" type="xs:string"/>
+    <xs:attribute name="header_text_padding" type="xs:string"/>
+    <xs:attribute name="header_text_color" type="color_type"/>
+    <xs:attribute name="header_text_z_index" type="xs:integer"/>
+
+    <!-- header_font_ -->
+    <xs:attribute name="header_font_border_width" type="border_width_type"/>
+    <xs:attribute name="header_font_border_color" type="color_type"/>
+    <xs:attribute name="header_font_border_style" type="border_style_type"/>
+    <xs:attribute name="header_font_text_decoration" type="text_decoration_type"/>
+    <xs:attribute name="header_font_text_align" type="text_align"/>
+    <xs:attribute name="header_font_vertical_text_align" type="vertical_text_align"/>
+    <xs:attribute name="header_font_text_background" type="color_type"/>
+    <xs:attribute name="header_font_padding" type="xs:string"/>
+    <xs:attribute name="header_font_background" type="color_type"/>
+    <xs:attribute name="header_font_z_index" type="xs:integer"/>
+
+    <!-- axis_title_font_ -->
+    <xs:attribute name="axis_title_font_border_width" type="border_width_type"/>
+    <xs:attribute name="axis_title_font_border_color" type="color_type"/>
+    <xs:attribute name="axis_title_font_border_style" type="border_style_type"/>
+    <xs:attribute name="axis_title_font_family" type="xs:string"/>
+    <xs:attribute name="axis_title_font_style" type="font_style_type"/>
+    <xs:attribute name="axis_title_font_weight" type="font_weight_type"/>
+    <xs:attribute name="axis_title_font_text_decoration" type="text_decoration_type"/>
+    <xs:attribute name="axis_title_font_text_align" type="text_align"/>
+    <xs:attribute name="axis_title_font_vertical_text_align" type="vertical_text_align"/>
+    <xs:attribute name="axis_title_font_color" type="color_type"/>
+    <xs:attribute name="axis_title_font_text_background" type="color_type"/>
+    <xs:attribute name="axis_title_font_size" type="xs:string"/>
+    <xs:attribute name="axis_title_font_padding" type="xs:string"/>
+    <xs:attribute name="axis_title_font_background" type="color_type"/>
+    <xs:attribute name="axis_title_font_z_index" type="xs:integer"/>
+
+    <!-- axis_title_text_ -->
+    <xs:attribute name="axis_title_text_border_width" type="border_width_type"/>
+    <xs:attribute name="axis_title_text_border_color" type="color_type"/>
+    <xs:attribute name="axis_title_text_border_style" type="border_style_type"/>
+    <xs:attribute name="axis_title_text_font_family" type="xs:string"/>
+    <xs:attribute name="axis_title_text_font_style" type="font_style_type"/>
+    <xs:attribute name="axis_title_text_font_weight" type="font_weight_type"/>
+    <xs:attribute name="axis_title_text_decoration" type="text_decoration_type"/>
+    <xs:attribute name="axis_title_text_align" type="text_align"/>
+    <xs:attribute name="axis_title_text_vertical_text_align" type="vertical_text_align"/>
+    <xs:attribute name="axis_title_text_font_color" type="color_type"/>
+    <xs:attribute name="axis_title_text_background" type="color_type"/>
+    <xs:attribute name="axis_title_text_font_size" type="xs:string"/>
+    <xs:attribute name="axis_title_text_padding" type="xs:string"/>
+    <xs:attribute name="axis_title_text_color" type="color_type"/>
+    <xs:attribute name="axis_title_text_z_index" type="xs:integer"/>
+
+    <!-- axis_label_font_ -->
+    <xs:attribute name="axis_label_font_border_width" type="border_width_type"/>
+    <xs:attribute name="axis_label_font_border_color" type="color_type"/>
+    <xs:attribute name="axis_label_font_border_style" type="border_style_type"/>
+    <xs:attribute name="axis_label_font_family" type="xs:string"/>
+    <xs:attribute name="axis_label_font_style" type="font_style_type"/>
+    <xs:attribute name="axis_label_font_weight" type="font_weight_type"/>
+    <xs:attribute name="axis_label_font_text_decoration" type="text_decoration_type"/>
+    <xs:attribute name="axis_label_font_text_align" type="text_align"/>
+    <xs:attribute name="axis_label_font_vertical_text_align" type="vertical_text_align"/>
+    <xs:attribute name="axis_label_font_color" type="color_type"/>
+    <xs:attribute name="axis_label_font_text_background" type="color_type"/>
+    <xs:attribute name="axis_label_font_size" type="xs:string"/>
+    <xs:attribute name="axis_label_font_padding" type="xs:string"/>
+    <xs:attribute name="axis_label_font_background" type="color_type"/>
+    <xs:attribute name="axis_label_font_z_index" type="xs:integer"/>
+
+    <!-- axis_label_text_ -->
+    <xs:attribute name="axis_label_text_border_width" type="border_width_type"/>
+    <xs:attribute name="axis_label_text_border_color" type="color_type"/>
+    <xs:attribute name="axis_label_text_border_style" type="border_style_type"/>
+    <xs:attribute name="axis_label_text_font_family" type="xs:string"/>
+    <xs:attribute name="axis_label_text_font_style" type="font_style_type"/>
+    <xs:attribute name="axis_label_text_font_weight" type="font_weight_type"/>
+    <xs:attribute name="axis_label_text_decoration" type="text_decoration_type"/>
+    <xs:attribute name="axis_label_text_align" type="text_align"/>
+    <xs:attribute name="axis_label_text_vertical_text_align" type="vertical_text_align"/>
+    <xs:attribute name="axis_label_text_font_color" type="color_type"/>
+    <xs:attribute name="axis_label_text_background" type="color_type"/>
+    <xs:attribute name="axis_label_text_font_size" type="xs:string"/>
+    <xs:attribute name="axis_label_text_padding" type="xs:string"/>
+    <xs:attribute name="axis_label_text_color" type="color_type"/>
+    <xs:attribute name="axis_label_text_z_index" type="xs:integer"/>
+  </xs:attributeGroup>
+
 
 
   <xs:simpleType name="color_type">

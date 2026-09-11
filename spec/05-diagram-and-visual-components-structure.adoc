@@ -96,6 +96,8 @@ Display objects do not have names or any other way to specifically refer to indi
 
 All XMILE display objects provide attributes which describe their look and feel or style. Styles applied to visual XMILE objects are composed of attributes of the following core style objects plus any specific attributes available to that specific type of object.
 
+Because some objects, for example graphs, may have a number of different components each requiring its own styling, these basic tags may be prefixed by the context in which they are used - for example axis_title_text_padding would indicate the padding that should be used for axis title text. The full list of acceptable prefixes is shown in <<sec-style-prefix-additions>>.
+
 Border
 
 * `+border_width="thick | thin |+` <double>`+"+` –default=1px  –thick=3px  –thin=1px
@@ -218,6 +220,29 @@ List of predefined colors:
 |#FFFF00
 
 |===
+
+[[sec-style-prefix-additions]]
+=== Style Prefix Additions
+
+All of the style tags MAY be prefixed to indicate which element in an object they should apply to. Implementations MAY choose to treat these prefixed tags in a manner similar to the cascade described in <<sec-the-cascading-style-system>>. In this case, for example, `+padding+` would apply to every element in an object, `+text_padding+` to all text elements, and `+axis_title_text_padding+` to the axis title, each level superseding the value from the more general one.
+
+The valid prefixes are:
+
+* `+text_+` - styles specific to text elements
+
+* `+header_font_+` - specific to the font of the header
+
+* `+header_text_+` - specific to the text of the header
+
+* `+axis_title_font_+` - specific to the font of the axis title
+
+* `+axis_title_text_+` - specific to the text of the axis
+
+* `+axis_label_font_+` - specific to the font of the axis label
+
+* `+axis_label_text_+` - specific to the text of the axis label
+
+Each of these, followed by the style tag it qualifies, is a valid OPTIONAL attribute and appears as one in the schema. This opens up a large number of attribute names that form valid XMILE, of which the contextually meaningful ones are a much smaller set: a reader is not expected to honor a prefix on an object that has no such element.
 
 [[sec-the-cascading-style-system]]
 === The cascading style system
