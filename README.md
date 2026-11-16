@@ -86,9 +86,10 @@ producer, or this tool is wrong — and it becomes possible to work out which.
 
 Two signatures are checked. The **main** signature covers the `<status>`
 attributes, the variable equations, the per-variable AI states and the log. The
-**agentic** signature covers the collated `content` of every `<message>` in
-`<agentic_log>`, and is carried in the `{note:signature}` prefix at the head of
-`<log>`.
+**agent log** signature covers the collated content of every `<message>` in
+`<agent_log>`, and is carried in the `signature` attribute of `<agent_log>`. A
+file that records AI use (`uses` or `analyzed` true) without an `<agent_log>`
+fails.
 
 The `<testing>` tag is what makes this useful rather than merely binary. Its
 `signed_message_body` holds the exact string the producer signed, so the message

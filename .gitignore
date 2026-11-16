@@ -8,3 +8,6 @@ __pycache__/
 *.pyc
 *.html
 !spec/**/*.html
+
+# Stella sidecar files saved next to models
+*.isdb

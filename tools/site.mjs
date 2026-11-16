@@ -408,7 +408,7 @@ function sampleFeatures(file) {
   const has = (tag) => new RegExp(`<(?:\\w+:)?${tag}[\\s/>]`).test(xml);
   const features = [];
   if (has('ai_information')) features.push('AI information');
-  if (has('agentic_log')) features.push('agentic log');
+  if (has('agent_log')) features.push('agent log');
   if (has('testing')) features.push('signed message body');
   if (has('element')) features.push('non-apply-to-all arrays');
   else if (has('dimensions')) features.push('arrays');

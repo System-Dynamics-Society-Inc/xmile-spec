@@ -2,83 +2,99 @@
 <xmile version="1.2" xmlns="http://docs.oasis-open.org/xmile/ns/XMILE/v1.0" xmlns:isee="http://iseesystems.com/XMILE">
 	<header>
 		<options namespace="std, isee"/>
-		<name>AIGenerated.xmile</name>
-		<uuid>99a9b3f8-9f5c-47a4-8447-51c20fa46a9d</uuid>
+		<name>AIGenerated</name>
+		<uuid>6c98a590-41f9-4718-96ab-875cf482ffa7</uuid>
 		<vendor>isee systems, inc.</vendor>
-		<product version="4.3.2" isee:build_number="9999" isee:saved_by_v1="true" lang="en">Stella Architect</product>
+		<product version="4.5" isee:build_number="development" isee:saved_by_v1="true" lang="en">Stella Architect</product>
 	</header>
 	<ai_information>
-		<status verified="true" mixed="false" trusted="false" tampered="true" uses="true" analyzed="true" log_truncated="false" timestamp="1787188865" algorithm="ed25519" keyurl="https://iseesystems.com/keys/stella01.txt" want_var_info="true" want_var_status="true" want_log="true" sampling="1" signature="TSl8EkeKO85Edv9XR4y4ZwPg1u2PKSwwYIPR4FNkZnoUUr+nAMHPTa10ndqzvmUebG6DE1H390JW6tAapaFWCw=="/>
-		<testing signed_message_body="algorithm=ed25519 analyzed=true keyurl=https://iseesystems.com/keys/stella01.txt logtruncated=false mixed=false sampling=1 tampered=true timestamp=1787188865 trusted=false uses=true verified=true wantlog=true wantvarinfo=true wantvarstatus=true births=RabbitPopulation*fractionalbirthrate*effectofcrowdingonbirths carryingcapacity=50 crowdingratio=RabbitPopulation/carryingcapacity deaths=RabbitPopulation*fractionaldeathrate*effectofcrowdingondeaths effectofcrowdingonbirths=MAX(0,1-crowdingratio) effectofcrowdingondeaths=1+crowdingratio excessdeathsfromcrowding=deaths-RabbitPopulation*fractionaldeathrate fractionalbirthrate=0.2 fractionaldeathrate=0.05 RabbitPopulation=5 CCCCGCFCCG {Thismodelwascreatedoranalyzedbyanewerversionofthesoftwareusinganinteractiveagent:106HnQ924f/i6tbnK75VNQUlrsXl6you3FO5vzo7nygZC9qMmiUNR7lU5DbLGttJcbd9hJni4nOepiK/OKxcCQ==}"/>
-		<agentic_log>
-			<message type="agent_text" is_thinking="false" agent_name="Merlin">Merlin (Gemini) — What can I do for you today?</message>
-			<message type="user_text" is_thinking="false">build me a small population model for rabbits in a field what will feed up to 50 of them.</message>
-			<message type="agent_text" is_thinking="false" agent_name="Merlin">Running model simulation...</message>
-			<message type="agent_text" is_thinking="false" agent_name="Merlin">Retrieving data for 3 variables from 1 run...</message>
-			<message type="agent_text" is_thinking="false" agent_name="Merlin">&lt;p&gt;A Stock Flow Diagram (SFD) simulation model of the rabbit population in a field has been constructed and validated.&lt;/p&gt;
-&lt;h3&gt;Model Structure and Equations&lt;/h3&gt;
-&lt;p&gt;&lt;strong&gt;Stocks:&lt;/strong&gt;&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;&lt;strong&gt;Rabbit_Population&lt;/strong&gt; = 5 (&lt;code&gt;rabbits&lt;/code&gt;)&lt;ul&gt;
-&lt;li&gt;Inflows: &lt;code&gt;births&lt;/code&gt;&lt;/li&gt;
-&lt;li&gt;Outflows: &lt;code&gt;deaths&lt;/code&gt;&lt;/li&gt;
-&lt;li&gt;Units: &lt;code&gt;rabbits&lt;/code&gt;&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;&lt;strong&gt;Flows:&lt;/strong&gt;&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;&lt;strong&gt;births&lt;/strong&gt; = &lt;code&gt;Rabbit_Population * fractional_birth_rate * effect_of_crowding_on_births&lt;/code&gt;&lt;ul&gt;
-&lt;li&gt;Units: &lt;code&gt;rabbits/Months&lt;/code&gt;&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;li&gt;&lt;strong&gt;deaths&lt;/strong&gt; = &lt;code&gt;Rabbit_Population * fractional_death_rate * effect_of_crowding_on_deaths&lt;/code&gt;&lt;ul&gt;
-&lt;li&gt;Units: &lt;code&gt;rabbits/Months&lt;/code&gt;&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;&lt;strong&gt;Converters &amp;amp; Parameters:&lt;/strong&gt;&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;&lt;strong&gt;carrying_capacity&lt;/strong&gt; = &lt;code&gt;50&lt;/code&gt; (&lt;code&gt;rabbits&lt;/code&gt;)&lt;/li&gt;
-&lt;li&gt;&lt;strong&gt;fractional_birth_rate&lt;/strong&gt; = &lt;code&gt;0.2&lt;/code&gt; (&lt;code&gt;1/Month&lt;/code&gt;)&lt;/li&gt;
-&lt;li&gt;&lt;strong&gt;fractional_death_rate&lt;/strong&gt; = &lt;code&gt;0.05&lt;/code&gt; (&lt;code&gt;1/Month&lt;/code&gt;)&lt;/li&gt;
-&lt;li&gt;&lt;strong&gt;crowding_ratio&lt;/strong&gt; = &lt;code&gt;Rabbit_Population / carrying_capacity&lt;/code&gt; (&lt;code&gt;dimensionless&lt;/code&gt;)&lt;/li&gt;
-&lt;li&gt;&lt;strong&gt;effect_of_crowding_on_births&lt;/strong&gt; = &lt;code&gt;MAX(0, 1 - crowding_ratio)&lt;/code&gt; (&lt;code&gt;dimensionless&lt;/code&gt;)&lt;/li&gt;
-&lt;li&gt;&lt;strong&gt;effect_of_crowding_on_deaths&lt;/strong&gt; = &lt;code&gt;1 + crowding_ratio&lt;/code&gt; (&lt;code&gt;dimensionless&lt;/code&gt;)&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;&lt;strong&gt;Simulation Specifications:&lt;/strong&gt;&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;Start Time: &lt;code&gt;0&lt;/code&gt;&lt;/li&gt;
-&lt;li&gt;Stop Time: &lt;code&gt;36&lt;/code&gt; Months&lt;/li&gt;
-&lt;li&gt;DT: &lt;code&gt;0.25&lt;/code&gt; Months&lt;/li&gt;
-&lt;li&gt;Integration Method: &lt;code&gt;Euler&lt;/code&gt;&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;The baseline simulation has completed successfully without errors.&lt;/p&gt;
-&lt;p&gt;What would you like to explore next? We can run scenario analyses, visualize behavior over time, or conduct sensitivity tests.&lt;/p&gt;
-</message>
-			<message type="agent_complete" is_thinking="false" agent_name="Merlin">Task completed successfully</message>
-		</agentic_log>
-		<log>{This model was created or analyzed by a newer version of the software using an interactive agent:106HnQ924f/i6tbnK75VNQUlrsXl6you3FO5vzo7nygZC9qMmiUNR7lU5DbLGttJcbd9hJni4nOepiK/OKxcCQ==}
-</log>
+		<status verified="true" mixed="false" trusted="true" tampered="false" uses="true" analyzed="true" log_truncated="true" agent_log_truncated="false" base_log_truncated="false" log_pasted="false" timestamp="1794842595" algorithm="ed25519" keyurl="https://iseesystems.com/keys/stella01.txt" want_var_info="true" want_var_status="true" want_log="true" sampling="1" signature="Te86Vz2kGWWVNZVSfh6je/gBsQleBb8Z7d34p8rumxpDdf1NZAiDAB7h71l67Br24c5XRntLf5OrRU2/y8lEDQ=="/>
+		<testing signed_message_body="agentlogtruncated=false algorithm=ed25519 analyzed=true baselogtruncated=false keyurl=https://iseesystems.com/keys/stella01.txt logpasted=false logtruncated=true mixed=false sampling=1 tampered=false timestamp=1794842595 trusted=true uses=true verified=true wantlog=true wantvarinfo=true wantvarstatus=true births=Rabbits*normalbirthfraction*effectoffoodonbirths carryingcapacity=50 deaths=Rabbits/normallifespan*effectoffoodondeaths effectoffoodonbirths=relativefoodavailability effectoffoodondeaths=relativefoodavailability initialrabbits=4 normalbirthfraction=0.2 normallifespan=24 Rabbits=initialrabbits relativefoodavailability=carryingcapacity//Rabbits CCCCCCCCCC"/>
+		<agent_log signature="r2IWfpJKnAtZpvFi7PDL2/7IGD6EPsawUAIPqFkjLCWmcdv5ff3uGHXCLj3lJ2vZm84vWQlP9PVCBHyqX4UwBA==">
+			<message type="agent_text" is_thinking="false" agent_name="Socrates">Socrates (Claude) — What can I do for you today?</message>
+			<message type="user_text" is_thinking="false">build me a small population model for rabbits in a field what will feed up to 50 of them</message>
+			<message type="agent_text" is_thinking="false" agent_name="Merlin">Setting up a small rabbit population model. The library has no logistic-growth assembly that fits, so I&apos;m writing the model directly, using the library&apos;s food/capacity pattern.</message>
+			<message type="agent_text" is_thinking="false" agent_name="Merlin">I&apos;ve built the model, it has no errors or unit warnings, and it runs over 60 months in Run 1. Starting from 4 rabbits, the population grows in an S-curve and levels off at about 49.7, just under the 50 the field can feed.
+&lt;p style=&quot; margin-top:6px; margin-bottom:6px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Structure&lt;/span&gt;&lt;/p&gt;
+&lt;ul style=&quot;margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 1;&quot;&gt;
+&lt;li style=&quot; margin-top:6px; margin-bottom:6px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Stock:&lt;/span&gt; &lt;span style=&quot; font-family:&apos;Courier New&apos;;&quot;&gt;Rabbits&lt;/span&gt; (non-negative), starting at 4 (two breeding pairs).&lt;/li&gt;
+&lt;li style=&quot; margin-top:6px; margin-bottom:6px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Births&lt;/span&gt; = Rabbits × &lt;span style=&quot; font-family:&apos;Courier New&apos;;&quot;&gt;normal birth fraction&lt;/span&gt; (0.2 per month) × &lt;span style=&quot; font-family:&apos;Courier New&apos;;&quot;&gt;effect of food on births&lt;/span&gt;&lt;/li&gt;
+&lt;li style=&quot; margin-top:6px; margin-bottom:6px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Deaths&lt;/span&gt; = Rabbits ÷ &lt;span style=&quot; font-family:&apos;Courier New&apos;;&quot;&gt;normal lifespan&lt;/span&gt; (24 months) × &lt;span style=&quot; font-family:&apos;Courier New&apos;;&quot;&gt;effect of food on deaths&lt;/span&gt;. Deaths are a share of the current population, so the stock can&apos;t go negative.&lt;/li&gt;
+&lt;li style=&quot; margin-top:6px; margin-bottom:6px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;Courier New&apos;;&quot;&gt;relative food availability&lt;/span&gt; = &lt;span style=&quot; font-family:&apos;Courier New&apos;;&quot;&gt;carrying capacity&lt;/span&gt; (50) ÷ Rabbits, using safe division in case Rabbits reaches 0. A value of 1 means the field is feeding exactly 50 rabbits.&lt;/li&gt;
+&lt;li style=&quot; margin-top:6px; margin-bottom:6px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Two lookup tables (graph functions) driven by food availability:&lt;/span&gt;
+&lt;ul style=&quot;margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 2;&quot;&gt;
+&lt;li style=&quot; margin-top:6px; margin-bottom:6px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;The birth multiplier is 1 when there&apos;s at least twice the food needed, drops to 0.2 at capacity, and is near 0 when the field is overgrazed.&lt;/li&gt;
+&lt;li style=&quot; margin-top:6px; margin-bottom:6px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;The death multiplier stays at 1 while the field can feed everyone, then rises steeply (starvation) above 50 rabbits.&lt;/li&gt;&lt;/ul&gt;&lt;/li&gt;&lt;/ul&gt;
+&lt;p style=&quot; margin-top:6px; margin-bottom:6px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;I wrote this by hand rather than from an assembly. The library&apos;s closest match (&amp;quot;Constraining Inflow&amp;quot;) uses a fixed inflow, not births proportional to the population.&lt;/p&gt;
+&lt;p style=&quot; margin-top:6px; margin-bottom:6px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Run 1 results&lt;/span&gt;&lt;/p&gt;
+&lt;table border=&quot;1&quot; style=&quot; border-collapse:collapse;&quot; cellpadding=&quot;4&quot;&gt;
+&lt;tr&gt;
+&lt;td&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Month&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;
+&lt;td&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Rabbits&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;
+&lt;td&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Births/mo&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;
+&lt;td&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Deaths/mo&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;0&lt;/p&gt;&lt;/td&gt;
+&lt;td&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;4.0&lt;/p&gt;&lt;/td&gt;
+&lt;td&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;0.80&lt;/p&gt;&lt;/td&gt;
+&lt;td&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;0.17&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;12&lt;/p&gt;&lt;/td&gt;
+&lt;td&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;25.8&lt;/p&gt;&lt;/td&gt;
+&lt;td&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;5.09&lt;/p&gt;&lt;/td&gt;
+&lt;td&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;1.07&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;24&lt;/p&gt;&lt;/td&gt;
+&lt;td&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;48.4&lt;/p&gt;&lt;/td&gt;
+&lt;td&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;2.33&lt;/p&gt;&lt;/td&gt;
+&lt;td&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;2.02&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;60&lt;/p&gt;&lt;/td&gt;
+&lt;td&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;49.7&lt;/p&gt;&lt;/td&gt;
+&lt;td&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;2.07&lt;/p&gt;&lt;/td&gt;
+&lt;td&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;2.07&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;p style=&quot; margin-top:6px; margin-bottom:6px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Births and deaths match at the end, nothing hit the zero floor, and there were no runtime warnings.&lt;/p&gt;
+&lt;p style=&quot; margin-top:6px; margin-bottom:6px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Weaknesses&lt;/span&gt;&lt;/p&gt;
+&lt;ul style=&quot;margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 1;&quot;&gt;
+&lt;li style=&quot; margin-top:6px; margin-bottom:6px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Where it levels off depends on the parameters, not just the 50.&lt;/span&gt; The birth multiplier&apos;s value at capacity (0.2) was chosen so that births and deaths roughly balance there. If you change the birth fraction or lifespan, the population will level off somewhere other than about 50.&lt;/li&gt;
+&lt;li style=&quot; margin-top:6px; margin-bottom:6px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Food never runs down.&lt;/span&gt; The field always supplies food for 50, however hard it&apos;s grazed. Real overgrazing would need a stock of food that grows back.&lt;/li&gt;
+&lt;li style=&quot; margin-top:6px; margin-bottom:6px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;No age structure or seasons&lt;/span&gt;, and no predators or harvesting.&lt;/li&gt;&lt;/ul&gt;
+&lt;p style=&quot; margin-top:6px; margin-bottom:6px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Next step:&lt;/span&gt; I suggest an extreme-conditions test: start with 120 rabbits to check that starvation brings them down cleanly, and set the birth fraction to 0 to check they die out. After that I can analyse the feedback loops (why it levels off), make a chart, or add a food stock that grows back. Which would you like?&lt;/p&gt;</message>
+			<message type="agent_complete" is_thinking="false" agent_name="Merlin"/>
+		</agent_log>
 	</ai_information>
-	<sim_specs isee:sim_duration="1.5" isee:run_prefix="Run" isee:simulation_delay="0.0416667" isee:restore_on_start="false" method="Euler" time_units="Months" isee:instantaneous_flows="false" isee:ignore_module_errors="false" isee:strict_units="true" isee:loop_scores="true" isee:loop_exhaustive_allowed="1000">
+	<sim_specs isee:sim_duration="1.5" isee:run_prefix="Run" isee:simulation_delay="0.025" isee:restore_on_start="false" method="Euler" time_units="Months" isee:instantaneous_flows="false" isee:ignore_module_errors="false" isee:strict_units="true" isee:loop_scores="true" isee:loop_exhaustive_allowed="1000">
 		<start>0</start>
-		<stop>36</stop>
+		<stop>60</stop>
 		<dt>0.25</dt>
 	</sim_specs>
-	<isee:prefs saved_runs="5" keep="false" show_module_prefix="true" live_update_on_drag="true" show_restore_buttons="false" layer="model" isee:design="Deluxe Prev-Next Blue Green Pastel" isee:design_custom="false" interface_scale_ui="true" interface_max_page_width="10000" interface_max_page_height="10000" interface_min_page_width="0" interface_min_page_height="0" rifp="true">
-		<isee:tag_styles>
-			<isee:tag_style tag="Interface"/>
-			<isee:tag_style tag="Output"/>
-			<isee:tag_style tag="Parameter"/>
-			<isee:tag_style tag="Policy"/>
-		</isee:tag_styles>
-	</isee:prefs>
+	<isee:prefs saved_runs="5" keep="false" show_module_prefix="true" live_update_on_drag="true" show_restore_buttons="false" layer="model" isee:design="Deluxe Prev-Next Blue Green Pastel" isee:design_custom="false" interface_scale_ui="true" interface_max_page_width="10000" interface_max_page_height="10000" interface_min_page_width="0" interface_min_page_height="0" rifp="true"/>
 	<isee:multiplayer_settings include_chat="true" allow_observers="false" advance_time_increment="1" max_advance_time_in_ms="0" model_stops_when_players_drop="false" observer_start_page="home_page" enabled="false"/>
 	<isee:time_formats default_format="Builtin">
 		<isee:time_format name="Builtin" type="adaptive"/>
 	</isee:time_formats>
 	<isee:number_format_extenders/>
+	<isee:default_format/>
 	<model_units>
 		<unit name="Dimensionless">
 			<eqn>1</eqn>
@@ -94,203 +110,134 @@
 	</model_units>
 	<model>
 		<variables>
-			<aux name="carrying capacity" ai_state="C">
-				<doc>The maximum sustainable rabbit population supported by the field&apos;s resources.</doc>
-				<eqn>50</eqn>
-				<units>rabbits</units>
+			<aux name="initial rabbits" ai_state="C">
+				<doc>Rabbits released into the field at the start (two breeding pairs).</doc>
+				<eqn>4</eqn>
+				<units>Rabbits</units>
 			</aux>
-			<aux name="fractional birth rate" ai_state="C">
-				<doc>The baseline fractional reproduction rate per rabbit under unconstrained conditions.</doc>
+			<aux name="normal birth fraction" ai_state="C">
+				<doc>Births per rabbit per month when food is plentiful (averaged over both sexes and the breeding season).</doc>
 				<eqn>0.2</eqn>
-				<units>1/Month</units>
+				<units>1/Months</units>
 			</aux>
-			<aux name="fractional death rate" ai_state="C">
-				<doc>The baseline fractional mortality rate per rabbit in the absence of crowding pressures.</doc>
-				<eqn>0.05</eqn>
-				<units>1/Month</units>
+			<aux name="normal lifespan" ai_state="C">
+				<doc>Average rabbit lifespan in the field when well fed.</doc>
+				<eqn>24</eqn>
+				<units>Months</units>
 			</aux>
-			<aux name="crowding ratio" ai_state="C">
-				<doc>The ratio of the current rabbit population to environmental carrying capacity.</doc>
-				<eqn>Rabbit_Population/carrying_capacity</eqn>
-				<units>dimensionless</units>
+			<aux name="carrying capacity" ai_state="C">
+				<doc>Number of rabbits the field&apos;s forage can feed.</doc>
+				<eqn>50</eqn>
+				<units>Rabbits</units>
 			</aux>
-			<aux name="effect of crowding on births" ai_state="G">
-				<doc>Dimensionless multiplier representing reduced fecundity due to resource competition, dropping to zero as capacity is reached.</doc>
-				<eqn>MAX(0, 1 - crowding_ratio)</eqn>
-				<units>dimensionless</units>
+			<aux name="relative food availability" ai_state="C">
+				<doc>Food available per rabbit relative to what one rabbit needs. 1 = the field is feeding exactly its capacity; &gt;1 = surplus; &lt;1 = overgrazed.</doc>
+				<eqn>carrying_capacity // Rabbits</eqn>
+				<units>Dimensionless</units>
 			</aux>
-			<aux name="effect of crowding on deaths" ai_state="C">
-				<doc>Dimensionless multiplier representing elevated mortality due to resource scarcity and crowding.</doc>
-				<eqn>1 + crowding_ratio</eqn>
-				<units>dimensionless</units>
+			<aux name="effect of food on births" ai_state="C">
+				<doc>Multiplier on births. 1 when food is at least twice what the population needs; falls as food tightens (poorer condition, smaller litters); near 0 when overgrazed. Clamps at the ends of the x range.</doc>
+				<eqn>relative_food_availability</eqn>
+				<gf>
+					<yscale min="0" max="1"/>
+					<xpts>0,0.5,1,1.25,1.5,1.75,2</xpts>
+					<ypts>0,0.02,0.2,0.5,0.8,0.95,1</ypts>
+				</gf>
+				<units>Dimensionless</units>
+			</aux>
+			<aux name="effect of food on deaths" ai_state="C">
+				<doc>Multiplier on deaths. 1 while the field can feed everyone; rises steeply (starvation) once rabbits exceed capacity.</doc>
+				<eqn>relative_food_availability</eqn>
+				<gf>
+					<yscale min="1" max="10"/>
+					<xpts>0,0.25,0.5,0.75,1,2</xpts>
+					<ypts>10,6,3,1.6,1,1</ypts>
+				</gf>
+				<units>Dimensionless</units>
 			</aux>
 			<flow name="births" ai_state="C">
-				<doc>The rate at which new rabbits are born each month, regulated by density-dependent reproduction constraints.</doc>
-				<eqn>Rabbit_Population*fractional_birth_rate*effect_of_crowding_on_births</eqn>
+				<doc>Rabbits born per month: population times the normal fractional birth rate, reduced when food per rabbit gets scarce.</doc>
+				<eqn>Rabbits * normal_birth_fraction * effect_of_food_on_births</eqn>
 				<non_negative/>
-				<units>rabbits/Months</units>
+				<units>Rabbits/Months</units>
 			</flow>
 			<flow name="deaths" ai_state="C">
-				<doc>The rate of rabbit mortality each month, scaling with population size and density-dependent competition.</doc>
-				<eqn>Rabbit_Population*fractional_death_rate*effect_of_crowding_on_deaths</eqn>
+				<doc>Rabbits dying per month: first-order drain of the population over the normal lifespan, raised by starvation once the field is overgrazed. First-order control keeps Rabbits non-negative.</doc>
+				<eqn>Rabbits / normal_lifespan * effect_of_food_on_deaths</eqn>
 				<non_negative/>
-				<units>rabbits/Months</units>
+				<units>Rabbits/Months</units>
 			</flow>
-			<stock name="Rabbit Population" ai_state="G">
-				<doc>The total number of living rabbits in the field at any given time.</doc>
-				<eqn>5</eqn>
+			<stock name="Rabbits" ai_state="C">
+				<doc>Number of rabbits living in the field.</doc>
+				<eqn>initial_rabbits</eqn>
 				<inflow>births</inflow>
 				<outflow>deaths</outflow>
-				<units>rabbits</units>
+				<non_negative/>
+				<units>Rabbits</units>
 			</stock>
-			<aux name="excess deaths\nfrom crowding" ai_state="F">
-				<eqn>deaths - Rabbit_Population*fractional_death_rate</eqn>
-				<units>rabbits/Months</units>
-			</aux>
 		</variables>
 		<views>
 			<view isee:show_pages="false" background="white" page_width="1122" page_height="793" isee:popup_graphs_are_comparative="true" isee:enable_non_negative_highlights="false" type="stock_flow">
-				<aux x="528.8" y="430.4" name="carrying capacity"/>
-				<aux x="231.8" y="317.5" name="fractional birth rate"/>
-				<aux x="391.5" y="294" name="fractional death rate"/>
-				<aux x="484" y="344" name="crowding ratio"/>
-				<aux x="373" y="459" name="effect of crowding on births"/>
-				<aux x="546.8" y="148" name="effect of crowding on deaths"/>
-				<flow label_side="bottom" x="275" y="234" name="births">
+				<style/>
+				<aux x="511.625" y="279.5" name="initial rabbits"/>
+				<aux x="330.625" y="591.5" name="normal birth fraction"/>
+				<aux x="488.625" y="591.5" name="normal lifespan"/>
+				<aux x="393.625" y="214.5" name="carrying capacity"/>
+				<aux x="403.625" y="373.5" name="relative food availability"/>
+				<aux x="245.625" y="384.5" name="effect of food on births"/>
+				<aux x="562.625" y="361.5" name="effect of food on deaths"/>
+				<flow label_side="bottom" x="330.625" y="531.5" name="births">
 					<pts>
-						<pt x="212.5" y="234"/>
-						<pt x="337.5" y="234"/>
+						<pt x="268.125" y="531.5"/>
+						<pt x="393.125" y="531.5"/>
 					</pts>
 				</flow>
-				<flow label_side="bottom" x="433" y="234" name="deaths">
+				<flow label_side="bottom" x="488.625" y="531.5" name="deaths">
 					<pts>
-						<pt x="382.5" y="234"/>
-						<pt x="507.5" y="234"/>
+						<pt x="438.125" y="531.5"/>
+						<pt x="563.125" y="531.5"/>
 					</pts>
 				</flow>
-				<stock x="360" y="234" name="Rabbit Population"/>
-				<connector uid="1" polarity="+" isee:polarity_placement="outside" angle="220">
-					<isee:documentation>Reasoning:
-A larger population of reproductive rabbits produces more total offspring per unit time.
-
-Polarity Reasoning: 
-An increase in Rabbit Population increases the rate of Births.</isee:documentation>
-					<isee:reasoning>A larger population of reproductive rabbits produces more total offspring per unit time.</isee:reasoning>
-					<isee:polarity_reasoning>An increase in Rabbit Population increases the rate of Births.</isee:polarity_reasoning>
-					<from>Rabbit_Population</from>
+				<stock x="415.625" y="531.5" name="Rabbits"/>
+				<connector uid="1" angle="220">
+					<from>Rabbits</from>
 					<to>births</to>
 				</connector>
-				<connector uid="2" polarity="+" isee:polarity_placement="outside" angle="62.6445">
-					<isee:documentation>Reasoning:
-A higher baseline birth fraction directly increases birth volume.
-
-Polarity Reasoning: 
-An increase in Fractional Birth Rate increases Births.</isee:documentation>
-					<isee:reasoning>A higher baseline birth fraction directly increases birth volume.</isee:reasoning>
-					<isee:polarity_reasoning>An increase in Fractional Birth Rate increases Births.</isee:polarity_reasoning>
-					<from>fractional_birth_rate</from>
+				<connector uid="2" angle="90">
+					<from>normal_birth_fraction</from>
 					<to>births</to>
 				</connector>
-				<connector uid="3" polarity="+" isee:polarity_placement="outside" angle="116.424">
-					<isee:documentation>Reasoning:
-A higher crowding birth factor permits more births.
-
-Polarity Reasoning: 
-An increase in Effect of Crowding on Births increases Births.</isee:documentation>
-					<isee:reasoning>A higher crowding birth factor permits more births.</isee:reasoning>
-					<isee:polarity_reasoning>An increase in Effect of Crowding on Births increases Births.</isee:polarity_reasoning>
-					<from>effect_of_crowding_on_births</from>
+				<connector uid="3" angle="325.038">
+					<from>effect_of_food_on_births</from>
 					<to>births</to>
 				</connector>
-				<connector uid="5" polarity="+" isee:polarity_placement="outside" angle="40">
-					<isee:documentation>Reasoning:
-More rabbits result in a higher absolute number of deaths.
-
-Polarity Reasoning: 
-An increase in Rabbit Population increases Deaths.</isee:documentation>
-					<isee:reasoning>More rabbits result in a higher absolute number of deaths.</isee:reasoning>
-					<isee:polarity_reasoning>An increase in Rabbit Population increases Deaths.</isee:polarity_reasoning>
-					<from>Rabbit_Population</from>
+				<connector uid="4" angle="40">
+					<from>Rabbits</from>
 					<to>deaths</to>
 				</connector>
-				<connector uid="6" polarity="+" isee:polarity_placement="outside" angle="55.3297">
-					<isee:documentation>Reasoning:
-A higher baseline death fraction increases total mortality rate.
-
-Polarity Reasoning: 
-An increase in Fractional Death Rate increases Deaths.</isee:documentation>
-					<isee:reasoning>A higher baseline death fraction increases total mortality rate.</isee:reasoning>
-					<isee:polarity_reasoning>An increase in Fractional Death Rate increases Deaths.</isee:polarity_reasoning>
-					<from>fractional_death_rate</from>
+				<connector uid="5" angle="90">
+					<from>normal_lifespan</from>
 					<to>deaths</to>
 				</connector>
-				<connector uid="7" polarity="+" isee:polarity_placement="outside" angle="168.261">
-					<isee:documentation>Reasoning:
-Higher crowding-induced mortality pressure increases total deaths.
-
-Polarity Reasoning: 
-An increase in Effect of Crowding on Deaths increases Deaths.</isee:documentation>
-					<isee:reasoning>Higher crowding-induced mortality pressure increases total deaths.</isee:reasoning>
-					<isee:polarity_reasoning>An increase in Effect of Crowding on Deaths increases Deaths.</isee:polarity_reasoning>
-					<from>effect_of_crowding_on_deaths</from>
+				<connector uid="6" angle="271.477">
+					<from>effect_of_food_on_deaths</from>
 					<to>deaths</to>
 				</connector>
-				<connector uid="8" polarity="+" isee:polarity_placement="outside" angle="260.789">
-					<isee:documentation>Reasoning:
-As the population grows, density relative to carrying capacity rises.
-
-Polarity Reasoning: 
-An increase in Rabbit Population increases the Crowding Ratio.</isee:documentation>
-					<isee:reasoning>As the population grows, density relative to carrying capacity rises.</isee:reasoning>
-					<isee:polarity_reasoning>An increase in Rabbit Population increases the Crowding Ratio.</isee:polarity_reasoning>
-					<from>Rabbit_Population</from>
-					<to>crowding_ratio</to>
+				<connector uid="7" angle="163.983">
+					<from>relative_food_availability</from>
+					<to>effect_of_food_on_births</to>
 				</connector>
-				<connector uid="10" polarity="-" isee:polarity_placement="outside" angle="117.408">
-					<isee:documentation>Reasoning:
-A larger capacity dilutes density pressures for a given population size.
-
-Polarity Reasoning: 
-An increase in Carrying Capacity decreases the Crowding Ratio.</isee:documentation>
-					<isee:reasoning>A larger capacity dilutes density pressures for a given population size.</isee:reasoning>
-					<isee:polarity_reasoning>An increase in Carrying Capacity decreases the Crowding Ratio.</isee:polarity_reasoning>
+				<connector uid="8" angle="24.316">
+					<from>relative_food_availability</from>
+					<to>effect_of_food_on_deaths</to>
+				</connector>
+				<connector uid="9" angle="273.599">
 					<from>carrying_capacity</from>
-					<to>crowding_ratio</to>
+					<to>relative_food_availability</to>
 				</connector>
-				<connector uid="11" polarity="-" isee:polarity_placement="outside" angle="246.014">
-					<isee:documentation>Reasoning:
-Greater crowding exerts negative pressure on breeding success and food availability.
-
-Polarity Reasoning: 
-An increase in Crowding Ratio decreases Effect of Crowding on Births.</isee:documentation>
-					<isee:reasoning>Greater crowding exerts negative pressure on breeding success and food availability.</isee:reasoning>
-					<isee:polarity_reasoning>An increase in Crowding Ratio decreases Effect of Crowding on Births.</isee:polarity_reasoning>
-					<from>crowding_ratio</from>
-					<to>effect_of_crowding_on_births</to>
-				</connector>
-				<connector uid="12" polarity="+" isee:polarity_placement="outside" angle="52.2341">
-					<isee:documentation>Reasoning:
-Greater crowding leads to starvation and stress, increasing death rate.
-
-Polarity Reasoning: 
-An increase in Crowding Ratio increases Effect of Crowding on Deaths.</isee:documentation>
-					<isee:reasoning>Greater crowding leads to starvation and stress, increasing death rate.</isee:reasoning>
-					<isee:polarity_reasoning>An increase in Crowding Ratio increases Effect of Crowding on Deaths.</isee:polarity_reasoning>
-					<from>crowding_ratio</from>
-					<to>effect_of_crowding_on_deaths</to>
-				</connector>
-				<aux x="403.2" y="84" name="excess deaths\nfrom crowding"/>
-				<connector uid="13" angle="126.236">
-					<from>deaths</from>
-					<to>excess_deaths_from_crowding</to>
-				</connector>
-				<connector uid="14" angle="98.9336">
-					<from>Rabbit_Population</from>
-					<to>excess_deaths_from_crowding</to>
-				</connector>
-				<connector uid="15" angle="111.811">
-					<from>fractional_death_rate</from>
-					<to>excess_deaths_from_crowding</to>
+				<connector uid="10" angle="114.343">
+					<from>Rabbits</from>
+					<to>relative_food_availability</to>
 				</connector>
 			</view>
 		</views>

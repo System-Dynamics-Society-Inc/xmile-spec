@@ -95,7 +95,7 @@
           <xs:element ref="model_units" minOccurs="0" maxOccurs="1"/>
           <xs:element ref="behavior" minOccurs="0" maxOccurs="1"/>
           <xs:element ref="data" minOccurs="0" maxOccurs="1"/>
-          <xs:element ref="style" minOccurs="0" maxOccurs="1"/>
+          <!-- no file-level <style>: Chapter 5 places it only in <views> and <view> -->
           <xs:element ref="macro" minOccurs="0" maxOccurs="unbounded"/>
           <xs:element ref="model" minOccurs="1" maxOccurs="unbounded"/>
 
@@ -1492,13 +1492,14 @@
     </xs:complexType>
   </xs:element>
 
-  <!-- clarify_spec - note that style is not allowed at the file level  in this xsd -->
   <!--
-    The cascading style system.
+    The object style system.
 
-    Section 5: "A <style> tag contains display information and defaults
-    separated into children tags by object type. The style system controls the
-    look and feel of all visual XMILE objects."
+    Section 5: "A <style> tag contains display information about object types.
+    The style system determines the look and feel of all visual XMILE objects."
+    A <style> appears only in <views> and <view>, never at the file level, and
+    carries no attributes of its own: every setting is on the child for the
+    object type it applies to.
 
     The v1.0 schema admitted only six of those object types, so a style block
     that set defaults for a graph, a table, a slider or a text box, all of them
@@ -1532,7 +1533,6 @@
         <xs:element name="table" type="table_style_type" minOccurs="0"/>
         <xs:element name="text_box" type="style_type" minOccurs="0"/>
       </xs:all>
-      <xs:attributeGroup ref="style_attributes"/>
     </xs:complexType>
   </xs:element>
 
@@ -1735,6 +1735,18 @@
     <xs:attribute name="text_color" type="color_type"/>
     <xs:attribute name="text_z_index" type="xs:integer"/>
 
+    <!-- header_font_ -->
+    <xs:attribute name="header_font_border_width" type="border_width_type"/>
+    <xs:attribute name="header_font_border_color" type="color_type"/>
+    <xs:attribute name="header_font_border_style" type="border_style_type"/>
+    <xs:attribute name="header_font_text_decoration" type="text_decoration_type"/>
+    <xs:attribute name="header_font_text_align" type="text_align"/>
+    <xs:attribute name="header_font_vertical_text_align" type="vertical_text_align"/>
+    <xs:attribute name="header_font_text_background" type="color_type"/>
+    <xs:attribute name="header_font_padding" type="xs:string"/>
+    <xs:attribute name="header_font_background" type="color_type"/>
+    <xs:attribute name="header_font_z_index" type="xs:integer"/>
+
     <!-- header_text_ -->
     <xs:attribute name="header_text_border_width" type="border_width_type"/>
     <xs:attribute name="header_text_border_color" type="color_type"/>
@@ -1749,31 +1761,32 @@
     <xs:attribute name="header_text_color" type="color_type"/>
     <xs:attribute name="header_text_z_index" type="xs:integer"/>
 
-    <!-- header_font_ -->
-    <xs:attribute name="header_font_border_width" type="border_width_type"/>
-    <xs:attribute name="header_font_border_color" type="color_type"/>
-    <xs:attribute name="header_font_border_style" type="border_style_type"/>
-    <xs:attribute name="header_font_text_decoration" type="text_decoration_type"/>
-    <xs:attribute name="header_font_text_align" type="text_align"/>
-    <xs:attribute name="header_font_vertical_text_align" type="vertical_text_align"/>
-    <xs:attribute name="header_font_text_background" type="color_type"/>
-    <xs:attribute name="header_font_padding" type="xs:string"/>
-    <xs:attribute name="header_font_background" type="color_type"/>
-    <xs:attribute name="header_font_z_index" type="xs:integer"/>
+    <!-- axis_title_ -->
+    <xs:attribute name="axis_title_border_width" type="border_width_type"/>
+    <xs:attribute name="axis_title_border_color" type="color_type"/>
+    <xs:attribute name="axis_title_border_style" type="border_style_type"/>
+    <xs:attribute name="axis_title_font_family" type="xs:string"/>
+    <xs:attribute name="axis_title_font_style" type="font_style_type"/>
+    <xs:attribute name="axis_title_font_weight" type="font_weight_type"/>
+    <xs:attribute name="axis_title_text_decoration" type="text_decoration_type"/>
+    <xs:attribute name="axis_title_text_align" type="text_align"/>
+    <xs:attribute name="axis_title_vertical_text_align" type="vertical_text_align"/>
+    <xs:attribute name="axis_title_font_color" type="color_type"/>
+    <xs:attribute name="axis_title_text_background" type="color_type"/>
+    <xs:attribute name="axis_title_font_size" type="xs:string"/>
+    <xs:attribute name="axis_title_padding" type="xs:string"/>
+    <xs:attribute name="axis_title_color" type="color_type"/>
+    <xs:attribute name="axis_title_background" type="color_type"/>
+    <xs:attribute name="axis_title_z_index" type="xs:integer"/>
 
     <!-- axis_title_font_ -->
     <xs:attribute name="axis_title_font_border_width" type="border_width_type"/>
     <xs:attribute name="axis_title_font_border_color" type="color_type"/>
     <xs:attribute name="axis_title_font_border_style" type="border_style_type"/>
-    <xs:attribute name="axis_title_font_family" type="xs:string"/>
-    <xs:attribute name="axis_title_font_style" type="font_style_type"/>
-    <xs:attribute name="axis_title_font_weight" type="font_weight_type"/>
     <xs:attribute name="axis_title_font_text_decoration" type="text_decoration_type"/>
     <xs:attribute name="axis_title_font_text_align" type="text_align"/>
     <xs:attribute name="axis_title_font_vertical_text_align" type="vertical_text_align"/>
-    <xs:attribute name="axis_title_font_color" type="color_type"/>
     <xs:attribute name="axis_title_font_text_background" type="color_type"/>
-    <xs:attribute name="axis_title_font_size" type="xs:string"/>
     <xs:attribute name="axis_title_font_padding" type="xs:string"/>
     <xs:attribute name="axis_title_font_background" type="color_type"/>
     <xs:attribute name="axis_title_font_z_index" type="xs:integer"/>
@@ -1785,29 +1798,39 @@
     <xs:attribute name="axis_title_text_font_family" type="xs:string"/>
     <xs:attribute name="axis_title_text_font_style" type="font_style_type"/>
     <xs:attribute name="axis_title_text_font_weight" type="font_weight_type"/>
-    <xs:attribute name="axis_title_text_decoration" type="text_decoration_type"/>
-    <xs:attribute name="axis_title_text_align" type="text_align"/>
     <xs:attribute name="axis_title_text_vertical_text_align" type="vertical_text_align"/>
     <xs:attribute name="axis_title_text_font_color" type="color_type"/>
-    <xs:attribute name="axis_title_text_background" type="color_type"/>
     <xs:attribute name="axis_title_text_font_size" type="xs:string"/>
     <xs:attribute name="axis_title_text_padding" type="xs:string"/>
     <xs:attribute name="axis_title_text_color" type="color_type"/>
     <xs:attribute name="axis_title_text_z_index" type="xs:integer"/>
 
+    <!-- axis_label_ -->
+    <xs:attribute name="axis_label_border_width" type="border_width_type"/>
+    <xs:attribute name="axis_label_border_color" type="color_type"/>
+    <xs:attribute name="axis_label_border_style" type="border_style_type"/>
+    <xs:attribute name="axis_label_font_family" type="xs:string"/>
+    <xs:attribute name="axis_label_font_style" type="font_style_type"/>
+    <xs:attribute name="axis_label_font_weight" type="font_weight_type"/>
+    <xs:attribute name="axis_label_text_decoration" type="text_decoration_type"/>
+    <xs:attribute name="axis_label_text_align" type="text_align"/>
+    <xs:attribute name="axis_label_vertical_text_align" type="vertical_text_align"/>
+    <xs:attribute name="axis_label_font_color" type="color_type"/>
+    <xs:attribute name="axis_label_text_background" type="color_type"/>
+    <xs:attribute name="axis_label_font_size" type="xs:string"/>
+    <xs:attribute name="axis_label_padding" type="xs:string"/>
+    <xs:attribute name="axis_label_color" type="color_type"/>
+    <xs:attribute name="axis_label_background" type="color_type"/>
+    <xs:attribute name="axis_label_z_index" type="xs:integer"/>
+
     <!-- axis_label_font_ -->
     <xs:attribute name="axis_label_font_border_width" type="border_width_type"/>
     <xs:attribute name="axis_label_font_border_color" type="color_type"/>
     <xs:attribute name="axis_label_font_border_style" type="border_style_type"/>
-    <xs:attribute name="axis_label_font_family" type="xs:string"/>
-    <xs:attribute name="axis_label_font_style" type="font_style_type"/>
-    <xs:attribute name="axis_label_font_weight" type="font_weight_type"/>
     <xs:attribute name="axis_label_font_text_decoration" type="text_decoration_type"/>
     <xs:attribute name="axis_label_font_text_align" type="text_align"/>
     <xs:attribute name="axis_label_font_vertical_text_align" type="vertical_text_align"/>
-    <xs:attribute name="axis_label_font_color" type="color_type"/>
     <xs:attribute name="axis_label_font_text_background" type="color_type"/>
-    <xs:attribute name="axis_label_font_size" type="xs:string"/>
     <xs:attribute name="axis_label_font_padding" type="xs:string"/>
     <xs:attribute name="axis_label_font_background" type="color_type"/>
     <xs:attribute name="axis_label_font_z_index" type="xs:integer"/>
@@ -1819,11 +1842,8 @@
     <xs:attribute name="axis_label_text_font_family" type="xs:string"/>
     <xs:attribute name="axis_label_text_font_style" type="font_style_type"/>
     <xs:attribute name="axis_label_text_font_weight" type="font_weight_type"/>
-    <xs:attribute name="axis_label_text_decoration" type="text_decoration_type"/>
-    <xs:attribute name="axis_label_text_align" type="text_align"/>
     <xs:attribute name="axis_label_text_vertical_text_align" type="vertical_text_align"/>
     <xs:attribute name="axis_label_text_font_color" type="color_type"/>
-    <xs:attribute name="axis_label_text_background" type="color_type"/>
     <xs:attribute name="axis_label_text_font_size" type="xs:string"/>
     <xs:attribute name="axis_label_text_padding" type="xs:string"/>
     <xs:attribute name="axis_label_text_color" type="color_type"/>
@@ -2098,7 +2118,7 @@
 
     xs:all rather than xs:sequence: Chapter 2 does not fix an order for these,
     and files in circulation differ, some writing status then testing then log
-    then settings, others status then agentic_log then log. XSD 1.1 lifts the
+    then settings, others status then agent_log then log. XSD 1.1 lifts the
     1.0 restrictions on xs:all, so this is expressible without inventing an
     order the specification never required.
   -->
@@ -2113,7 +2133,12 @@
       <xs:all>
         <xs:element ref="status"/>
         <xs:element ref="log" minOccurs="0"/>
-        <xs:element ref="agentic_log" minOccurs="0"/>
+        <!--
+          Optional here, but Chapter 2 requires it whenever uses or analyzed is
+          true on <status>. That is a co-occurrence constraint the schema does
+          not express; a missing agent log in that case marks the model tampered.
+        -->
+        <xs:element ref="agent_log" minOccurs="0"/>
         <xs:element ref="settings" minOccurs="0"/>
         <xs:element ref="testing" minOccurs="0"/>
       </xs:all>
@@ -2142,6 +2167,9 @@
       <xs:attribute name="uses" type="xs:boolean" use="optional"/>
       <xs:attribute name="analyzed" type="xs:boolean" use="optional"/>
       <xs:attribute name="log_truncated" type="xs:boolean" use="optional"/>
+      <xs:attribute name="agent_log_truncated" type="xs:boolean" use="optional"/>
+      <xs:attribute name="base_log_truncated" type="xs:boolean" use="optional"/>
+      <xs:attribute name="log_pasted" type="xs:boolean" use="optional"/>
       <xs:attribute name="timestamp" type="xs:integer" use="optional"/>
       <xs:attribute name="algorithm" use="optional">
         <xs:simpleType>
@@ -2169,18 +2197,16 @@
 
   <!--
     The log is plain text, markup or markdown, so its content is unconstrained.
-    When an agentic log is present it begins with the {note:signature} prefix
-    described in Chapter 2; that is a lexical convention inside the text and is
-    not expressible here.
   -->
   <xs:element name="log" type="string_element_type"/>
 
-  <xs:element name="agentic_log">
+  <xs:element name="agent_log">
     <xs:annotation>
       <xs:documentation>
-        The record of an interaction with an agentic AI agent, one message per
-        exchange, in document order. The order is significant: the agentic
-        signature is taken over the collated content in this order.
+        The record of an interaction with an AI agent, one message per
+        exchange, in document order. The order is significant: the agent log
+        signature is taken over the collated content in this order. It may be
+        empty, and is signed even then.
       </xs:documentation>
     </xs:annotation>
     <xs:complexType>
@@ -2208,6 +2234,8 @@
           </xs:complexType>
         </xs:element>
       </xs:sequence>
+      <!-- Chapter 2, Signing the Agent Log: required whenever the tag is present. -->
+      <xs:attribute name="signature" type="xs:base64Binary" use="required"/>
     </xs:complexType>
   </xs:element>
 

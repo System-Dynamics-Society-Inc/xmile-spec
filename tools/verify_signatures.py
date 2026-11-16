@@ -11,8 +11,8 @@ Two signatures are checked:
 
   main      over the status attributes, the variable equations, the per-variable
             AI states and the log, as assembled below.
-  agentic   over the collated content of every <message> in <agentic_log>,
-            carried in the {note:signature} prefix at the head of <log>.
+  agent log over the collated content of every <message> in <agent_log>,
+            carried in the signature attribute of <agent_log>.
 
 The <testing> tag is what makes this reliable. Its signed_message_body attribute
 holds the exact string the producer signed, so when it is present the message
@@ -70,8 +70,9 @@ def unescape(text):
         index += 1
     return ''.join(out)
 
-# The {note:signature} prefix. The note may be any text without a colon or a
-# closing brace, which is what makes this greedy-free match unambiguous.
+# The {note:signature} prefix at the head of <log>, where an earlier draft
+# carried the agent log signature. It is recognised only so that a file written
+# that way gets a precise report rather than a bare "no signature".
 LOG_PREFIX = re.compile(r'^\{([^:}]*):([A-Za-z0-9+/=]+)\}')
 
 
@@ -232,8 +233,8 @@ def build_message(root):
     return message[:-1] if message.endswith(' ') else message
 
 
-def agentic_candidates(ai):
-    """What the agentic signature might cover, most-specified first.
+def agent_log_candidates(ai):
+    """What the agent log signature might cover, most-specified first.
 
     Chapter 2 says the message is the collated content of every <message>. An
     earlier draft said it was the collated type, and files in circulation were
@@ -242,7 +243,7 @@ def agentic_candidates(ai):
     only tried the specified rule would report "signature does not match" for a
     file that is internally consistent under the other one.
     """
-    log = ai.find(X + 'agentic_log')
+    log = ai.find(X + 'agent_log')
     if log is None:
         return None
     messages = log.findall(X + 'message')
@@ -265,10 +266,14 @@ def agentic_candidates(ai):
     ]
 
 
-def agentic_signature(ai):
+def agent_log_signature(ai):
+    agent_log = ai.find(X + 'agent_log')
+    return agent_log.get('signature') if agent_log is not None else None
+
+
+def legacy_log_prefix(ai):
     log = ai.find(X + 'log')
-    match = LOG_PREFIX.match((log.text or '') if log is not None else '')
-    return match.group(2) if match else None
+    return LOG_PREFIX.match((log.text or '') if log is not None else '') is not None
 
 
 # ------------------------------------------------------------------ report ---
@@ -352,13 +357,24 @@ def check_file(path, keys, show_message):
     lines.append('main signature       %s' % ('verified' if good else 'FAILED: %s' % why))
     failed = failed or not good
 
-    candidates = agentic_candidates(ai)
-    if candidates is not None:
-        sig = agentic_signature(ai)
+    candidates = agent_log_candidates(ai)
+    used = status_el.get('uses') == 'true' or status_el.get('analyzed') == 'true'
+    if candidates is None:
+        if used:
+            failed = True
+            lines.append('agent log signature  FAILED: AI was used or analyzed but there '
+                         'is no <agent_log>')
+    else:
+        sig = agent_log_signature(ai)
         if sig is None:
             failed = True
-            lines.append('agentic signature    FAILED: <agentic_log> present but <log> '
-                         'carries no {note:signature} prefix')
+            if legacy_log_prefix(ai):
+                lines.append('agent log signature  FAILED: no signature attribute on '
+                             '<agent_log>; <log> carries the {note:signature} prefix of '
+                             'an earlier draft')
+            else:
+                lines.append('agent log signature  FAILED: no signature attribute on '
+                             '<agent_log>')
         else:
             matched = None
             for label, body in candidates:
@@ -367,17 +383,17 @@ def check_file(path, keys, show_message):
                     matched = label
                     break
             if matched == 'content':
-                lines.append('agentic signature    verified (over collated content)')
+                lines.append('agent log signature  verified (over collated content)')
             elif matched == 'content attribute':
-                lines.append('agentic signature    verified, but over a content ATTRIBUTE; '
+                lines.append('agent log signature  verified, but over a content ATTRIBUTE; '
                              'the message is the element content in this version')
                 failed = True
             elif matched == 'type':
-                lines.append('agentic signature    verified, but over collated TYPE, not '
+                lines.append('agent log signature  verified, but over collated TYPE, not '
                              'content as Chapter 2 requires')
                 failed = True
             else:
-                lines.append('agentic signature    FAILED: matches no form of the '
+                lines.append('agent log signature  FAILED: matches no form of the '
                              'collated messages')
                 failed = True
 
