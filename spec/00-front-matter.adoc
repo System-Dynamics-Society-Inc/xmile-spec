@@ -1,8 +1,8 @@
 XML Interchange Language for System Dynamics (XMILE) Version 1.2
 
-SDS Working Draft 02
+SDS Release Candidate 01
 
-26 August 2026
+16 November 2026
 
 Specification URIs
 
@@ -78,7 +78,7 @@ When referencing this specification the following citation format should be used
 
 **pass:c[[xmile-v1.2\]]**
 
-__XML Interchange Language for System Dynamics (XMILE) Version 1.2__. Edited by Karim Chichakly, Robert Eberlein, Robert Powers, and William Schoenberg. 26 August 2026. SDS Working Draft 02. https://xmile.systemdynamics.org/1.2/xmile-v1.2.html[https://xmile.systemdynamics.org/1.2/xmile-v1.2.html]. Latest version: https://xmile.systemdynamics.org[https://xmile.systemdynamics.org].
+__XML Interchange Language for System Dynamics (XMILE) Version 1.2__. Edited by Karim Chichakly, Robert Eberlein, Robert Powers, and William Schoenberg. 16 November 2026. SDS Release Candidate 01. https://xmile.systemdynamics.org/1.2/xmile-v1.2.html[https://xmile.systemdynamics.org/1.2/xmile-v1.2.html]. Latest version: https://xmile.systemdynamics.org[https://xmile.systemdynamics.org].
 
 Notices
 

@@ -315,8 +315,9 @@
     </xs:annotation>
     <xs:complexType>
       <xs:all>
-        <xs:element name="stop" type="double_element_type" minOccurs="1"/>
-        <xs:element name="start" type="double_element_type" minOccurs="1"/>
+        <!-- A number or the name of a variable (Chapter 2). -->
+        <xs:element name="stop" type="time_element_type" minOccurs="1"/>
+        <xs:element name="start" type="time_element_type" minOccurs="1"/>
         <xs:element name="dt" minOccurs="0" default="1">
           <xs:complexType>
             <xs:simpleContent>
@@ -451,7 +452,8 @@
       <!-- note - name is generally required/recommended but is optional for primary model -->
       <xs:attribute name="name" type="xs:string" use="optional"/>
 
-      <xs:attribute name="resource" type="xs:string" use="optional"/>
+      <!-- Chapter 4: renamed from resource in 1.2. -->
+      <xs:attribute name="url" type="xs:string" use="optional"/>
       <xs:attribute name="run" type="xs:boolean" use="optional" default="false"/>
       <xs:attribute name="password" type="xs:string" use="optional"/>
     </xs:complexType>
@@ -545,6 +547,8 @@
       <!-- common attributes -->
       <xs:attribute name="name" type="xs:string" use="optional"/>
       <xs:attribute name="access" type="access_type" use="optional"/>
+      <!-- Chapter 4: with access="output", also a submodel input. -->
+      <xs:attribute name="throughput" type="xs:boolean" use="optional" default="false"/>
       <xs:attribute name="autoexport" type="xs:boolean" use="optional" default="false"/>
       <xs:attribute name="subscript" type="xs:string" use="optional"/>
       <!-- Chapter 4, Common Variable Properties. -->
@@ -571,6 +575,8 @@
       <xs:attribute name="batch_integrity" type="xs:boolean" use="optional" default="false"/>
       <xs:attribute name="one_at_a_time" type="xs:boolean" use="optional" default="true"/>
       <xs:attribute name="exponential_leak" type="xs:boolean" use="optional" default="false"/>
+      <!-- Chapter 4: strictly FIFO, so a transit time change affects output immediately. -->
+      <xs:attribute name="fifo" type="xs:boolean" use="optional" default="false"/>
     </xs:complexType>
   </xs:element>
 
@@ -586,6 +592,8 @@
       <xs:choice maxOccurs="unbounded">
         <!-- common child elements -->
         <xs:element name="eqn" type="string_element_type" minOccurs="0" maxOccurs="1"/>
+        <!-- Chapter 4: initial value, used in place of eqn at the start of the simulation. -->
+        <xs:element name="init_eqn" type="string_element_type" minOccurs="0" maxOccurs="1"/>
         <xs:element name="mathml" type="string_element_type" minOccurs="0" maxOccurs="1"/>
         <xs:element name="units" type="string_element_type" minOccurs="0" maxOccurs="1"/>
         <xs:element name="doc" type="string_element_type" minOccurs="0" maxOccurs="1"/>
@@ -608,6 +616,8 @@
           <xs:complexType>
             <xs:choice maxOccurs="unbounded">
               <xs:element name="eqn" type="string_element_type" minOccurs="0" maxOccurs="1"/>
+              <!-- Chapter 4: initial value, used in place of eqn at the start of the simulation. -->
+              <xs:element name="init_eqn" type="string_element_type" minOccurs="0" maxOccurs="1"/>
               <xs:element name="mathml" type="string_element_type" minOccurs="0" maxOccurs="1"/>
               <xs:element ref="gf" minOccurs="0" maxOccurs="1"/>
               <xs:element ref="event_poster" minOccurs="0" maxOccurs="1"/>
@@ -624,6 +634,8 @@
 
       <xs:attribute name="name" type="xs:string" use="optional"/>
       <xs:attribute name="access" type="access_type" use="optional"/>
+      <!-- Chapter 4: with access="output", also a submodel input. -->
+      <xs:attribute name="throughput" type="xs:boolean" use="optional" default="false"/>
       <xs:attribute name="autoexport" type="xs:boolean" use="optional" default="false"/>
       <xs:attribute name="subscript" type="xs:string" use="optional"/>
       <!-- Chapter 4, Common Variable Properties. -->
@@ -649,6 +661,8 @@
       <xs:choice maxOccurs="unbounded">
         <!-- common -->
         <xs:element name="eqn" type="string_element_type" minOccurs="0" maxOccurs="1"/>
+        <!-- Chapter 4: initial value, used in place of eqn at the start of the simulation. -->
+        <xs:element name="init_eqn" type="string_element_type" minOccurs="0" maxOccurs="1"/>
         <xs:element name="mathml" type="string_element_type" minOccurs="0" maxOccurs="1"/>
         <xs:element name="units" type="string_element_type" minOccurs="0" maxOccurs="1"/>
         <xs:element name="doc" type="string_element_type" minOccurs="0" maxOccurs="1"/>
@@ -664,6 +678,8 @@
           <xs:complexType>
             <xs:choice maxOccurs="unbounded">
               <xs:element name="eqn" type="string_element_type" minOccurs="0" maxOccurs="1"/>
+              <!-- Chapter 4: initial value, used in place of eqn at the start of the simulation. -->
+              <xs:element name="init_eqn" type="string_element_type" minOccurs="0" maxOccurs="1"/>
               <xs:element name="mathml" type="string_element_type" minOccurs="0" maxOccurs="1"/>
               <xs:element ref="gf" minOccurs="0" maxOccurs="1"/>
               <xs:element ref="event_poster" minOccurs="0" maxOccurs="1"/>
@@ -675,6 +691,8 @@
 
       <xs:attribute name="name" type="xs:string" use="optional"/>
       <xs:attribute name="access" type="access_type" use="optional"/>
+      <!-- Chapter 4: with access="output", also a submodel input. -->
+      <xs:attribute name="throughput" type="xs:boolean" use="optional" default="false"/>
       <xs:attribute name="autoexport" type="xs:boolean" use="optional" default="false"/>
       <xs:attribute name="subscript" type="xs:string" use="optional"/>
       <!-- Chapter 4, Common Variable Properties. -->
@@ -724,8 +742,8 @@
   </xs:element>
 
   <xs:attributeGroup name="format_attributes">
-    <xs:attribute name="precision" type="xs:double" use="optional"/>
-    <xs:attribute name="scale_by" type="xs:integer" default="1" use="optional"/>
+    <xs:attribute name="precision" type="precision_type" use="optional"/>
+    <xs:attribute name="scale_by" type="scale_by_type" default="1" use="optional"/>
     <xs:attribute name="delimit_000s" type="xs:boolean" default="false" use="optional"/>
     <xs:attribute name="display_as" default="number" use="optional">
       <xs:simpleType>
@@ -809,20 +827,34 @@
         </xs:element>
       </xs:choice>
       <xs:attribute name="name" type="xs:string" use="required"/>
+      <!-- Chapter 4: only in effect when running the model by group. -->
+      <xs:attribute name="run" type="xs:boolean" use="optional" default="false"/>
     </xs:complexType>
   </xs:element>
 
   <xs:element name="module">
     <xs:annotation>
       <xs:documentation>
-        Modules are placeholders in the variables section for submodels. If
-        present, this must appear in every model that references that
-        submodel.
+        Modules are placeholders in the variables section for submodels. The
+        connections between variables in the containing model and those in
+        the submodel are defined here.
       </xs:documentation>
     </xs:annotation>
     <xs:complexType>
       <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <!-- Number format for the module, as for any entry in the variables section. -->
+        <xs:element ref="format" minOccurs="0" maxOccurs="1"/>
+        <!-- Documentation, a common variable property (Chapter 4). -->
+        <xs:element name="doc" type="string_element_type" minOccurs="0" maxOccurs="1"/>
+        <!-- connect: names fully module qualified. -->
         <xs:element name="connect" minOccurs="0" maxOccurs="unbounded">
+          <xs:complexType>
+            <xs:attribute name="to" type="xs:string" use="required"/>
+            <xs:attribute name="from" type="xs:string" use="required"/>
+          </xs:complexType>
+        </xs:element>
+        <!-- connect2: names in the model holding the tag left unqualified. -->
+        <xs:element name="connect2" minOccurs="0" maxOccurs="unbounded">
           <xs:complexType>
             <xs:attribute name="to" type="xs:string" use="required"/>
             <xs:attribute name="from" type="xs:string" use="required"/>
@@ -830,8 +862,11 @@
         </xs:element>
       </xs:choice>
       <xs:attribute name="name" type="xs:string" use="required"/>
-      <!-- the resource is really only optional if the submodel is contained in the model - otherwise it much refer to location-->
-      <xs:attribute name="resource" type="xs:string" use="optional"/>
+      <!--
+        Renamed from resource in 1.2. Optional only when the submodel is in
+        the same file; otherwise it must give the submodel's location.
+      -->
+      <xs:attribute name="url" type="xs:string" use="optional"/>
     </xs:complexType>
   </xs:element>
 
@@ -846,6 +881,8 @@
         <xs:element name="dim" minOccurs="0" maxOccurs="unbounded">
           <xs:complexType>
             <xs:attribute name="name" type="xs:string" use="required"/>
+            <!-- Chapter 4: editor hint for non-apply-to-all arrays; equations are the same along this dimension. -->
+            <xs:attribute name="marked_a2a" type="xs:boolean" use="optional" default="false"/>
           </xs:complexType>
         </xs:element>
       </xs:sequence>
@@ -905,11 +942,14 @@
               </xs:simpleType>
             </xs:attribute>
             <xs:attribute name="interval" type="xs:integer" use="optional"/>
+            <!-- Chapter 4: do not pause; accumulate the event for later action. -->
+            <xs:attribute name="no_stop" type="xs:boolean" use="optional" default="false"/>
           </xs:complexType>
         </xs:element>
       </xs:sequence>
-      <xs:attribute name="min" type="xs:double" use="required"/>
-      <xs:attribute name="max" type="xs:double" use="required"/>
+      <!-- Chapter 4: OPTIONAL user setting for where to place events. -->
+      <xs:attribute name="min" type="xs:double" use="optional"/>
+      <xs:attribute name="max" type="xs:double" use="optional"/>
     </xs:complexType>
   </xs:element>
 
@@ -922,53 +962,56 @@
     <xs:complexType>
       <xs:choice minOccurs="0" maxOccurs="unbounded">
         <xs:element ref="style" minOccurs="0" maxOccurs="1"/>
-        <xs:element name="view" minOccurs="0" maxOccurs="unbounded">
-          <!--
-            defaultAttributesApply="false" because this type extends
-            view_content_type, which already carries vendor_attributes and
-            passes the wildcard down. Applying the group a second time here
-            would declare two attribute wildcards on one type.
-          -->
-          <xs:complexType defaultAttributesApply="false">
-            <xs:complexContent>
-              <xs:extension base="view_content_type">
-                <xs:attribute name="background" type="xs:string"/>
-                <xs:attribute name="zoom" type="xs:double"/>
-                <xs:attribute name="scroll_x" type="xs:double"/>
-                <xs:attribute name="scroll_y" type="xs:double"/>
-                <xs:attribute name="home_page" type="xs:integer"/>
-                <xs:attribute name="home_view" type="xs:boolean"/>
-                <xs:attribute name="page_width" type="xs:double"/>
-                <xs:attribute name="page_height" type="xs:double"/>
-                <xs:attribute name="show_pages" type="xs:boolean"/>
-                <xs:attribute name="page_orientation">
-                  <xs:simpleType>
-                    <xs:restriction base="xs:string">
-                      <xs:enumeration value="landscape"/>
-                      <xs:enumeration value="portrait"/>
-                    </xs:restriction>
-                  </xs:simpleType>
-                </xs:attribute>
-                <xs:attribute name="page_sequence">
-                  <xs:simpleType>
-                    <xs:restriction base="xs:string">
-                      <xs:enumeration value="row"/>
-                      <xs:enumeration value="column"/>
-                    </xs:restriction>
-                  </xs:simpleType>
-                </xs:attribute>
-                <xs:attribute name="type" type="view_type" default="stock_flow"/>
-                <!-- clarify_spec - the following are for popups only -->
-                <xs:attribute name="x" type="xs:int" use="optional"/>
-                <xs:attribute name="y" type="xs:int" use="optional"/>
-                <xs:attribute name="content" type="xs:string" use="optional"/>
-              </xs:extension>
-            </xs:complexContent>
-          </xs:complexType>
-        </xs:element>
+        <xs:element name="view" type="view_element_type" minOccurs="0" maxOccurs="unbounded"/>
       </xs:choice>
     </xs:complexType>
   </xs:element>
+
+  <!--
+    A single <view>. Named so it can appear both inside <views> and, with no
+    <views> wrapper, directly inside <macro> (Chapter 4).
+
+    defaultAttributesApply="false" because this type extends
+    view_content_type, which already carries vendor_attributes and passes the
+    wildcard down. Applying the group a second time here would declare two
+    attribute wildcards on one type.
+  -->
+  <xs:complexType name="view_element_type" defaultAttributesApply="false">
+    <xs:complexContent>
+      <xs:extension base="view_content_type">
+        <xs:attribute name="background" type="xs:string"/>
+        <xs:attribute name="zoom" type="xs:double"/>
+        <xs:attribute name="scroll_x" type="xs:double"/>
+        <xs:attribute name="scroll_y" type="xs:double"/>
+        <xs:attribute name="home_page" type="xs:integer"/>
+        <xs:attribute name="home_view" type="xs:boolean"/>
+        <xs:attribute name="page_width" type="xs:double"/>
+        <xs:attribute name="page_height" type="xs:double"/>
+        <xs:attribute name="show_pages" type="xs:boolean"/>
+        <xs:attribute name="page_orientation">
+          <xs:simpleType>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="landscape"/>
+              <xs:enumeration value="portrait"/>
+            </xs:restriction>
+          </xs:simpleType>
+        </xs:attribute>
+        <xs:attribute name="page_sequence">
+          <xs:simpleType>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="row"/>
+              <xs:enumeration value="column"/>
+            </xs:restriction>
+          </xs:simpleType>
+        </xs:attribute>
+        <xs:attribute name="type" type="view_type" default="stock_flow"/>
+        <!-- clarify_spec - the following are for popups only -->
+        <xs:attribute name="x" type="xs:int" use="optional"/>
+        <xs:attribute name="y" type="xs:int" use="optional"/>
+        <xs:attribute name="content" type="xs:string" use="optional"/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
 
 
   <xs:simpleType name="view_type">
@@ -1078,6 +1121,19 @@
               </xs:complexType>
             </xs:element>
             <xs:element name="to" type="string_element_type" minOccurs="1"/>
+            <!-- Chapter 6: optional points for a curved or segmented connector. -->
+            <xs:element name="pts" minOccurs="0">
+              <xs:complexType>
+                <xs:sequence maxOccurs="unbounded">
+                  <xs:element name="pt">
+                    <xs:complexType>
+                      <xs:attribute name="x" type="xs:double"/>
+                      <xs:attribute name="y" type="xs:double"/>
+                    </xs:complexType>
+                  </xs:element>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
           </xs:all>
           <xs:attribute name="uid" type="xs:int"/>
           <xs:attribute name="x" type="xs:double"/>
@@ -1131,17 +1187,21 @@
       <xs:element ref="numeric_display"/>
       <xs:element name="graph">
         <xs:complexType>
-          <xs:choice>
-            <xs:element ref="plot" minOccurs="1" maxOccurs="unbounded"/>
+          <!-- A graph MAY have no plots, e.g. one saved before any variable is added. -->
+          <xs:choice minOccurs="0">
+            <xs:element ref="plot" minOccurs="0" maxOccurs="unbounded"/>
           </xs:choice>
           <xs:attributeGroup ref="style_attributes"/>
           <xs:attribute name="type" type="graph_type" default="time_series"/>
           <xs:attribute name="title" type="xs:string" use="optional"/>
           <xs:attribute name="doc" type="xs:string" use="optional"/>
           <xs:attribute name="show_grid" type="xs:boolean" default="true"/>
+          <!-- Chapter 6: color of the grid lines. -->
+          <xs:attribute name="grid_color" type="color_type" use="optional"/>
           <xs:attribute name="num_x_grid_lines" type="xs:int" default="0"/>
           <xs:attribute name="num_y_grid_lines" type="xs:int" default="0"/>
           <xs:attribute name="num_y_labels" type="xs:int" default="0"/>
+          <xs:attribute name="num_x_labels" type="xs:int" default="0"/>
           <xs:attribute name="x_axis_title" type="xs:string" use="optional"/>
           <xs:attribute name="right_axis_title" type="xs:string" use="optional"/>
           <xs:attribute name="right_axis_auto_scale" type="xs:boolean" default="true"/>
@@ -1149,10 +1209,21 @@
           <xs:attribute name="left_axis_title" type="xs:string" use="optional"/>
           <xs:attribute name="left_axis_auto_scale" type="xs:boolean" default="true"/>
           <xs:attribute name="left_axis_multi_scale" type="xs:boolean" default="true"/>
+          <!-- Chapter 6: show units with each axis and in legend entries. -->
+          <xs:attribute name="left_include_units" type="xs:boolean" default="true"/>
+          <xs:attribute name="right_include_units" type="xs:boolean" default="true"/>
+          <xs:attribute name="include_units_in_legend" type="xs:boolean" default="false"/>
+          <xs:attribute name="legend_position" type="legend_position_type" default="bottom"/>
           <xs:attribute name="plot_numbers" type="xs:boolean" default="false"/>
           <xs:attribute name="comparative" type="xs:boolean" default="false"/>
           <xs:attribute name="from" type="xs:double" use="optional"/>
           <xs:attribute name="to" type="xs:double" use="optional"/>
+          <!--
+            Optional, including inside a stacked_container, where the graph
+            normally takes the container's size and these repeat it.
+          -->
+          <xs:attribute name="width" type="xs:double" use="optional"/>
+          <xs:attribute name="height" type="xs:double" use="optional"/>
 
         </xs:complexType>
       </xs:element>
@@ -1189,14 +1260,20 @@
           <xs:attribute name="title" type="xs:string" use="optional"/>
           <xs:attribute name="doc" type="xs:string" use="optional"/>
           <xs:attribute name="orientation" type="orientation" default="vertical"/>
-          <xs:attribute name="column_width" type="xs:int" use="required"/>
+          <xs:attribute name="column_width" type="xs:int" use="optional"/>
           <xs:attribute name="blank_column_width" type="xs:int" use="optional"/>
-          <xs:attribute name="report_interval" type="report_interval" use="required"/>
+          <xs:attribute name="interval" type="report_interval" default="1"/>
           <xs:attribute name="report_balances" type="report_balances" default="beginning"/>
           <xs:attribute name="report_flows" type="report_flows" default="instantaneous"/>
           <xs:attribute name="comparative" type="xs:boolean" default="false"/>
           <xs:attribute name="wrap_text" type="xs:boolean" default="false"/>
           <xs:attributeGroup ref="header_style_attributes"/>
+          <!--
+            Optional, including inside a stacked_container, where the table
+            normally takes the container's size and these repeat it.
+          -->
+          <xs:attribute name="width" type="xs:double" use="optional"/>
+          <xs:attribute name="height" type="xs:double" use="optional"/>
 
         </xs:complexType>
       </xs:element>
@@ -1240,6 +1317,19 @@
       <xs:enumeration value="time_series"/>
       <xs:enumeration value="scatter"/>
       <xs:enumeration value="bar"/>
+      <xs:enumeration value="area"/>
+      <xs:enumeration value="box"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <!-- Chapter 6: where a graph's legend is drawn, or none to hide it. -->
+  <xs:simpleType name="legend_position_type">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="top"/>
+      <xs:enumeration value="bottom"/>
+      <xs:enumeration value="left"/>
+      <xs:enumeration value="right"/>
+      <xs:enumeration value="none"/>
     </xs:restriction>
   </xs:simpleType>
 
@@ -1303,7 +1393,7 @@
       <xs:attribute name="name" type="xs:string"/>
       <xs:attribute name="min" type="xs:double" use="optional"/>
       <xs:attribute name="max" type="xs:double" use="optional"/>
-      <xs:attribute name="precision" type="xs:double" use="optional"/>
+      <xs:attribute name="precision" type="precision_type" use="optional"/>
       <xs:attributeGroup ref="style_attributes"/>
       <xs:attributeGroup ref="positioning_attributes"/>
     </xs:complexType>
@@ -1343,6 +1433,8 @@
           <xs:attribute name="y" type="xs:double"/>
           <xs:attribute name="uid" type="xs:int"/>
           <xs:attribute name="visible_index" type="xs:integer"/>
+          <!-- Chapter 6: shown collapsed, contents hidden until opened. -->
+          <xs:attribute name="minimized" type="xs:boolean" default="false"/>
         </xs:extension>
       </xs:complexContent>
     </xs:complexType>
@@ -1351,20 +1443,25 @@
   <xs:element name="plot">
     <xs:complexType>
       <xs:all>
-        <xs:element name="entity">
+        <!-- Chapter 6: OPTIONAL; a plot whose variable is not yet chosen has none. -->
+        <xs:element name="entity" minOccurs="0">
           <xs:complexType>
             <xs:attribute name="name" type="xs:string" use="required"/>
             <xs:attribute name="index" type="xs:string" use="optional"/>
           </xs:complexType>
         </xs:element>
         <xs:element ref="scale" minOccurs="0"/>
+        <!-- Number format for this plot, overriding the variable's own. -->
+        <xs:element ref="format" minOccurs="0"/>
       </xs:all>
       <xs:attribute name="index" type="xs:int"/>
       <xs:attribute name="pen_width" type="xs:int" default="1"/>
       <xs:attribute name="pen_style" type="penstyle" default="solid"/>
       <xs:attribute name="show_y_axis" type="xs:boolean" default="true"/>
-      <xs:attribute name="title" type="xs:string" use="required"/>
+      <xs:attribute name="title" type="xs:string" use="optional"/>
       <xs:attribute name="right_axis" type="xs:boolean" default="false"/>
+      <xs:attribute name="color" type="color_type" use="optional"/>
+      <xs:attribute name="precision" type="precision_type" use="optional"/>
 
     </xs:complexType>
   </xs:element>
@@ -1461,13 +1558,23 @@
     </xs:annotation>
     <xs:complexType>
       <xs:choice maxOccurs="unbounded">
-        <xs:element name="parm" type="string_element_type" minOccurs="0" maxOccurs="unbounded"/>
+        <!-- Chapter 4: default holds an XMILE expression used when the caller omits this parameter. -->
+        <xs:element name="parm" minOccurs="0" maxOccurs="unbounded">
+          <xs:complexType>
+            <xs:simpleContent>
+              <xs:extension base="xs:string">
+                <xs:attribute name="default" type="xs:string" use="optional"/>
+              </xs:extension>
+            </xs:simpleContent>
+          </xs:complexType>
+        </xs:element>
         <xs:element name="eqn" type="string_element_type" minOccurs="1" maxOccurs="1"/>
         <xs:element name="format" type="string_element_type" minOccurs="0" maxOccurs="1"/>
         <xs:element name="doc" type="string_element_type" minOccurs="0" maxOccurs="1"/>
         <xs:element ref="sim_specs" minOccurs="0" maxOccurs="1"/>
         <xs:element ref="variables" minOccurs="0" maxOccurs="1"/>
-        <xs:element ref="views" minOccurs="0" maxOccurs="1"/>
+        <!-- Chapter 4: exactly one <view>, with no <views> wrapper. -->
+        <xs:element name="view" type="view_element_type" minOccurs="0" maxOccurs="1"/>
       </xs:choice>
       <xs:attribute name="name" type="xs:string" use="required"/>
       <xs:attribute name="namespace" type="xs:string" use="optional"/>
@@ -1558,7 +1665,7 @@
     one. These two types are the object's own presentation attributes, taken
     from <graph> and <table> below and made optional: a defaults block supplies
     whichever it wants, so nothing here can be REQUIRED even where it is
-    required on the object itself (column_width and report_interval are).
+    required on the object itself (interval is).
 
     Attributes that identify a particular instance, title, doc and the specific
     axis titles, are deliberately excluded. They describe one object, not a
@@ -1572,15 +1679,21 @@
     <xs:attributeGroup ref="style_positioning_attributes"/>
     <xs:attribute name="type" type="graph_type" use="optional"/>
     <xs:attribute name="show_grid" type="xs:boolean" use="optional"/>
+    <xs:attribute name="grid_color" type="color_type" use="optional"/>
     <xs:attribute name="num_x_grid_lines" type="xs:int" use="optional"/>
     <xs:attribute name="num_y_grid_lines" type="xs:int" use="optional"/>
     <xs:attribute name="num_y_labels" type="xs:int" use="optional"/>
+    <xs:attribute name="num_x_labels" type="xs:int" use="optional"/>
     <xs:attribute name="plot_numbers" type="xs:boolean" use="optional"/>
     <xs:attribute name="comparative" type="xs:boolean" use="optional"/>
     <xs:attribute name="left_axis_auto_scale" type="xs:boolean" use="optional"/>
     <xs:attribute name="left_axis_multi_scale" type="xs:boolean" use="optional"/>
     <xs:attribute name="right_axis_auto_scale" type="xs:boolean" use="optional"/>
     <xs:attribute name="right_axis_multi_scale" type="xs:boolean" use="optional"/>
+    <xs:attribute name="left_include_units" type="xs:boolean" use="optional"/>
+    <xs:attribute name="right_include_units" type="xs:boolean" use="optional"/>
+    <xs:attribute name="include_units_in_legend" type="xs:boolean" use="optional"/>
+    <xs:attribute name="legend_position" type="legend_position_type" use="optional"/>
   </xs:complexType>
 
   <xs:complexType name="table_style_type">
@@ -1593,7 +1706,7 @@
     <xs:attribute name="orientation" type="orientation" use="optional"/>
     <xs:attribute name="column_width" type="xs:int" use="optional"/>
     <xs:attribute name="blank_column_width" type="xs:int" use="optional"/>
-    <xs:attribute name="report_interval" type="report_interval" use="optional"/>
+    <xs:attribute name="interval" type="report_interval" use="optional"/>
     <xs:attribute name="report_balances" type="report_balances" use="optional"/>
     <xs:attribute name="report_flows" type="report_flows" use="optional"/>
     <xs:attribute name="wrap_text" type="xs:boolean" use="optional"/>
@@ -1926,7 +2039,8 @@
 
   <xs:attributeGroup name="data_attributes">
     <xs:attribute name="type" type="data_type" default="CSV"/>
-    <xs:attribute name="enable" type="xs:boolean" default="true"/>
+    <!-- Chapter 2 spells this enabled; the schema had enable. -->
+    <xs:attribute name="enabled" type="xs:boolean" default="true"/>
     <xs:attribute name="frequency" type="frequency_type" default="automatic"/>
     <xs:attribute name="orientation" type="orientation_type" default="vertical"/>
     <xs:attribute name="resource" type="xs:string" use="required"/>
@@ -2095,6 +2209,40 @@
     </xs:simpleContent>
   </xs:complexType>
 
+  <!--
+    Chapter 2: <start> and <stop> hold either a number or the name of a
+    variable. A root model variable MAY be unqualified, and a submodel one
+    MUST be qualified. Neither form can be told from the other lexically,
+    so the type is a string.
+  -->
+  <xs:complexType name="time_element_type">
+    <xs:simpleContent>
+      <xs:extension base="xs:string"/>
+    </xs:simpleContent>
+  </xs:complexType>
+
+  <!-- Chapter 4 <format>: a number, or "full" for full precision. -->
+  <xs:simpleType name="precision_type">
+    <xs:union memberTypes="xs:double">
+      <xs:simpleType>
+        <xs:restriction base="xs:string">
+          <xs:enumeration value="full"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:union>
+  </xs:simpleType>
+
+  <!-- Chapter 4 <format>: a scale factor, or "auto" for automatic scaling. -->
+  <xs:simpleType name="scale_by_type">
+    <xs:union memberTypes="xs:integer">
+      <xs:simpleType>
+        <xs:restriction base="xs:string">
+          <xs:enumeration value="auto"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:union>
+  </xs:simpleType>
+
   <!-- Hoisted out of the uuid element declaration, which held it inline. -->
   <xs:simpleType name="uuid_type">
     <xs:restriction base="xs:string">
@@ -2156,12 +2304,13 @@
     </xs:annotation>
     <xs:complexType>
       <!--
-        verified and trusted are REQUIRED. Everything else is optional: when
-        verified is false the chapter licenses omitting the rest, so requiring
-        any further attribute would reject a file the chapter permits.
+        verified is REQUIRED, and trusted is REQUIRED unless verified is false
+        (the assertion below). Everything else is optional: when verified is
+        false the chapter licenses omitting the rest, so requiring any further
+        attribute would reject a file the chapter permits.
       -->
       <xs:attribute name="verified" type="xs:boolean" use="required"/>
-      <xs:attribute name="trusted" type="xs:boolean" use="required"/>
+      <xs:attribute name="trusted" type="xs:boolean" use="optional"/>
       <xs:attribute name="mixed" type="xs:boolean" use="optional"/>
       <xs:attribute name="tampered" type="xs:boolean" use="optional"/>
       <xs:attribute name="uses" type="xs:boolean" use="optional"/>
@@ -2192,6 +2341,7 @@
       <xs:attribute name="sampling" type="xs:positiveInteger" use="optional" default="1"/>
       <xs:attribute name="want_log" type="xs:boolean" use="optional"/>
       <xs:attribute name="signature" type="xs:base64Binary" use="optional"/>
+      <xs:assert test="string(@verified) = ('false', '0') or exists(@trusted)"/>
     </xs:complexType>
   </xs:element>
 

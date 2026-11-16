@@ -31,7 +31,7 @@ An XMILE file MAY define many models, each in its own `+<model>+` tagfootnote:[W
 
 * Namespace:  `+namespace="…"+` with XMILE namespaces, separated by commas. For example, `+namespace="std, isee"+` means resolve unrecognized identifiers against the `+std+` namespace first, and then against the `+isee+` namespace. If this setting appears, it overrides the file-level namespace setting in the XMILE options block.  (default: same as the file-level namespace)
 
-* Optional reference to a separate model file for the model contents:  `+resource="…"+`. A resource can be a relative file path, an absolute file path, or an URL. Since the `+<module>+` tag can also specify a separate model file resource, this is only needed for models that do not use modules. However, when the same module is shared in multiple parts of the file, it is better to create one URL reference in a model block, rather than specifying it in the module block.
+* Optional reference to a separate model file for the model contents:  `+url="…"+`. A url can be a relative file path, an absolute file path, or a valid web based URL, interpreted as described for modules in <<sec-modules>>. Since the `+<module>+` tag can also specify a separate model file through its `+url+`, this is only needed for models that do not use modules. However, when the same module is shared in multiple parts of the file, it is better to create one URL reference in a model block, rather than specifying it in the module block.
 
 The model section can OPTIONALLY include `+<sim_specs>+` and `+<behavior>+` tags, as described in Chapter 2, to override specific settings. The rest of this chapter focuses on the specific tags that appear within the `+<variables>+` tag, which are all entities that either simulate or affect the simulation.
 
@@ -76,9 +76,13 @@ All variables have the following OPTIONAL properties:
 
 * Access:  `+access="…"+` attribute w/valid XMILE access name – see Submodels in Chapter 3 and in <<sec-submodels-4-7>> (default: none)
 
+* Throughput:  `+throughput="…"+` attribute with true/false; when true on a variable with `+access="output"+`, the variable is also a submodel input – see Submodels in <<sec-submodels-4-7>> (default: false)
+
 * Access automatically set to output:  `+autoexport="…"+` attribute with true/false – see Submodels in <<sec-submodels-4-7>> (default: false)
 
 * Equation:  `+<eqn>+` w/valid XMILE expression, in a CDATA section if needed
+
+* Initial equation:  `+<init_eqn>+` w/valid XMILE expression, in a CDATA section if needed, used in addition to `+<eqn>+` to specify how to compute the variable’s value during initialization (default: the initial value is computed from `+<eqn>+`). This is used when initialization causes a circularity using the normal equations, but there is no active circularity because a stock is involved. Only flows and auxiliaries can have an `+<init_eqn>+`, as a stock’s `+<eqn>+` is its initial value. In a non-apply-to-all array `+<init_eqn>+` MAY appear within each `+<element>+`.
 
 * MathML equation:  <mathml> block containing content-based MathML representation of the equationfootnote:[This is optional for a number of reasons, most notably the size of the representation.  All vendors, however, should strive to offer MathML output as a user-option.]
 
@@ -121,9 +125,9 @@ Groups require more than one variable in them and are specifically used to autos
 
 The `+<format>+` tag allows default formatting to be set for values of each variable.  Without it, the default settings for each attribute below takes effect:
 
-* Precision:  `+precision="…"+` with value indicating precision of least significant digit, e.g., “0.01” to round to the hundredths place or “0.5” to round to the nearest half (default: best guess based on the scale of the variable)
+* Precision:  `+precision="…"+` with value indicating precision of least significant digit, e.g., “0.01” to round to the hundredths place or “0.5” to round to the nearest half, or “full” to display values at full precision without rounding (default: best guess based on the scale of the variable)
 
-* Magnitude scale:  `+scale_by="…"+` with the factor to scale all values by before displaying, e.g., “1000” to display thousands (default: no scaling, i.e., 1); note the `+precision+` applies to the scaled number
+* Magnitude scale:  `+scale_by="…"+` with the factor to scale all values by before displaying, e.g., “1000” to display thousands, or “auto” to let the application choose the scale from the magnitude of the values (default: no scaling, i.e., 1); note the `+precision+` applies to the scaled number
 
 * Special symbols:  `+display_as="…"+` with “number”, “currency”, or “percent” (default: `+number+`)
 
@@ -136,7 +140,7 @@ These can also be overridden, using the same attribute names, in variable defini
 
 Events based on entity values can be triggered while the model is being simulated. At the simulation level, these events are limited to pausing the simulation (default) or stopping the simulation. The model user can be informed of these events in various ways, as described in Chapter 6.
 
-All events appear in an `+event_poster+` block with `+min+` and `+max+` attributes specifying the lower and upper bounds for all posters (this is a user setting to help them decide where to place events). A series of `+threshold+` blocks then define the event triggers:
+All events appear in an `+event_poster+` block with OPTIONAL `+min+` and `+max+` attributes specifying the lower and upper bounds for all posters (this is a user setting to help them decide where to place events). A series of `+threshold+` blocks then define the event triggers:
 
 [source,xml]
 ----
@@ -158,6 +162,8 @@ The threshold has these additional OPTIONAL attributes:
 * Frequency:  `+repeat="…"+` w/valid XMILE event frequency name – see Chapter 3 (default: `+each+`)
 
 * Repetition interval:  `+interval="…"+` w/number of unit times (default: disabled; only enabled if present)
+
+* Continue simulation: `+no_stop="true"+` will not pause the simulation but just accumulate the event for action at a later time in (or the end of) the simulation.
 
 Each threshold block MUST have a unique value and direction (so there can be two threshold blocks at 5 as long as one is increasing and the other is decreasing). Within each threshold block, the actual events are defined, which MAY be either a single event that is used every time the threshold is exceeded (frequency of `+each+` REQUIRES there be only one event) or a sequence of events that are used one at a time in their specified order each time the threshold is exceeded (i.e., the first event is used the first time the threshold is exceeded, the second is used the second time, etc.). Events appear in an `+<event>+` tag which has one OPTIONAL attribute:
 
@@ -311,13 +317,13 @@ If the x-axis points are evenly spaced, as above, it is strongly RECOMMENDED you
 [[sec-arrays-4-1-4]]
 ==== Arrays
 
-Any variable MAY be arrayed (the `+<uses_arrays>+` option must also be set in the XMILE header). All arrayed variables MUST include exactly one `+<dimensions>+` tag that specifies the array dimensions of the variable. Like its cousin at the top of each XMILE file, this tag includes `+<dim>+` tags that define which dimensions are used and in which order. Only the name attribute is used on each `+<dim>+` tag. For example, the following definition states that the variable is a two-dimensional array with dimensions X by Y:
+Any variable MAY be arrayed (the `+<uses_arrays>+` option must also be set in the XMILE header). All arrayed variables MUST include exactly one `+<dimensions>+` tag that specifies the array dimensions of the variable. Like its cousin at the top of each XMILE file, this tag includes `+<dim>+` tags that define which dimensions are used and in which order. Only the name and an optional marked_a2a attribute is used on each `+<dim>+` tag. For example, the following definition states that the variable is a two-dimensional array with dimensions X by Y with all equations the same for every element of Y (marked_a2a is only meaningful for non-apply-to-all arrays as described below):
 
 [source,xml]
 ----
 <dimensions>
 <dim name="X"/>
-<dim name="Y"/>
+<dim name="Y" marked_a2a="true"/>
 </dimensions>
 ----
 
@@ -325,7 +331,7 @@ There are three different kinds of XMILE arrays:
 
 * Apply-to-all arrays, where one variable, the array owner, acts as a surrogate for all array elements
 
-* Non-apply-to-all arrays, where one variable, the array owner, acts as a container for many different array elements (this container necessarily shares some things across all elements, e.g., units)
+* Non-apply-to-all arrays, where one variable, the array owner, acts as a container for many different array elements (this container necessarily shares some things across all elements, e.g., units). When a specific dimension has the marked_a2a attribute set it is a hint to the equation editor to display a reduced dimension set for editing.
 
 * Apply-to-all arrays with non-apply-to-all graphical functions, where one variable, the array owner, acts as the surrogate for all properties of the array elements except the graphical function used for each element (which differs by element)
 
@@ -404,6 +410,8 @@ The following conveyor properties and attributes are OPTIONAL:
 * Number of batches:  `+one_at_a_time="…"+` with true/false (default: true); true if only the front batch from the (REQUIRED) upstream queue can be taken each DT and false if as many batches as will fit (subject to capacity and inflow limits) can be taken
 
 * Exponential leakage:  `+exponential_leak="…"+` with true/false (default: false); if true, leakage is an exponential decay across the conveyor (rather than linear) – for __all__ leakages
+
+* Strict FIFO:  `+fifo="…"+` with true/false (default: false); if true, material is strictly FIFO so that a change in the transit time increases or decreases the output immediately just as changing a conveyor speed would.
 
 For example, a conveyor with a transit time of 4 and a capacity of 1200:
 
@@ -625,20 +633,35 @@ The operation of the Finance department is modeled in
 
 Submodels appear within their own `+<model>+` tag. Within the same file as the root model or other submodels, that tag MUST include the `+name+` attribute. When the submodel appears alone in its own file, the `+name+` generally SHOULD NOT be provided, allowing the submodel to be developed and tested as a stand-alone model.
 
-To be used by any other model, including the root model, submodels MUST be directly represented with an explicit module in the variables section of the model directly above them. This is because the connections between submodels are defined in modules.
+To be used by any other model, including the root model, submodels MUST be directly represented with an explicit module in the variables section of the model containing them. This is because the connections between model variables and those in a submodel are defined in the containing model.
 
 [[sec-modules]]
 ==== Modules
 
-Modules are placeholders in the variables section, and in the stock-flow diagram, for submodels. If present, this must appear in every model that references that submodel. A module appears in a `+<module>+` block with two possible attributes and one property:
+Modules are placeholders in the variables section, and in the stock-flow diagram, for submodels. A module appears in a `+<module>+` block with two possible attributes and two properties:
 
-* Name:  `+name="…"+` attribute w/valid XMILE identifier. If the optional `+resource+` is not specified, the name is required to match the `+name+` attribute of the submodel. If the optional `+resource+` is specified, the name will be used to try to match the `+name+` attribute of any model in the submodel file. If no match is found, the name is required to be ignored for the purposes of locating the submodel and the and the module will then represent the unnamed (root) model in the referenced file.  REQUIRED
+* REQUIRED Name:  `+name="…"+` attribute w/valid XMILE identifier. If the optional `+url+` is not specified, the name is required to match the `+name+` attribute of the submodel as it appears in the same XMILE file. That named submodel MUST be included in the file. If the optional `+url+` is specified, the name will be assigned to the root (unnamed) model in the submodel file.
 
-* OPTIONAL location:  `+resource="…"+` with a reference to the submodel’s file. A resource can be a relative file path, an absolute file path, or an URL. This is REQUIRED if the submodel is not in the same file as the model. Likewise, this should not appear if there is a `+<model>+` block for the submodel that already includes the `+resource+` attribute (see the beginning of Chapter 4).
+* OPTIONAL number format:  `+<format>+` as described in <<sec-ranges-scales-number-formats>> (default: unspecified)
 
-* Submodel input assignment:  `+<connect to="…" from="…"/>+` where `+to+` contains the name of the module input within this submodel or one its submodels (in which case, it is qualified with the submodel’s name) that is assigned and `+from+` contains the qualified name of the submodel output that is being assigned to that submodel input. To support arbitrary re-use of submodelsfootnote:[By “re-use”, we specifically mean either the re-use of independently developed modules within different models, or the re-use of the same module, stored in a separate file, within the same model. The latter works because nothing precludes separate modules, all with different names, referring to the same model file. Note that within the same model file, each model (and therefore associated module) must have a unique name. However, when using separate files, a separate unnamed (root) model can appear in each file. Each of these separate models do not have a name until they are assigned to named modules in the larger model, allowing multiple modules to refer to the same model [file].], the inputs of a submodel within a submodel must be allowed to appear here as the connections must be specified at the lowest common ancestor (LCA) of the submodel hierarchy (keep in mind also that the module itself always appears one level above the submodel it refers to).  OPTIONAL
+* OPTIONAL location:  `+url="…"+` with a reference to the submodel’s file. A url can be a relative file path, an absolute file path, or a valid web based URL. A file path prefixed by `+r../+` MUST always be interpreted as a relative file path, resolved against the directory containing the current file as if `+r+` were a subdirectory of it, whether or not such a directory exists. Thus `+r../modules/Sub_Model.xmile+` refers to `+modules/Sub_Model.xmile+` beside the current file. If `+url="…"+` is included there MUST NOT be a `+<model>+` block for the submodel in the current file.
 
-When a module does exist, connectors from entities to that module automatically denote that those entities are submodel outputs into just that module, so no additional designation is used. Likewise, connectors from the module to entities automatically turn those entities into submodel inputs (inputs are always marked as such in the XMILE).
+* Submodel input assignment:  `+<connect to="…" from="…"/>+` or `+<connect2 to="…" from="…"/>+` where `+to+` is the target of the connection and `+from+` is the source. These tags appear in the model that is the lowest common ancestor (LCA) of the two models being connected, that is the lowest model in the hierarchy that contains both of them, either directly or through one of its submodels. For example consider the hierarchy:
++
+image::figure-submodel-hierarchy.png[]
+
++
+If there was a connection from a variable in Level 2 A to Level 2 B the connection tags would appear in Level 1 B. The must be written in both the Level 2 B module entry and the Level 2A module entry. A connection from a variable in Level 1 B to Level 2 B would also appear in Level 1 B in the Level 2 B module entry. On the other hand, a connection from Level 2 B to Level 1 A would appear in Root under the Level 1 A module.
+
+When using the `+<connect>+` tag the names for all from and to should be fully module qualified, including a starting . for names in the root model. For the `+<connect2>+` tag the names of any variables in the model in which the tag is written should not be qualified, while names outside that model should be qualified.
+
+Reading either `+<connect>+` or `+<connect2>+` tags will give exactly the same result when there are no external modules. When there are external modules, using `+<connect2>+` will allow the cross level connections to work correctly when opening a separate module directly.
+
+To support arbitrary re-use of submodelsfootnote:[By “re-use”, we specifically mean either the re-use of independently developed modules within different models, or the re-use of the same module, stored in a separate file, within the same model. The latter works because nothing precludes separate modules, all with different names, referring to the same model file. Note that within the same model file, each model (and therefore associated module) must have a unique name. However, when using separate files, a separate unnamed (root) model can appear in each file. Each of these separate models do not have a name until they are assigned to named modules in the larger model, allowing multiple modules to refer to the same model [file].], the inputs of a submodel within a submodel must be allowed to appear in these connection tags, as the connections must be specified at the lowest common ancestor (LCA) of the submodel hierarchy as illustrated above (keep in mind also that the module itself always appears one level above the submodel it refers to). Connection tags are OPTIONAL.
+
+Implementations MAY include `+<connect>+` and `+<connect2>+` in other locations as long as they have exactly the same meaning.
+
+Connectors from variables to a module in a diagram automatically denote that those variables are outputs into that module, so no additional designation is used. Likewise, connectors from the module to variables automatically turn those variables into submodel inputs (inputs are always marked as such in the XMILE).
 
 Below is an example showing the inclusion of a module sharing data with the root model when saved within the same XMILE file:
 
@@ -661,8 +684,10 @@ Below is an example showing the inclusion of a module sharing data with the root
 <model>
 <variables>
 <module name="Sub_Model">
-<connect to="Input" from=".Root_Model_Output"/>
+<connect to="Sub_Model.Input" from=".Root_Model_Output"/>
+<connect2 to="Sub_Model.Input" from="Root_Model_Output"/>
 <connect to=".Root_Model_Input" from="Sub_Model.Output"/>
+<connect2 to="Root_Model_Input" from="Sub_Model.Output"/>
 </module>
 <aux name="Root_Model_Output" access="output"/>
 <aux name="Root_Model_Input" access="input"/>
@@ -697,9 +722,11 @@ If saved in separate files this same model would look like this:
 </sim_specs>
 <model>
 <variables>
-<module name="Sub_Model" resource="module.xml">
-<connect to="Input" from=".Root_Model_Output"/>
+<module name="Sub_Model" url="r../modules/Sub_Model.xmile">
+<connect to="Sub_Model.Input" from=".Root_Model_Output"/>
+<connect2 to="Sub_Model.Input" from="Root_Model_Output"/>
 <connect to=".Root_Model_Input" from="Sub_Model.Output"/>
+<connect2 to="Root_Model_Input" from="Sub_Model.Output"/>
 </module>
 <aux name="Root_Model_Output" access="output"/>
 <aux name="Root_Model_Input" access="input"/>
@@ -708,7 +735,7 @@ If saved in separate files this same model would look like this:
 </xmile>
 ----
 
-And in file “module.xml”:
+And in file “modules/Sub_Model.xmile”:
 
 [source,xml]
 ----
@@ -747,7 +774,14 @@ Submodel inputs are identified by setting the `+access+` property of the variabl
 
 Note that variables MAY be designated submodel inputs without assigning them to submodel outputs. In this case, the variable’s equation determines its value (rather than a submodel output).
 
-Submodel inputs MAY simultaneously be implicit submodel outputs (see <<sec-submodel-outputs>>) by having a connector from the submodel input directly into a module. In this case, the variable is called a submodel throughput. This is used, for example, when the output of a module not only wants to be used at the level above it, but also wants to be forwarded on to another module.
+Submodel inputs MAY simultaneously be implicit submodel outputs (see <<sec-submodel-outputs>>) by having a connector from the submodel input directly into a module. In this case, the variable is called a submodel throughput. This is used, for example, when the output of a module not only wants to be used at the level above it, but also wants to be forwarded on to another module. A variable that is both a submodel input and an explicit submodel output is marked by setting its `+access+` property to `+output+` and its `+throughput+` property to `+true+`:
+
+[source,xml]
+----
+<aux name="pqr" access="output" throughput="true">
+...
+</aux>
+----
 
 [[sec-submodel-outputs]]
 ==== Submodel Outputs
@@ -807,7 +841,7 @@ Macros also have the following OPTIONAL properties and attributes:
 
 * Variables:  `+<variables>+` as defined for `+<model>+` (see <<sec-common-variable-properties>>-<<sec-submodels-4-7>>) (default: no variables).
 
-* View:  Exactly one `+<view>+` within a `+<views>+` tag (see Chapters 5 and 6) (default: no view). This must only appear in conjunction with a `+<variables>+` tag and exists only to facilitate editing macros.
+* View:  Exactly one `+<view>+` with no `+<views>+` tag (see Chapters 5 and 6) (default: no view). This must only appear in conjunction with a `+<variables>+` tag and exists only to facilitate editing macros.
 
 * Namespace:  `+namespace="…"+` with a XMILE namespace, for example, `+namespace="isee"+` (default: single namespace specified in the header’s `+<options>+` tag, or no namespace if either no namespaces or multiple namespaces are specified in the header).
 

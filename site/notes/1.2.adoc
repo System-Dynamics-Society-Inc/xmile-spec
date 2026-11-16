@@ -1,43 +1,175 @@
-Version 1.2 is *under review* and is not approved. It extends the specification
-to record the use of AI in model construction, so that someone opening a model
-can determine reliably whether, and where, AI was used.
+Version 1.2 is a *release candidate*. It is proposed to the Technical Committee
+for approval and is not yet approved. It extends the specification to record the
+use of AI in model construction, so that someone opening a model can determine
+reliably whether, and where, AI was used. It also brings the specification in
+line with what current implementations write, from models saved in separate
+files to graph and table settings.
 
 Nothing on this page is normative until the Technical Committee approves it.
-Implementers should expect changes.
+
+== Changes that affect existing files
+
+These rename or remove something a 1.1 file may contain, so a file written to
+1.1 that uses them must be updated to conform to 1.2.
+
+* *Option tags are plural.* `<uses_conveyor>`, `<uses_queue>`,
+`<has_model_view>` and `<uses_annotation>` become `<uses_conveyors>`,
+`<uses_queues>`, `<has_model_views>` and `<uses_annotations>`, matching
+`<uses_arrays>`.
+
+* *`resource` is now `url`.* The attribute that points a `<model>` or a
+`<module>` at a separate file is renamed. The `resource` attribute on data
+`<import>` and `<export>`, and on `<include>`, is unchanged.
+
+* *Styles live in views.* A `<style>` tag may appear in a `<view>` or in a
+`<views>` tag. There is no longer a file-level `<style>`, and the `<style>` tag
+itself carries no attributes: each child sets the defaults for one object type.
+The order in which a missing attribute is looked up is now stated explicitly.
+
+* *A macro's view stands alone.* A `<macro>` holds at most one `<view>`, with no
+`<views>` wrapper.
 
 == Added
 
-* *AI information.* A new root-level `<ai_information>` tag carrying the AI
-usage status, the interaction log, an agentic interaction log, software-specific
-settings, and a testing block. Section 2.3.
+=== AI information
 
-* *Signed AI provenance.* An ed25519 signature over the AI status, the variable
-equations, the per-variable AI states and the log, so that a reader can tell
-whether the recorded provenance has been altered. Section 2.3.3.
+* *AI information.* A new root-level `<ai_information>` tag carries the AI usage
+status, a plain-text log, an agent log, software-specific settings, and a
+testing block that holds the exact message a producer signed.
+
+* *Agent log.* `<agent_log>` records an exchange with an AI agent as separate
+`<message>` tags, so that prompts, replies and status reports can be told apart.
+Each message's text is element content, not an attribute. It is required, even
+if empty, whenever AI was used.
+
+* *Signed provenance.* An ed25519 signature over the AI status, the variable
+equations, the per-variable AI states and the log, and a second signature over
+the agent log, so that a reader can tell whether the recorded provenance has
+been altered.
 
 * *Per-variable AI status.* An `ai_state` attribute on each variable, recording
-whether it was created by a person, by AI, or edited by both. Section 2.3.4.
+whether it was created by a person, by AI, or edited by both.
 
-== Changed
+* *Status detail.* `<status>` gains `agent_log_truncated`, `base_log_truncated`
+and `log_pasted`. `verified` is required, and `trusted` is required unless
+`verified` is false.
 
-* The specification version is raised to 1.2 throughout.
+=== Vendor extensions
 
-* The XML Schema gains `<ai_information>` and `ai_state`, and accepts
-`version="1.2"`. It also corrects `max_dimensions` to `maximum_dimensions`,
-which the text has always named that way.
+* A new section states where a vendor may add its own elements and attributes
+(in its own namespace, never the XMILE one), and what a reader must do with
+ones it does not recognize (ignore them and keep reading). Chapter 7 gains the
+matching conformance requirements.
+
+=== Models and modules
+
+* *Submodels in separate files.* A module with a `url` always represents the
+unnamed root model of that file, which takes the module's name. A path that
+starts with `r../` is always relative to the directory of the file that refers
+to it.
+
+* *`<connect2>`.* An alternative to `<connect>` in which names in the model
+holding the tag are left unqualified, so cross-level connections still resolve
+when a module saved in its own file is opened directly. Both are written in the
+lowest common ancestor of the two models they connect, illustrated with a new
+figure.
+
+* Modules may carry `<format>` and `<doc>`.
+
+=== Variables and simulation
+
+* *Initial equations.* `<init_eqn>` on flows and auxiliaries, and on their array
+elements, gives an equation used only during initialization. It breaks a
+circularity that exists only at the start of the simulation because a stock is
+involved.
+
+* *Throughput.* `throughput="true"` on a variable with `access="output"` marks
+it as a submodel input as well.
+
+* *Start and stop by name.* `<start>` and `<stop>` may name a variable instead
+of giving a number. A variable in the root model may be named without
+qualification.
+
+* *Strict FIFO conveyors.* `fifo="true"` makes a change in transit time affect
+the conveyor's output immediately, as changing its speed would.
+
+* *Array editing hint.* `marked_a2a` on a variable's `<dim>` tells an equation
+editor that a non-apply-to-all array is the same along that dimension.
+
+* *Events.* `no_stop="true"` on a threshold records the event without pausing
+the simulation. The `min` and `max` attributes of `<event_poster>` are optional.
+
+* *Number formats.* `precision` may be `full`, and `scale_by` may be `auto`.
+
+=== Display
+
+* *Graph types.* `area` and `box` join `time_series`, `scatter` and `bar`.
+
+* *Graph settings.* `legend_position`, `grid_color`, `include_units_in_legend`,
+`left_include_units` and `right_include_units`. Each may also be set as a
+default in a `<style>` tag.
+
+* *Plots.* A `<plot>` may set its own `color`, `precision` and `<format>`.
+
+* *Stacked containers.* `minimized` shows a container collapsed until it is
+opened.
+
+* *Style prefixes.* A section lists the prefixes, such as `axis_title_` and
+`header_font_`, that apply a style attribute to one part of an object.
+
+== Relaxed
+
+Each of these was required in 1.1 and is optional now, because implementations
+legitimately write files without them.
+
+* A graph may have no plots, and a plot may have no `<entity>`, for example
+before any variable has been chosen. A plot's `title` is optional.
+
+* A table's `column_width` and `interval` are optional.
+
+== Schema
+
+The XML Schema is published beside the specification and is XSD 1.1, which
+vendor extensions require. Beyond following every change above, it corrects
+places where it disagreed with the text:
+
+* `max_dimensions` is `maximum_dimensions`, a table's `report_interval` is
+`interval`, and a data import's `enable` is `enabled`, as the text has always
+named them.
+
+* A connector may carry `<pts>`, as the Chapter 6 example shows, and a group
+may carry `run`, as Chapter 4 describes.
+
+* A graph may carry `num_x_labels`, and a graph or table in a stacked container
+may carry `width` and `height`.
+
+* A macro `<parm>` may carry a `default`.
+
+== Editorial
+
+* The front matter names the System Dynamics Society as steward, with links to
+this site in place of the OASIS addresses.
+
+* Examples damaged by the conversion from Word are repaired: typographic dashes
+and quotation marks that had replaced `-` and `"` in equations and XML.
 
 == Open questions for the Technical Committee
 
-The draft carries one question in the text, marked as an editor's question in
-Section 2.3.2: whether a message's `content` should remain an attribute or
-become element content. Attributes require the markup inside them to be XML
-escaped, and because the agentic signature covers `content`, two producers that
-escape identically-rendered markup differently would produce different
-signatures. Deciding this after approval would be a breaking change.
+* *Two spellings for four style attributes.* `padding`, `border_color`,
+`border_width` and `border_style` each have a `text_` spelling that Chapter 6
+allows and its examples use, while Chapter 5 and the schema recognize only the
+short one. Which survives is for the Committee to decide; the errata linked
+below sets out the evidence.
+
+The question raised in the previous draft, whether an agent log message should
+be an attribute or element content, is settled: it is element content, for the
+reason the earlier draft gave. Two producers that escaped identical markup
+differently would otherwise produce different signatures.
 
 == Review
 
-The redline linked below marks every change against version 1.1. It shows the
-rendered prose rather than the source, so cross-references appear as the section
-numbers to cite in comments, and blocks that changed only because a heading,
-footnote or reference was renumbered are separated from the editorial changes.
+The redline linked below marks every change against the version it is measured
+from. It shows the rendered prose rather than the source, so cross-references
+appear as the section numbers to cite in comments, and blocks that changed only
+because a heading, footnote or reference was renumbered are separated from the
+editorial changes.

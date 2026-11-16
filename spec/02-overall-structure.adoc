@@ -214,7 +214,7 @@ The information under `+<status>+` is persistent, and becomes invalid unless it 
 [[sec-ai-status]]
 ==== AI Status
 
-The following attributes are supported on `+<status>+`. Of these, `+verified+` and `+trusted+` are REQUIRED; the rest are OPTIONAL, since a `+verified+` of false licenses omitting them. Additional attributes MAY be included as long as they follow the rules for signature generation described in <<sec-ai-signing>>.
+The following attributes are supported on `+<status>+`. Of these, `+verified+` is REQUIRED, and `+trusted+` is REQUIRED unless `+verified+` is false; the rest are OPTIONAL, since a `+verified+` of false licenses omitting them. Additional attributes MAY be included as long as they follow the rules for signature generation described in <<sec-ai-signing>>.
 
 [cols="2,2,5",options="header"]
 |===
@@ -528,9 +528,9 @@ Every XMILE file MUST contain at least one set of simulation specifications, eit
 
 The simulation specifications block is defined with the tag `+<sim_specs>+`.  The following properties are REQUIRED:
 
-* Start time:  `+<start>+` w/time
+* Start time:  `+<start>+` w/time, either a number or the name of a variable, e.g., `+Simulation_Start+`; a variable in the root model MAY be named without qualification, while a variable in a submodel MUST be qualified (see <<sec-submodels-4-7>>)
 
-* Stop time:  `+<stop>+` w/time (after start time)
+* Stop time:  `+<stop>+` w/time, either a number or the name of a variable, named as for `+<start>+` (after start time)
 
 There are several additional OPTIONAL attributes and properties with appropriate defaults:
 

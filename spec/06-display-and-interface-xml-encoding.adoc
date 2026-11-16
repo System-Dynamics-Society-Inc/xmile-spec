@@ -207,9 +207,11 @@ A stacked container is used to allow XMILE display objects to be stacked on top 
 
 * `+visible_index+` REQUIRED `+–+` Integer 0 based index of which content object to display.
 
+* `+minimized+` OPTIONAL `+–+` true/false; if true, the container is shown minimized, collapsed so that its contents are not displayed until it is opened (default: `+false+`).
+
 Descriptions of all other display attributes of a stacked container can be found in <<sec-stock-and-flow-diagram-objects>>.
 
-Stacked container objects are REQUIRED to have ONLY the five properties shown above.  Any borders, backgrounds etc. are supplied by their contents.
+Stacked container objects are REQUIRED to have ONLY the five properties shown above, plus the OPTIONAL `+minimized+`.  Any borders, backgrounds etc. are supplied by their contents.
 
 [[sec-input-objects]]
 === Input Objects
@@ -266,13 +268,15 @@ Descriptions of all other display attributes of a numeric display can be found i
 
 Support for this tags is REQUIRED if the implementation supports outputs (per the header options, <<sec-xmile-options>>). Graphs are defined within the `+<graph>+` tag, which has the following attributes and properties, beyond the applicable display attributes, e.g., `+background+`:
 
-* Graph type: REQUIRED `+type="…"+` with `+time_series+`, `+scatter+`, or `+bar+` (default: `+time_series+`)
+* Graph type: REQUIRED `+type="…"+` with `+time_series+`, `+scatter+`,  `+bar+`, `+area+`, or `+box+` (default: `+time_series+`)
 
 * Title:  OPTIONAL `+<title>+` with graph title (default: none)
 
 * Documentation:  OPTIONAL `+<doc>+` with block of text, optionally in HTML format (default: none)
 
 * Show grid: OPTIONAL `+show_grid="…"+` with true/false (default: `+true+`)
+
+* Grid color: OPTIONAL `+grid_color="…"+` with the color of the grid lines, as specified in <<sec-specification-of-color>> (default: application defined)
 
 * Number of X Grid Lines: OPTIONAL `+num_x_grid_lines="…"+` with integer (default: `+0+`)
 
@@ -290,11 +294,19 @@ Support for this tags is REQUIRED if the implementation supports outputs (per th
 
 * Right Axis Multi-scale: OPTIONAL `+right_axis_multi_scale="…"+` with true/false (default: `+true+`)
 
+* Right Axis Units: OPTIONAL `+right_include_units="…"+` with true/false; if true, the units of the variables plotted against the right axis are shown with that axis (default: `+true+`)
+
 * Left  Axis Title: OPTIONAL left`+_axis_title="…"+` with string (default: `+empty+`)
 
 * Left Axis Auto-scale: OPTIONAL `+left_axis_auto_scale="…"+` with true/false (default: `+true+`)
 
 * Left Axis Multi-scale: OPTIONAL `+left_axis_multi_scale="…"+` with true/false (default: `+true+`)
+
+* Left Axis Units: OPTIONAL `+left_include_units="…"+` with true/false; if true, the units of the variables plotted against the left axis are shown with that axis (default: `+true+`)
+
+* Legend position: OPTIONAL `+legend_position="…"+` with `+top+`, `+bottom+`, `+left+`, `+right+`, or `+none+` to hide the legend (default: `+bottom+`)
+
+* Units in Legend: OPTIONAL `+include_units_in_legend="…"+` with true/false; if true, each plot's entry in the legend includes the units of its variable (default: `+false+`)
 
 * Display numbers: OPTIONAL `+plot_numbers="…"+` with true/false (default: `+false+`)
 
@@ -310,7 +322,7 @@ Time-series graphs can OPTIONALLY include the following additional attributes:
 
 * Ending display time:  `+to="…"+` with the ending time (default: STOPTIME)
 
-Each graph includes a number of plotted variables.  Within the `+<graph>+` tag, one `+<plot>+` tag MUST appear for each variable plotted.  Each `+<plot>+` tag has the following attributes:
+Each graph includes a number of plotted variables.  Within the `+<graph>+` tag, one `+<plot>+` tag MUST appear for each variable plotted.  A graph MAY have no plots, for example when no variables have yet been added to it.  Each `+<plot>+` tag has the following attributes:
 
 * Plot index:  REQUIRED `+index="…"+` with sequential index number starting at zero for the first plot; this is important for both the legend and plotting numbers on curves (the plotted number is one greater than the index); for scatter plots, index 0 is the __x__-axis variable, index 1 is the __y__-axis variable, and (if a 3D scatter plot) index 2 is the __z__-axis variable (default: position of plot relative to other plots)
 
@@ -320,11 +332,15 @@ Each graph includes a number of plotted variables.  Within the `+<graph>+` tag, 
 
 * Display y-axis scale:  OPTIONAL `+show_y_axis="…"+` with true/false (default: `+true+`)
 
-* Plot title:  REQUIRED `+title="…"+` with String (default: `+entity display name+`)
+* Plot title:  OPTIONAL `+title="…"+` with String (default: `+entity display name+`)
 
 * Which axis the plot is plotted against: OPTIONAL `+right_axis="…"+` with true/false (default: `+false+`)
 
-Within the `+<plot>+` tag, the REQUIRED`+<entity>+` tag defines which entity to plot, and the OPTIONAL `+<scale>+` tag defines custom scaling for the entity.  The scale settings are overridden by the presence of auto-scaling or non-mutli-scaling on the axis.
+* Plot color:  OPTIONAL `+color="…"+` with the color of the plotted line, as specified in <<sec-specification-of-color>> (default: application defined)
+
+* Precision:  OPTIONAL `+precision="…"+` with the precision of numbers displayed in legends and when scrubbing the curve, as described for `+<format>+` in <<sec-ranges-scales-number-formats>> (default: the variable's own format)
+
+Within the `+<plot>+` tag, the OPTIONAL `+<entity>+` tag defines which entity to plot (a plot without one, for example one whose variable has not yet been chosen, plots nothing), the OPTIONAL `+<scale>+` tag defines custom scaling for the entity, and the OPTIONAL `+<format>+` tag, as described in <<sec-ranges-scales-number-formats>>, defines the number format for the plot, overriding the entity’s own.  The scale settings are overridden by the presence of auto-scaling or non-mutli-scaling on the axis.
 
 The default scale for entities with a globally defined scale is that global scale.  When no global scale is defined for an entity, the default scale automatically fills the range of values for the entity (for comparative graphs, this is across all runs of that entity in the graph).  The `+<scale>+` tag allows the user to override these settings.
 
@@ -338,7 +354,7 @@ Graphs plot an entity’s data from the current run and any other loaded runs. A
 
 `+</plot>+`
 
-`+<plot precision="1" color="red" pen_width="1" index="0" show_y_axis="true" right_axis=”true”>+`
+`+<plot precision="1" color="red" pen_width="1" index="1" show_y_axis="true" right_axis=”true”>+`
 
 `+<entity name="Converter_2" />+`
 
@@ -357,11 +373,11 @@ Support for this tags is REQUIRED if outputs are supported (per the header optio
 
 * Data orientation:  REQUIRED `+orientation="…"+` with either `+horizontal+` or `+vertical+` (default: `+vertical+`)
 
-* Default column width:  REQUIRED `+column_width="…"+` with width in model coordinates
+* Default column width:  OPTIONAL `+column_width="…"+` with width in model coordinates (default: application defined)
 
 * Default blank column width: OPTIONAL `+blank_column_width="…"+` with width in model coordinates
 
-* Report interval:  REQUIRED `+interval="…"+` specifying how often, in model time, to report values during the simulation; use `+DT+` to export every DT (default: 1)
+* Report interval:  OPTIONAL `+interval="…"+` specifying how often, in model time, to report values during the simulation; use `+DT+` to export every DT (default: 1)
 
 * Report ending/beginning balances: OPTIONAL  `+report_balances="…"+` with either `+beginning+` or `+ending+` (default: `+beginning+`)
 
