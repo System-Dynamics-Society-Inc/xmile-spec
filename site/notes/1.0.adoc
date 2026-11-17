@@ -1,0 +1,28 @@
+This release is the XMILE 1.0 standard as approved by the OASIS XMILE Technical
+Committee, converted from the original Word document to AsciiDoc and placed
+under version control. It is the baseline against which the 1.1 changes can be
+read commit by commit.
+
+== What the text is
+
+The specification defines an XML dialect for interchanging system dynamics
+models: the model equation structure and its XML encoding, the diagram and
+visual components, the display and interface encoding, and the conformance
+requirements a compliant implementation must satisfy.
+
+== Provenance
+
+The AsciiDoc was produced from `archive/xmile-v1.1-redline.docx`, a Word
+_Compare Documents_ result, by rejecting every tracked change. The output was
+then verified against the independently supplied `archive/xmile-v1.0-cos01.docx`
+and the text is identical.
+
+Generating both 1.0 and 1.1 through the same converter is deliberate: it keeps
+the diff between the two tags free of conversion noise, so `git diff v1.0 v1.1`
+shows only real editorial changes.
+
+The authoritative OASIS publication remains at
+http://docs.oasis-open.org/xmile/xmile/v1.0/cos01/.
+
+Built from the tagged source with a build that treats every Asciidoctor warning
+as an error.

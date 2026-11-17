@@ -1,3 +1,7 @@
 # Validating XMILE documents needs an XSD 1.1 processor. See tools/validate.py
 # for why the schema cannot be XSD 1.0 and why this is not a Node package.
 xmlschema>=4.0,<5
+
+# Verifying the ed25519 signatures in <ai_information>. See
+# tools/verify_signatures.py.
+cryptography>=42

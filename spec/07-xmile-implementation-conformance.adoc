@@ -26,6 +26,10 @@ To conform to the XMILE base level, an implementation:
 
 * MUST include a `+<header>+` tag (<<sec-overall-structure>>) with sub-tags `+<vendor>+` and `+<product>+` with its version number (<<sec-header-section>>)
 
+* MUST ignore any element or attribute in a namespace it does not recognize, and MUST continue to read the rest of the file (<<sec-vendor-extensions>>)
+
+* MUST NOT treat a standard element or attribute written under a vendor prefix as though it were the standard one (<<sec-vendor-extensions>>)
+
 * MUST include at least one `+<model>+` tag (<<sec-overall-structure>>)
 
 * MUST name models beyond the root model (<<sec-model-equation-xml-encoding>>)
@@ -53,7 +57,7 @@ To conform to the XMILE base level, an implementation:
 
 To support the optional conveyor features of XMILE, an implementation:
 
-* MUST include the `+<uses_conveyor>+` tag in the `+<options>+` block (<<sec-xmile-options>>)
+* MUST include the `+<uses_conveyors>+` tag in the `+<options>+` block (<<sec-xmile-options>>)
 
 * MUST support the `+<conveyor>+` block with all of its options (<<sec-stocks-4-2>> and <<sec-conveyor-options>>)
 
@@ -64,7 +68,7 @@ To support the optional conveyor features of XMILE, an implementation:
 
 To support the optional queue features of XMILE, an implementation:
 
-* MUST include the `+<uses_queue>+` tag in the `+<options>+` block (<<sec-xmile-options>>)
+* MUST include the `+<uses_queues>+` tag in the `+<options>+` block (<<sec-xmile-options>>)
 
 * MUST support the `+<queue/>+` tag in the stock (<<sec-normative-references>>)
 
@@ -75,7 +79,7 @@ To support the optional queue features of XMILE, an implementation:
 
 To support the optional array features of XMILE, an implementation:
 
-* MUST include the `+<uses_array>+` tag in the `+<options>+` block with the correct number of dimensions (<<sec-xmile-options>>)
+* MUST include the `+<uses_arrays>+` tag in the `+<options>+` block with the correct number of dimensions (<<sec-xmile-options>>)
 
 * MUST include a `+<dimensions>+` tag (<<sec-dimensions-section>>)
 
@@ -142,7 +146,7 @@ To support the optional event poster features of XMILE, an implementation:
 
 To support the optional features of XMILE to represent a model view, an implementation:
 
-* MUST include the `+<has_model_view>+` tag in the `+<options>+` block (<<sec-xmile-options>>)
+* MUST include the `+<has_model_views>+` tag in the `+<options>+` block (<<sec-xmile-options>>)
 
 * MUST support styles (<<sec-style-section>>)
 
@@ -158,9 +162,9 @@ To support the optional features of XMILE to represent a model view, an implemen
 
 * MUST support the <`+alias+`> tag. If they exist, alias objects MUST represent only stock, flow, and aux objects. Alias objects MUST NOT have connectors pointing to them. <`+uid+`>, <`+x+`>, <`+y+`>, and <`+of+`>  attributes for each alias MUST be specified for an alias object (<<sec-alias>>)
 
-* MUST support the <`+graph+`> tag. <`+type+`> and <`+comparative+`> attributes MUST be specified for each graph .One <`+plot+`> tag MUST appear for each variable being plotted. Each <`+plot+`> tag MUST specify a value for the <`+index+`>, <`+title+`>,  and <`+entity+`> attributes (<<sec-graphs>>)
+* MUST support the <`+graph+`> tag. <`+type+`> and <`+comparative+`> attributes MUST be specified for each graph .One <`+plot+`> tag MUST appear for each variable being plotted. Each <`+plot+`> tag MUST specify a value for the <`+index+`> attribute (<<sec-graphs>>)
 
-* MUST support a <`+table+`> tag. <`+orientation+`>, <`+column_width+`>, <`+interval+`>, and <`+comparative+`>   attributes for the table MUST be specified .One <`+item+`> tag MUST appear for each variable being displayed. Each <`+item+`> tag MUST specify a value for the <`+type+`>  and <`+entity+`> attributes (<<sec-tables>>)
+* MUST support a <`+table+`> tag. <`+orientation+`> and <`+comparative+`> attributes for the table MUST be specified .One <`+item+`> tag MUST appear for each variable being displayed. Each <`+item+`> tag MUST specify a value for the <`+type+`>  and <`+entity+`> attributes (<<sec-tables>>)
 
 Additionally,
 
@@ -205,9 +209,9 @@ To support the optional simulation output features of XMILE, an implementation:
 
 * MUST include the `+<uses_outputs>+` tag in the `+<options>+` block (<<sec-xmile-options>>)
 
-* MUST support the <`+graph+`> tag. <`+type+`> and <`+comparative+`> attributes MUST be specified for each graph .One <`+plot+`> tag MUST appear for each variable being plotted. Each <`+plot+`> tag MUST specify a value for the <`+index+`>, <`+title+`>,  and <`+entity+`> attributes (<<sec-graphs>>)
+* MUST support the <`+graph+`> tag. <`+type+`> and <`+comparative+`> attributes MUST be specified for each graph .One <`+plot+`> tag MUST appear for each variable being plotted. Each <`+plot+`> tag MUST specify a value for the <`+index+`> attribute (<<sec-graphs>>)
 
-* MUST support the <`+table+`> tag. <`+orientation+`>, <`+column_width+`>, <`+interval+`>, and <`+comparative+`>   attributes for the table MUST be specified .One <`+item+`> tag MUST appear for each variable being displayed. Each <`+item+`> tag MUST specify a value for the <`+type+`>  and <`+entity+`> attributes (<<sec-tables>>)
+* MUST support the <`+table+`> tag. <`+orientation+`> and <`+comparative+`> attributes for the table MUST be specified .One <`+item+`> tag MUST appear for each variable being displayed. Each <`+item+`> tag MUST specify a value for the <`+type+`>  and <`+entity+`> attributes (<<sec-tables>>)
 
 * If `+numeric_display+` is true in the `+<uses_outputs>+` tag, MUST support numeric displays (<<sec-numeric-displays>>)
 

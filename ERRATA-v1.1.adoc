@@ -140,7 +140,7 @@ The four commits on `errata/v1.1-fixes`:
   text.
 |===
 
-Afterwards nothing in the specification refers to a withdrawn feature, no
+Afterward nothing in the specification refers to a withdrawn feature, no
 reference is written as a literal section number, and the build resolves every
 cross-reference.
 

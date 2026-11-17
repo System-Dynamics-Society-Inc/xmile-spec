@@ -49,7 +49,7 @@ An implementation that simulates XMILE whole-models per this specification.
 
 **Whole-model** or **XMILE Whole-model**
 
-An XML file that conforms to this specification plus all XMILE files included through either the includes section of the header or through the resource attribute of a XMILE model or a module.
+An XML file that conforms to this specification plus all XMILE files included through either the includes section of the header or through the url attribute of a XMILE model or a module.
 
 [[sec-normative-references]]
 === Normative References

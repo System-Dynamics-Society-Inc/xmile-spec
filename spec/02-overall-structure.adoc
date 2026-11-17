@@ -5,15 +5,17 @@ A XMILE file contains information about a whole-model, with a well-specified str
 
 [source,xml]
 ----
-<xmile version="1.1" 
+<xmile version="1.2" 
       xmlns="http://docs.oasis-open.org/xmile/ns/XMILE/v1.0">
 ...
 </xmile>
 ----
 
-The version number MUST refer to the version of XMILE used (presently 1.1). The XML namespace refers to tags and attributes used in this specification. Both of these attributes are REQUIRED. Inside of the <xmile> tag are a number of top-level tags, listed below. These tags are marked req (a single instance is REQUIRED), opt (a single instance is OPTIONAL), * (zero or more tags MAY occur) and + (one or more tags MAY occur). Top level tags MAY occur in any order, but are RECOMMENDED to occur in the following order:
+The version number MUST refer to the version of XMILE used (presently 1.2). The XML namespace refers to tags and attributes used in this specification. Both of these attributes are REQUIRED. Inside of the <xmile> tag are a number of top-level tags, listed below. These tags are marked req (a single instance is REQUIRED), opt (a single instance is OPTIONAL), * (zero or more tags MAY occur) and + (one or more tags MAY occur). Top level tags MAY occur in any order, but are RECOMMENDED to occur in the following order:
 
 * `+<header>+` (req) - information about the origin of the file and required capabilities.
+
+* `+<ai_information>+` (opt) - status and settings relating to the use of AI in the creation of this file.
 
 * `+<sim_specs>+` (opt) - default simulation specifications for this file.
 
@@ -40,7 +42,7 @@ When an XMILE file includes references to models contained in separate files or 
 
 There are four categories of namespaces in play in a XMILE whole-model - XML tag namespaces, Variable namespace, Function namespace and Unit namespaces. XML tag namespaces and Unit namespaces are independent, but Variable and Function namespaces interact.
 
-XML tag namespaces are global. Unadorned tags are described in detail in the various sections of this document and provision for vendor specific additions are also detailed.
+XML tag namespaces are global. Unadorned tags are described in detail in the various sections of this document, and provision for vendor specific additions is made in <<sec-vendor-extensions>>.
 
 Each XMILE whole-model has a single Unit namespace against which all Unit Definitions and Equation Units are resolved. The Unit namespace is separate from any other namespaces and this means that the variables of units and variable or function names can overlap (for example someone might use Ounce/Min and define Min as an alias of Minute even though MIN is a reserved function name). Because this namespace crosses models Unit Definitions contained in separate files must be combined into this namespace.
 
@@ -49,6 +51,30 @@ The Function namespace combines global definitions (all functions defined here a
 Variable names are resolved within models, but in the same context as functions and therefore can't overlap. It is not, for example, possible to have a variable named MIN as this is a reserved function name. Similarly, if the  macro BIGGEST has been defined, no variable may be given the name BIGGEST. It is, however, possible, to have the same variable name appear in different models.  For example if you have a project with one model MyCompany and another model Competitors, both could contain the variable profit (with MyCompany.profit and Competitors.profit the way to refer to that variable from different models).
 
 One final subtlety in namespaces is that Dimension names, in turn, define their own Element namespace. Thus, even though Array Dimension names must be unique, they can have overlapping Element names and the Element names can be the same as Variable names. Element names are resolved by context when they appear inside square brackets of a variable and can be used in context by prefixing them with the array dimension name (as in Location.Boston, where Location is a Dimension name with element Boston).
+
+[[sec-vendor-extensions]]
+=== Vendor Extensions
+
+Consistent with <<sec-namespaces>>, a vendor MAY add elements and attributes of its own to an XMILE file, and a reader that encounters one has a defined obligation toward it.
+
+*Where an extension goes.* A vendor extension MUST be in an XML namespace of the vendor's own, declared on the file as an attribute of the `+<xmile>+` tag and distinct from the XMILE namespace. A vendor MUST NOT place an extension in the XMILE namespace, and MUST NOT write an unprefixed element or attribute that this specification does not define. Both rules exist so that a name without a prefix always means what this document says it means.
+
+A vendor MUST NOT respell a standard element or attribute in its own namespace. Where this specification defines an attribute, a conforming file writes it unprefixed; the same attribute written again under a vendor prefix produces two spellings of the same thing, and there is no rule to resolve which prevails.
+
+*Where an extension may appear.* A vendor attribute MAY appear on any element this specification defines, and a vendor element MAY appear wherever child elements are permitted. To clarify, if an element does not have children (for example `+<eqn>+`, `+<doc>+`, `+<units>+`) vendor specific child elements are not allowed.
+
+[source,xml]
+----
+<eqn vendor:origin="imported">rate * elapsed</eqn>
+----
+
+The value of such an element is unchanged by the presence of the attribute, and a reader that does not recognize the attribute reads the equation exactly as it would have without it. This is stated because a schema written the obvious way forbids it: an element declared with a simple type can carry no attributes at all, so a vendor cannot annotate the very elements most worth annotating. A schema for this specification MUST therefore declare such elements with a complex type over the same value, and the schema published with this specification does so.
+
+*What a reader does.* A reader MUST ignore any element or attribute in a namespace it does not recognize, and MUST continue to process the rest of the file. Ignoring means exactly that: the content is neither an error nor a reason to reject the document. A reader MAY preserve such content when rewriting a file it has read, and SHOULD do so where it can, since discarding another tool's extensions on a round trip is the outcome this provision exists to prevent.
+
+A reader MUST NOT honor a standard element or attribute that appears under a vendor prefix. Such a name is a vendor extension by the rule above, and treating `+vendor:show_pages+` as though it were `+show_pages+` would make the meaning of a file depend on which reader opened it.
+
+*What this does not license.* An extension MUST NOT change the meaning of the standard content around it. A file whose behavior differs when its extensions are ignored is not a conforming file, because a conforming reader is required to ignore them.
 
 [[sec-header-section]]
 === Header Section
@@ -98,16 +124,16 @@ The XMILE options appear under the tag `+<options>+`. This is a list of function
 
 [source,xml]
 ----
-<uses_conveyor/>
-<uses_queue/>
-<uses_arrays/>
+<uses_conveyors/>
+<uses_queues/>
+<uses_arrays maximum_dimensions="2"/>
 <uses_submodels/>
-<uses_macros/>
+<uses_macros recursive_macros="false" option_filters="false"/>
 <uses_event_posters/>
-<has_model_view/>
+<has_model_views/>
 <uses_outputs/>
 <uses_inputs/>
-<uses_annotation/>
+<uses_annotations/>
 ----
 
 There is one OPTIONAL attribute for the `+<options>+` tag:
@@ -126,13 +152,13 @@ The `+<uses_macros>+` tag has two REQUIRED attributes:
 
 * Defines option filters:  `+option_filters="…"+` with true/false.
 
-The `+<uses_conveyor>+` tag has two OPTIONAL attributes:
+The `+<uses_conveyors>+` tag has two OPTIONAL attributes:
 
 * Has conveyors that arrest:  `+arrest="…"+` with true/false (default: false)
 
 * Has conveyor leakages:  `+leak="…"+` with true/false (default: false)
 
-The `+<uses_queue>+` tag has one OPTIONAL attribute:
+The `+<uses_queues>+` tag has one OPTIONAL attribute:
 
 * Has queue overflows:  `+overflow="…"+` with true/false (default: false)
 
@@ -140,7 +166,7 @@ The `+<uses_event_posters>+` tag has one OPTIONAL attribute:
 
 * Has messages:  `+messages="…"+` with true/false (default: false)
 
-The `+<has_model_view>+` tag notes whether the XMILE file contains one or more <`+view+`> sections containing a visual representation of one or more models. Note that any software which supports XMILE should be able to simulate all whole-models, even those without diagrams.
+The `+<has_model_views>+` tag notes whether the XMILE file contains one or more <`+view+`> sections containing a visual representation of one or more models. Note that any software which supports XMILE should be able to simulate all whole-models, even those without diagrams.
 
 The `+<uses_outputs>+` tag implies both time-series graphs and tables are included. It has one OPTIONAL attribute:
 
@@ -148,7 +174,7 @@ The `+<uses_outputs>+` tag implies both time-series graphs and tables are includ
 
 The `+<uses_inputs>+` tag implies sliders are included.
 
-The `+<uses_annotation>+` tag implies text boxes are included.
+The `+<uses_annotations>+` tag implies text boxes are included.
 
 A sample options block appears below:
 
@@ -156,9 +182,343 @@ A sample options block appears below:
 ----
 <options namespace="std, isee">
 <uses_conveyors leak="true"/>  <!-- has conveyors, some leak -->
-<uses_arrays maximum_dimensions=”2”/>   <!-- has 2D arrays -->
-<has_model_view/>    <!-- has diagram of model -->
+<uses_arrays maximum_dimensions="2"/>   <!-- has 2D arrays -->
+<has_model_views/>    <!-- has diagram of model -->
 </options>
+----
+
+[[sec-ai-information-section]]
+=== AI Information Section
+
+The OPTIONAL `+<ai_information>+` tag records status and settings relating to the use of AI in the creation of a model. Its purpose is to ensure that someone opening a model can reliably determine whether, and where, AI was used in creating it. This does not prevent someone from developing a model with AI and then transcribing it into another model by hand, but it does mean that use of AI within conforming software, including through copy and paste, is tracked. Depending on version and vendor markings in the saved file this may mark the model as tampered as described below.
+
+The REQUIRED sub-tag is:
+
+* AI usage status:  `+<status>+` as described in <<sec-ai-status>>. This tag consists of attributes and has no sub-tags.
+
+OPTIONAL sub-tags include:
+
+* AI interaction log:  `+<log>+` w/the log of interaction between the user and the AI agent. This SHOULD be plain text, markup, or markdown, in whichever form is most convenient for the software. This tag MAY be empty or absent when there is no log of activity.
+
+* Agent log:  `+<agent_log>+` w/the log of interaction between the user and an AI agent, in which the prompts, replies and status are delineated as separate messages, as described in <<sec-agent-log>>. This tag MUST be included, even if empty, when either `+uses+` or `+analyzed+` is true on `+<status>+` as described in <<sec-ai-status>>. This ensures that the agent log is always signed when AI has been used.
+
+* Software-specific settings:  `+<settings>+` w/settings related to AI usage. No sub-tags or attributes are specified, as the nature of these settings is expected to be software specific.
+
+* Testing signature block:  `+<testing>+` w/the single attribute `+signed_message_body="…"+`, whose value is the constructed message string described in <<sec-ai-signing>>. This tag is intended primarily for testing between vendors consuming the output of different providers, and is not expected to be included in production software artifacts. It is included in some of the example files here to clarify any ambiguities about its construction.
+
+The `+log_truncated+` attribute of `+<status>+` indicates whether either log has been truncated. It can be more finely delineated with `+agent_log_truncated+` for the `+<agent_log>+` and `+base_log_truncated+` for the `+<log>+`.
+
+The information under `+<status>+` is persistent, and becomes invalid unless it is updated each time the model is written. It is also used when working with copy and paste, or other injection of model content, as described in <<sec-notes-on-ai-settings>>.
+
+
+[[sec-ai-status]]
+==== AI Status
+
+The following attributes are supported on `+<status>+`. Of these, `+verified+` is REQUIRED, and `+trusted+` is REQUIRED unless `+verified+` is false; the rest are OPTIONAL, since a `+verified+` of false licenses omitting them. Additional attributes MAY be included as long as they follow the rules for signature generation described in <<sec-ai-signing>>.
+
+[cols="2,2,5",options="header"]
+|===
+|Attribute
+|Valid values
+|Comments
+
+|`+verified+`
+|true/false
+|If false, the content is not trusted. In this case the other attributes MAY be skipped, as it indicates that the use of AI in model construction is unknown. Models saved in software that does not support `+<ai_information>+` will have `+verified+` false.
+
+|`+mixed+`
+|true/false
+|True if the model was previously opened from XML that did not contain an `+<ai_information>+` tag. There is no way to determine the provenance of a model that does not contain the `+<ai_information>+` tag, and that indeterminacy persists.
+
+|`+trusted+`
+|true/false
+|True if all required tags have been specified and the signature on the last model reading was correct, as described in <<sec-ai-signing>>. Typically false will arise from bad signing, or from a public signing key that is not trusted.
+
+|`+tampered+`
+|true/false
+|True if signature verification has ever failed when reading the model. When true, `+trusted+` will also be false.
+
+|`+uses+`
+|true/false
+|True if AI has ever been used as part of model construction.
+
+|`+analyzed+`
+|true/false
+|True if any AI based analysis of the model has been done and the model subsequently saved.
+
+|`+log_truncated+`
+|true/false
+|True if either the `+<log>+` or the `+<agent_log>+` has ever been truncated. If the software does not store a log as part of its regular activity (and AI was used), this MUST be set to true.
+
+|`+agent_log_truncated+`
+|true/false
+|True if the `+<agent_log>+` has ever been truncated.
+
+|`+base_log_truncated+`
+|true/false
+|True if the `+<log>+` has ever been truncated.
+
+|`+log_pasted+`
+|true/false
+|True if the content of the log may include material pasted from another model. The log then MAY record AI interaction that took place outside this model.
+
+|`+timestamp+`
+|integer
+|The time at which the `+<ai_information>+` was last saved, in seconds since 1 January 1970.
+
+|`+algorithm+`
+|`+ed25519+`
+|The algorithm used to generate the signature. Only one algorithm is supported.
+
+|`+keyurl+`
+|https URL
+|A web address that returns, in response to a GET, the base 64 encoded public key for verifying the signature. The encoded value is an OpenSSH `+ssh-ed25519+` key blob, that is the algorithm name and the 32 byte key each preceded by its length as a four byte big-endian count, and not the 32 key bytes on their own.
+
+|`+want_var_info+`
+|true/false
+|True when variable information is included in the text used to generate the signature.
+
+|`+want_var_status+`
+|true/false
+|True when the status of each variable in the model is included in the text used to generate the signature.
+
+|`+skip_module_files+`
+|true/false
+|If true, modules saved as separate files do not have their variable information included here, but instead include it in their own `+<ai_information>+` section. If false or absent, all variables in all modules are processed when `+want_var_info+` is true.
+
+|`+sampling+`
+|integer
+|The number of entries between variable information. This is used for large models, RECOMMENDED above 500 variables, where generating all variable information might be time consuming. If absent it MUST be assumed to be 1.
+
+|`+want_log+`
+|true/false
+|True if the AI log is included in the text used to generate the signature. If AI has not been used this would normally be false, even though true would generate the same signature.
+
+|`+signature+`
+|string
+|The base 64 encoded signature for the text.
+
+|===
+
+[[sec-agent-log]]
+==== Agent Log
+
+The `+<agent_log>+` tag holds the record of an interaction with an AI agent. Where `+<log>+` is a single block of text, the agent log separates the exchange into individual messages, so that prompts, replies and status reports can be told apart.
+
+The tag consists of zero or more `+<message>+` tags. It is empty when AI has been used but there has been no agent interaction to record. The message itself is the content of the tag. It MAY be plain text, markup or markdown, and MAY be carried in a CDATA section where that is more convenient than escaping it.
+
+Earlier drafts of this section carried the message in a `+content+` attribute. It is an element's content in this version, because an attribute value must have its markup escaped, and the agent log signature described in <<sec-agent-log-signing>> is taken over that content: two producers escaping the same markup differently would sign different bytes for the same message.
+
+The `+<agent_log>+` tag itself has one attribute:
+
+[cols="2,2,5",options="header"]
+|===
+|Attribute
+|Valid values
+|Comments
+
+|`+signature+`
+|string
+|The base 64 encoded signature for the agent log, as described in <<sec-agent-log-signing>>. REQUIRED whenever the `+<agent_log>+` tag is present.
+
+|===
+
+Each `+<message>+` has one REQUIRED attribute:
+
+[cols="2,2,5",options="header"]
+|===
+|Attribute
+|Valid values
+|Comments
+
+|`+type+`
+|text
+|The kind of message this is, which distinguishes a user prompt from an agent reply or a status report. The text should be human readable and short, but can take any value.
+
+|===
+
+and the following OPTIONAL attributes:
+
+[cols="2,2,5",options="header"]
+|===
+|Attribute
+|Valid values
+|Comments
+
+|`+is_thinking+`
+|true/false
+|True when the message records the agent's intermediate reasoning rather than a reply directed at the user (default: false).
+
+|`+agent_name+`
+|text
+|The name of the agent that produced the message. Not meaningful on messages originating from the user (default: none).
+
+|===
+
+An example of an agent log:
+
+[source,xml]
+----
+<agent_log signature="MnTEQdy8CBqwSjjbLkC/2K7E/9jc9DbfHV6Xi41i3E92iUJDNMMriegu5m/xjTjhxwDh0v2PrskFncsYg6+LAw==">
+  <message type="user_text" is_thinking="false">Is population a stock. Be very terse in your reply.</message>
+  <message type="agent_text" is_thinking="false" agent_name="Merlin">Yes. Population is a stock: it accumulates over time, changed by births and in-migration flowing in and deaths and out-migration flowing out. If every flow stopped, the population would still exist, which is the test for a stock.
+&lt;p style=&quot; margin-top:6px; margin-bottom:6px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Your current model is empty, so it doesn&apos;t contain a population stock yet.&lt;/p&gt;</message>
+  <message type="agent_complete" is_thinking="false" agent_name="Merlin"/>
+</agent_log>
+----
+
+
+[[sec-ai-signing]]
+==== Signing
+
+Signing is done using the ed25519 signature algorithmfootnote:[https://datatracker.ietf.org/doc/html/rfc8032[RFC 8032]] against a message constructed by combining the attributes above with the additional information indicated below. The private key used MUST correspond to the public key returned by `+keyurl+`. Software vendors MAY choose which public keys they trust; an untrusted key SHALL be treated as an unsigned model, though checking for tampering MAY still occur. Software providers SHOULD communicate among themselves to determine bilateral standards for key trust.
+
+The text to be signed MUST have all whitespace (space, tab, line feed, carriage return) and all underbar characters removed. Where a name or an equation writes a character as an XMILE identifier escape, as described in <<sec-common-variable-properties>>, that escape MUST first be resolved to the character it stands for, and only then is the whitespace removed. A variable named `+excess deaths\nfrom crowding+` therefore contributes `+excessdeathsfromcrowding+`: the escape becomes a line feed and is removed with the rest of the whitespace, rather than surviving as a backslash followed by an `+n+`. The text consists of:
+
+* All key/value pairs from the `+<status>+` tag other than `+signature+` itself, which is the result and so cannot be part of what is signed, sorted alphabetically by key. There MUST be an equals sign between the key and the value, and a space after the value, with no spaces within either the key or the value. Attribute values MUST NOT be quoted, so for example `+log_truncated="true"+` in the XML becomes `+logtruncated=true+`.
+
+* If `+want_var_info+` is true, the variable name followed by an equals sign followed by its equation, for the model variables sorted alphabetically by variable name. Names MUST be compared without regard to case, and MUST be compared as they are written in the XML rather than after the removal described above. Both matter: comparing after removal would order `+low cost housing constr des+` before `+low cost hous prog+`, because the space that separates the words is gone, whereas comparing the written names orders them the other way round. For models containing modules, variables in the root module appear first, followed by the module variables, each qualified by its module name and a full stop, as in `+City.population+`. The module name has the same characters removed as everything else, so a module named `+Premium_Housing1+` qualifies its variables as `+PremiumHousing1.+`. Modules and sectors, and any content other than stocks, flows and auxiliaries, MUST be excluded from the list. For arrays with non-apply-to-all equations, all equations are listed from the first to the last element with no separation between them. This content MAY be partial, based on the value of `+sampling+`. Each equation, or equation list for non-apply-to-all equations, appears as it does in the XML, noting that there are no spaces within either the equation list or the variable name. Equations using cross level ghosts MUST use the local variable name. The equations for cross level inputs appear as they do in the XML, even when such equations are empty or invalid.
+
+* If `+want_var_status+` is true, the AI status information for each variable, ignoring `+sampling+`, where the status is a single letter from <<sec-ai-variable-status>>. The full list of status values MUST be followed by a space, but there is no space within the list.
+
+* If `+want_log+` is true, the log is appended, again with all whitespace characters removed. The log itself MUST be included in the `+<log>+` tag.
+
+If there is a terminal space on the constructed message string, which happens when the log is not included, it MUST be removed. Thus the only spaces are internal separators, and never come from the content forming the message.
+
+[[sec-agent-log-signing]]
+===== Signing the Agent Log
+
+The `+<agent_log>+` is signed separately from all other AI information, including the `+<log>+`. It is signed even when empty, in which case the message to be signed is the empty string. If any AI usage at all occurred, that is if `+uses+` or `+analyzed+` is true, the `+<agent_log>+` MUST be present and signed; otherwise the model MUST be treated as tampered.
+
+The message to be signed is formed by collating the content of every `+<message>+` in `+<agent_log>+`, in document order, with no separator between them, and is signed with the same algorithm and keys described above. The content is taken as it is after parsing, so a CDATA section and the equivalent escaped text sign identically, and neither the delimiters nor the escapes form part of what is signed.
+
+The collated content MUST have whitespace and underbar characters removed, exactly as the main message does. Nothing else about the messages is signed: `+type+`, `+is_thinking+` and `+agent_name+` are attributes and are all excluded.
+
+The signature is then included as the `+signature+` attribute of the `+<agent_log>+` tag.
+
+Software that recognizes the agent log MUST validate the signature and regenerate it on writing against the same key pair as described above.
+
+[[sec-ai-variable-status]]
+==== Variable AI Status
+
+Each variable MAY record how AI contributed to it, using the OPTIONAL `+ai_state="…"+` attribute on the variable tag, as described in <<sec-common-variable-properties>>. The value is one of the following codes:
+
+[cols="1,6",options="header"]
+|===
+|Code
+|Meaning
+
+|`+A+`
+|No information. The variable is from an untrusted source. `+trusted+` MUST be false if any variable has this status.
+
+|`+B+`
+|Created by a person not using AI. This will only occur when a modeler adds content using AI to an existing model. Depending on the software implementation these MAY always be reported as `+F+`.
+
+|`+C+`
+|AI was used to generate the variable and its equation. No editing by a person has been done.
+
+|`+D+`
+|Created by a person but edited by AI. Depending on the software implementation this MAY always be `+H+`.
+
+|`+E+`
+|Edited by a person, with unknown creation. This should never occur.
+
+|`+F+`
+|Created and edited by a person not using AI.
+
+|`+G+`
+|Created by AI then edited by a person, though possibly edited again by AI.
+
+|`+H+`
+|Created and edited by a person and also edited by AI.
+
+|===
+
+These states do not incorporate any sequence information. For example, a variable created and edited by a person, then edited by AI, then edited again by a person, is the same as if that last editing had not occurred, that is `+H+`.
+
+An example of the attribute on a variable definition is:
+
+[source,xml]
+----
+<flow name="ai generated flow" ai_state="C">
+----
+
+[[sec-notes-on-ai-settings]]
+==== Notes on AI Settings
+
+The AI settings are all irreversible. If a model starts unverified, or has content injected through the clipboard or another mechanism that is unverified, the model remains forever unverified. The same applies to `+trusted+` becoming false, and to `+uses+`, `+analyzed+` and `+log_truncated+` (as well as `+agent_log_truncated+` and `+base_log_truncated+`) becoming true, and likewise to `+log_pasted+`.
+
+Software implementations SHOULD require `+want_var_info+`, and additionally `+want_var_status+` if AI has been used. Unless the log has been truncated, `+want_log+` SHOULD also be true.
+
+When injecting content from outside sources, such as the clipboard, software implementations SHOULD include the signing, but MAY exclude variable information as long as the source of the content is fully trusted, most typically the software itself.
+
+[[sec-ai-examples]]
+==== Examples
+
+Status information for a simple AI generated model with one variable, price:
+
+[source,xml]
+----
+<status verified="true" trusted="true" tampered="false" uses="true" analyzed="false"
+        log_truncated="false" timestamp="1751663454" algorithm="ed25519"
+        keyurl="https://iseesystems.com/keys/stella01.txt" want_var_info="true"
+        want_var_status="true" want_log="true" sampling="1"
+        signature="FB3fCMap7xCQ+9GUmxl1QvdAQDehvMyPSOMNYtjv5hCWh6cHSA249hn6fo9120YAhmEUIoVg7hqMcs0aLaN/BA=="/>
+----
+
+The message string used to generate the signature is shown below. Line wrapping here occurs at the embedded spaces, and there is no space at the end:
+
+[source,text]
+----
+algorithm=ed25519 analyzed=false keyurl=https://iseesystems.com/keys/stella01.txt
+logtruncated=false sampling=1 tampered=false timestamp=1751663454 trusted=true
+uses=true verified=true wantlog=true wantvarinfo=true wantvarstatus=true price=50 C
+<h3>Youinstructedmeto...</h3><br/><h3>HereiswhatIhavedone...</h3><h3>SimplePriceModelNoFeedback</h3>Themodelwasupdatedtoincludeasinglevariable,'price',asrequested.Nofeedbackloopscouldbeformedbecausetheinputonlyspecifiedasingle,constantvariable,andnoothervariablesorrelationshipswereimpliedorprovidedasevidencetosupportthecreationofadditionalvariablesortheircausalconnections.Therefore,nochangesweremadetoclosefeedbackloops.<br/>
+----
+
+The definition for price is:
+
+[source,xml]
+----
+<aux name="price" ai_state="C">
+  <doc>The price of the product, set at a constant value as per the request. There is
+  no information provided to suggest that this variable should change over time or be
+  influenced by other factors.</doc>
+  <eqn>50</eqn>
+  <units>$/wheel</units>
+</aux>
+----
+
+The `+C+` in `+ai_state+` matches the `+C+` immediately after the equation for price (50) in the signature string.
+
+The same content for a model built entirely by hand would be:
+
+[source,xml]
+----
+<status verified="true" trusted="true" tampered="false" uses="false" analyzed="false"
+        log_truncated="false" timestamp="1751663148" algorithm="ed25519"
+        keyurl="https://iseesystems.com/keys/stella01.txt" want_var_info="true"
+        want_var_status="false" want_log="false" sampling="1"
+        signature="hnBrID6G4q9cX3Ga2WPHmFIMpVGCrTlLcxpFKU2stKNuL7/8IhOvZVDxvovCJ77AlRcfN4abQrWv9JBQ7t4WBQ=="/>
+----
+
+Note that `+want_var_status+` is false, as the variables are all untouched by AI. In this case the content string to be signed contains only the key/value pairs and the list of variables and equations:
+
+[source,text]
+----
+algorithm=ed25519 analyzed=false keyurl=https://iseesystems.com/keys/stella01.txt
+logtruncated=false sampling=1 tampered=false timestamp=1751663148 trusted=true
+uses=false verified=true wantlog=false wantvarinfo=true wantvarstatus=false price=50
+----
+
+The definition for price is largely the same, though no documentation was added and it is unmarked because the model records no AI usage:
+
+[source,xml]
+----
+<aux name="price">
+  <eqn>50</eqn>
+  <units>$/Wheel</units>
+</aux>
 ----
 
 [[sec-model-simulation-specification-section]]
@@ -168,9 +528,9 @@ Every XMILE file MUST contain at least one set of simulation specifications, eit
 
 The simulation specifications block is defined with the tag `+<sim_specs>+`.  The following properties are REQUIRED:
 
-* Start time:  `+<start>+` w/time
+* Start time:  `+<start>+` w/time, either a number or the name of a variable, e.g., `+Simulation_Start+`; a variable in the root model MAY be named without qualification, while a variable in a submodel MUST be qualified (see <<sec-submodels-4-7>>)
 
-* Stop time:  `+<stop>+` w/time (after start time)
+* Stop time:  `+<stop>+` w/time, either a number or the name of a variable, named as for `+<start>+` (after start time)
 
 There are several additional OPTIONAL attributes and properties with appropriate defaults:
 
@@ -271,41 +631,30 @@ Only stocks or only flows can also be set to non-negative by default (flows in t
 [[sec-style-section]]
 === Style Section
 
-Every XMILE file MAY include style information to set default options for display objects. When `+<has_model_view>+` is set in the `+<options>+` block, support for styles is REQUIRED. Being style information, this mostly belongs to the Presentation section (5.3), which describes the display and layout of XMILE files.
+Every XMILE file MAY include style information to set default options for display objects. When `+<has_model_views>+` is set in the `+<options>+` block, support for styles is REQUIRED. Being style information, this mostly belongs to the Presentation section (5.3), which describes the display and layout of XMILE files.
 
-The style information is cascading across five levels from the entity outwards, with the actual entity style defined by the first occurrence of a style definition for that style property:
-
-* Styles for the given entity
-
-* Styles for all entities in a specific view
-
-* Styles for all entities in a collection of views
-
-* Styles for all entities in the XMILE file
-
-* Default XMILE-defined styles when a default appears in this specification
-
-The style information usually includes program defaults when they differ from the standard, though it can also be used for file-specific file-wide settings. Whenever possible, style information uses standard CSS syntax and keywords recast into XML attributes and nodes.
-
-The style block begins with the `+<style>+` tag. Within this block, any known object can have its attributes set globally (but overridden locally) using its own modifier tags. Global settings that apply to everything are specified directly on the `+<style>+` tag or in nodes below it; this is true for `+<style>+` tags that appear within the `+<views>+` tag as well. For example, the following sets the color of objects within all views in the file to blue and the background to white:
+A `+<style>+` tag MAY appear in a `+<view>+` or in a `+<views>+` tag. It holds one child tag per object type, and the attributes on each child set the defaults for that object type. There are no attributes on the `+<style>+` tag itself, and there is no file-level `+<style>+`. For example, the following sets the color of all connectors in a view to magenta:
 
 [source,xml]
 ----
-<style color="blue" background="white"/>
-----
-
-Unless otherwise indicated or specified, style information appears in XML attributes. For example, `+font_family+` would be an attribute.
-
-These changes can also be applied directly to objects (again as a child to a `+<style>+` tag), e.g.,
-
-[source,xml]
-----
-<style color="blue" background="white">
-<connector color="magenta">
+<style>
+<connector color="magenta"/>
 </style>
 ----
 
-Note that when style information applies to a specific object, that style cannot be overridden at a lower level (e.g., within a view) by a change to the overall style (i.e., by the options on the `+<style>+` tag). Using the example above, to override the color of connectors at a lower level (e.g., the Display), the `+<connector>+` tag must explicitly appear in that level’s style block. If it does not appear there, connectors will be magenta at that level by default, even if the style block at that level sets the default color of all objects to green. In other words, object-specific styles at any level above an object take precedence over an overall style defined at any lower level.
+Unless otherwise indicated or specified, style information appears in XML attributes. For example, `+font_family+` would be an attribute. Whenever possible, style information uses standard CSS syntax and keywords recast into XML attributes and nodes.
+
+When a display attribute is not set on an object, it is taken from the first of the following that sets it for that object type:
+
+* The `+<style>+` in the `+<view>+` containing the object
+
+* The `+<style>+` in the `+<views>+` containing that view
+
+* The same, in turn, for each module containing the model, up to the root model
+
+* The application defaults, or the default given in this specification where there is one
+
+The full rules are given in <<sec-the-object-style-system>>.
 
 [[sec-data-section]]
 === Data Section
@@ -345,15 +694,15 @@ Macro tags define macros that can be used in model entity equations. Chapter 4 c
 
 XMILE files MAY link to other XMILE files by using includes. Support for includes is REQUIRED. This serves the following use cases:
 
-[source,xml]
-----
-A whole-model can be split across multiple files, allowing submodels and other components to be individually edited or versioned.
-A modeler may create a common library of submodels or macros and use them for multiple whole-models.
-A modeler may create a common style for models and include a common file for such style in different whole-models.
-A vendor may create a common library of macros with specific functionality used by all whole-models produced by that vendor's software.
-----
+* A whole-model can be split across multiple files, allowing submodels and other components to be individually edited or versioned.
 
-Included files are specified with an `+<includes>+` tag which goes inside of <header>
+* A modeler may create a common library of submodels or macros and use them for multiple whole-models.
+
+* A modeler may create a common style for models and include a common file for such style in different whole-models.
+
+* A vendor may create a common library of macros with specific functionality used by all whole-models produced by that vendor's software.
+
+Included files are specified with an `+<includes>+` tag which goes inside of `+<header>+`.
 
 [source,xml]
 ----
@@ -368,22 +717,27 @@ Included files are specified with an `+<includes>+` tag which goes inside of <he
 
 The included resource can be specified in multiple ways. Specifically, the resource attribute can be specified with:
 
-[source,xml]
-----
-URLs. By convention, a file retrieved from a URL is assumed to be an unchanging resource and may be cached. The file may also be provided automatically by the simulation software.
-----
-
-Example:
-
+* *URLs.* By convention, a file retrieved from a URL is assumed to be an unchanging resource and may be cached. The file may also be provided automatically by the simulation software.
++
 [source,xml]
 ----
 <include resource="http://systemdynamics.org/xmile/macros/standard-1.0.xml" />
-Relative file paths. Search relative to the location of the XMILE file. This allows modelers to distribute their whole-models as a folder of related files. This is a machine-independent path specification using "/" to separate directories. The "*" indicates a wildcard. Files are not cached.
+----
+
+* *Relative file paths.* Search relative to the location of the XMILE file. This allows modelers to distribute their whole-models as a folder of related files. This is a machine-independent path specification using `+"/"+` to separate directories. The `+"*"+` indicates a wildcard. Files are not cached. Starting a path with `+"r../"+` is used to indicate a relative path that should be resolved as if the directory `+"r"+` existed even if it does not.
++
+[source,xml]
+----
 <include resource="my-macro-library.xml" />
 <include resource="macros/my-macro-library.xml" />
 <include resource="macros/*" />
 <include resource="macros/supplychain-*.xml" />
-Absolute file paths. Similar to relative file paths except that the resource starts with "/" or "file://". In such cases, the file path is loaded from an absolute location on the local machine. Application programs may choose to limit file access or base the root directory in a particular location (e.g. a home directory) for security reasons. A platform-specific volume name (e.g. "D:") may not be specified.
+----
+
+* *Absolute file paths.* Similar to relative file paths except that the resource starts with `+"/"+` or `+"file://"+`. In such cases, the file path is loaded from an absolute location on the local machine. Application programs may choose to limit file access or base the root directory in a particular location (e.g. a home directory) for security reasons. A platform-specific volume name (e.g. `+"D:"+`) may not be specified.
++
+[source,xml]
+----
 <include resource="/library/my-macro-library.xml" />
 <include resource="file://library/my-macro-library.xml" />
 ----
@@ -400,29 +754,38 @@ As a contrast, files specified with a file path (particularly a relative file pa
 [[sec-format-of-included-files]]
 ==== Format of Included Files
 
-The format of the included files is a simplified version of the format of the full XMILE file.  The `+<header>+` tag is OPTIONAL, and if included can omit required header attributes. The `+<options>+` tag is optional.
+The format of the included files is a simplified version of the format of the full XMILE file.  The `+<header>+` tag is REQUIRED, but may be empty. The `+<options>+` tag is optional. For example a macro definitions, a full model with diagram information and a model with only equations would appear as:
 
 [source,xml]
 ----
-<xmile version="1.0" 
- xmlns=" http://docs.oasis-open.org/xmile/ns/XMILE/v1.0">
+<xmile version="1.2"
+ xmlns="http://docs.oasis-open.org/xmile/ns/XMILE/v1.0">
 <header>
 </header>
-<macro name="LOG">
+<macro name="MYLOG">
 ...
 </macro>
-<macro name="LOG10">
+<macro name="MYLOG10">
 ...
 </macro>
 </xmile>
 
-<xmile version="1.0" level="2"  xmlns="http://www.systemdynamics.org/XMILE">
+<xmile version="1.2" xmlns="http://docs.oasis-open.org/xmile/ns/XMILE/v1.0">
+<header/>
+<model>
+...
+<views>
+<view>
 <style>
 ...
 </style>
+</view>
+</views>
+</model>
 </xmile>
 
-<xmile version="1.0" level="2"  xmlns="http://www.systemdynamics.org/XMILE">
+<xmile version="1.2" xmlns="http://docs.oasis-open.org/xmile/ns/XMILE/v1.0">
+<header/>
 <model>
 ...
 </model>
@@ -434,7 +797,7 @@ The format of the included files is a simplified version of the format of the fu
 
 Software packages MUST process included files before simulation is started, and the content of included files MUST be merged into the whole-model environment before simulation. Specifically:
 
-* The `+<options>+` tag options will be merged with the `+<options>+` from the primary model. This means that if an included file specifies an option such as `+<uses_conveyor/>+`, then the simulation SHOULD assume the whole-model has the `+<uses_conveyor/>+` option specified. When merging XMILE `+<options>+` the most specific of each option will take priority.
+* The `+<options>+` tag options will be merged with the `+<options>+` from the primary model. This means that if an included file specifies an option such as `+<uses_conveyors/>+`, then the simulation SHOULD assume the whole-model has the `+<uses_conveyors/>+` option specified. When merging XMILE `+<options>+` the most specific of each option will take priority.
 
 * When an included file only contains `+<behavior>+` and/or `+<style>+` optionsfootnote:[This separation is necessary because an included file can contain behavior and style options specific to the models and macros in that file – and which should not override or be merged with those in the file that includes those models and macros, as they’re unrelated. Furthermore, the intent of including behavior and style information is so that vendors can create, and include in all their models, a file with all of their defaults when they differ from the XMILE defaults.], those `+<behavior>+` and `+<style>+` options in the included file will be merged into the default styles of the file including them. This allows behaviors and styles to be included from other files. When merging `+<behavior>+` and `+<style>+` options, any behaviors and styles specified in the file that included them will take priority. (This allows the file that included them to override styles specified in the included file).
 

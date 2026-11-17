@@ -34,15 +34,15 @@ Attributes common to objects described in <<sec-stock>> through <<sec-alias>>:
 
 * `+vertical_text_align –+` defined in <<sec-common-styles-associated-with-all-xmile-display-objects>>
 
-* `+text_padding -+` same as `+padding+` as defined in <<sec-common-styles-associated-with-all-xmile-display-objects>>
+* `+padding -+` defined in <<sec-common-styles-associated-with-all-xmile-display-objects>>
 
 * `+font_color -+` defined in <<sec-common-styles-associated-with-all-xmile-display-objects>>
 
-* `+text_border_color -+` same as `+border_color+` as defined in <<sec-common-styles-associated-with-all-xmile-display-objects>>
+* `+border_color -+` defined in <<sec-common-styles-associated-with-all-xmile-display-objects>>
 
-* `+text_border_width -+` same as `+border_width+` as defined in <<sec-common-styles-associated-with-all-xmile-display-objects>>
+* `+border_width -+` defined in <<sec-common-styles-associated-with-all-xmile-display-objects>>
 
-* `+text_border_style –+` same as `+border_style+` as defined in <<sec-common-styles-associated-with-all-xmile-display-objects>>
+* `+border_style -+` defined in <<sec-common-styles-associated-with-all-xmile-display-objects>>
 
 Additional attributes common to objects described in <<sec-stock>> through <<sec-group>>:
 
@@ -67,7 +67,7 @@ All other common attributes listed above are OPTIONAL for all display objects.
 
 The `+<stock>+` tag in the context of a `+<view>+` tag is used to describe the appearance of an XMILE stock equation object.  Support is REQUIRED for any implementation supporting views.  An example tag is shown below:
 
-`+<stock name=”Bathtub” x=”50” y=”100” width=”45” height=”35” label_side=”top” color=”blue” background=”white” z_index=”1” font_family=”Arial” font_size=”9pt” font_weight=”bold” font_style=”italic” text_decoration=”underline” text_align=”center” vertical_text_align=”center” text_padding=”2px” font_color=”blue” text_border_color=”black” text_border_width=”1px” text_border_style=”solid”/>+`
+`+<stock name="Bathtub" x="50" y="100" width="45" height="35" label_side="top" color="blue" background="white" z_index="1" font_family="Arial" font_size="9pt" font_weight="bold" font_style="italic" text_decoration="underline" text_align="center" vertical_text_align="center" padding="2px" font_color="blue" border_color="black" border_width="thin" border_style="solid"/>+`
 
 Descriptions of all the display attributes of a stock can be found in <<sec-stock-and-flow-diagram-objects>>.
 
@@ -76,13 +76,13 @@ Descriptions of all the display attributes of a stock can be found in <<sec-stoc
 
 The `+<flow>+` tag in the context of a `+<view>+` tag is used to describe the appearance of an XMILE flow equation object. Support is REQUIRED for any implementation supporting views.  An example tag is shown below:
 
-`+<flow name=”faucet” x=”50” y=”100” width=”18” height=”18” label_side=”top” color=”blue” background=”white” z_index=”1” font_family=”Arial” font_size=”9pt” font_weight=”bold” font_style=”italic” text_decoration=”underline” text_align=”center” vertical_text_align=”center” text_padding=”2px” font_color=”blue” text_border_color=”black” text_border_width=”1px” text_border_style=”solid”>+`
+`+<flow name="faucet" x="50" y="100" width="18" height="18" label_side="top" color="blue" background="white" z_index="1" font_family="Arial" font_size="9pt" font_weight="bold" font_style="italic" text_decoration="underline" text_align="center" vertical_text_align="center" padding="2px" font_color="blue" border_color="black" border_width="thin" border_style="solid">+`
 
 `+<pts>+`
 
-`+<pt x=”0” y=”100”/>+`
+`+<pt x="0" y="100"/>+`
 
-`+<pt x=”150 y=”100”/>+`
+`+<pt x="150" y="100"/>+`
 
 `+</pts>+`
 
@@ -97,7 +97,7 @@ Descriptions of all other display attributes of a flow can be found in <<sec-sto
 
 The `+<aux>+` tag in the context of a `+<view>+` tag is used to describe the appearance of an XMILE aux equation object.  Support is REQUIRED for any implementation supporting views.  An example tag is shown below:
 
-`+<aux name=”water flow rate” x=”50” y=”100” width=”45” height=”35” label_side=”top” color=”blue” background=”white” z_index=”1” font_family=”Arial” font_size=”9pt” font_weight=”bold” font_style=”italic” text_decoration=”underline” text_align=”center” vertical_text_align=”center” text_padding=”2px” font_color=”blue” text_border_color=”black” text_border_width=”1px” text_border_style=”solid”/>+`
+`+<aux name="water flow rate" x="50" y="100" width="45" height="35" label_side="top" color="blue" background="white" z_index="1" font_family="Arial" font_size="9pt" font_weight="bold" font_style="italic" text_decoration="underline" text_align="center" vertical_text_align="center" padding="2px" font_color="blue" border_color="black" border_width="thin" border_style="solid"/>+`
 
 Descriptions of all the display attributes of an aux can be found in <<sec-stock-and-flow-diagram-objects>>.
 
@@ -106,7 +106,7 @@ Descriptions of all the display attributes of an aux can be found in <<sec-stock
 
 The `+<module>+` tag in the context of a `+<view>+` tag is used to describe the appearance of an XMILE module equation object.  Support is OPTIONAL for any implementation supporting views and modules.   An example tag is shown below:
 
-`+<module name=”Important_Module” x=”50” y=”100” width=”45” height=”35” label_side=”top” color=”blue” background=”white” z_index=”1” font_family=”Arial” font_size=”9pt” font_weight=”bold” font_style=”italic” text_decoration=”underline” text_align=”center” vertical_text_align=”center” text_padding=”2px” font_color=”blue” text_border_color=”black” text_border_width=”1px” text_border_style=”solid”/>+`
+`+<module name="Important_Module" x="50" y="100" width="45" height="35" label_side="top" color="blue" background="white" z_index="1" font_family="Arial" font_size="9pt" font_weight="bold" font_style="italic" text_decoration="underline" text_align="center" vertical_text_align="center" padding="2px" font_color="blue" border_color="black" border_width="thin" border_style="solid"/>+`
 
 Descriptions of all the display attributes of a module can be found in <<sec-stock-and-flow-diagram-objects>>.
 
@@ -115,9 +115,9 @@ Descriptions of all the display attributes of a module can be found in <<sec-sto
 
 The `+<group>+` tag in the context of a `+<view>+` tag is used to describe the appearance of an XMILE group object. Support in the view is RECOMMENDED. A `+<group>+` display object differs from all other display objects used to represent model section objects in that there is a one-to-one relationship between group objects in the model section and group objects in the display section. This means that you can only have one `+<group>+` tag in the `+<views>+` tag that represents the `+<group>+` tag in the `+<variables>+` tag. All XMILE model objects which appear in the group within the model section are implicitly contained within the group object in the display section, but groups can also contain objects which are not present within the model section. Those objects are included within the group using an `+<item>+` tag. An example is shown below:
 
-`+<group name=”Major_Group” x=”50” y=”100” color=”blue” background=”white” z_index=”1” font_family=”Arial” font_size=”9pt” font_weight=”bold” font_style=”italic” text_decoration=”underline” text_align=”center” vertical_text_align=”center” text_padding=”2px” font_color=”blue” text_border_color=”black” text_border_width=”1px” text_border_style=”solid” locked=”true”>+`
+`+<group name="Major_Group" x="50" y="100" color="blue" background="white" z_index="1" font_family="Arial" font_size="9pt" font_weight="bold" font_style="italic" text_decoration="underline" text_align="center" vertical_text_align="center" padding="2px" font_color="blue" border_color="black" border_width="thin" border_style="solid" locked="true">+`
 
-`+<item uid=”1”/>+`
+`+<item uid="1"/>+`
 
 `+</group>+`
 
@@ -132,11 +132,11 @@ Descriptions of all other display attributes of a group can be found in <<sec-st
 
 The `+<connector>+` tag is used to describe the visual appearance of the relationships between XMILE model objects.  Support is REQUIRED for any implementation supporting views.  A connector is an arrow which only appears between two display objects.  An example tag is shown below:
 
-`+<connector uid=”1” x=”50” y=”100” angle=”32” line_style=”solid” delay_mark=”false” color=”blue” background=”white” z_index=”1” font_family=”Arial” font_size=”9pt” font_weight=”bold” font_style=”italic” text_decoration=”underline” text_align=”center” vertical_text_align=”center” text_padding=”2px” font_color=”blue” text_border_color=”black” text_border_width=”1px” text_border_style=”solid” polarity=””>+`
+`+<connector uid="1" x="50" y="100" angle="32" line_style="solid" delay_mark="false" color="blue" background="white" z_index="1" font_family="Arial" font_size="9pt" font_weight="bold" font_style="italic" text_decoration="underline" text_align="center" vertical_text_align="center" padding="2px" font_color="blue" border_color="black" border_width="thin" border_style="solid" polarity="none">+`
 
 `+<from>+`
 
-`+<alias uid=”2”/>+`
+`+<alias uid="2"/>+`
 
 `+</from>+`
 
@@ -144,11 +144,11 @@ The `+<connector>+` tag is used to describe the visual appearance of the relatio
 
 `+<pts>+`
 
-`+<pt x=”50” y=”50”/>+`
+`+<pt x="50" y="50"/>+`
 
-`+<pt x=”100” y=”100”/>+`
+`+<pt x="100" y="100"/>+`
 
-`+<pt x=”150” y=”75”/>+`
+`+<pt x="150" y="75"/>+`
 
 `+</pts>+`
 
@@ -175,7 +175,7 @@ Descriptions of all other display attributes of a connector can be found in <<se
 
 The `+<alias>+` tag is used to describe the visual appearance of an alias of an XMILE model object.  Support is REQUIRED for any implementation supporting views.  An alias is a symbol representing a “portal” to the display of another XMILE model object in the same view.  Aliases are only valid for stocks, flows, and auxiliaries.  It is RECOMMENDED for aliases to take on all the same styles as the object they represent with only the differences being written to the `+<alias>+` tag.  Aliases MAY have connectors leaving them but MAY NOT have connectors pointing to them.  An example tag is shown below:
 
-`+<alias uid=”1” x=”50” y=”100”>+`
+`+<alias uid="1" x="50" y="100">+`
 
 `+<of>faucet</of>+`
 
@@ -201,15 +201,17 @@ Any object within a container does NOT REQUIRE an `+x,y+` position or a size. It
 
 A stacked container is used to allow XMILE display objects to be stacked on top of one another in flipbook form. Support for this tag is OPTIONAL. This allows model creators to create pages of tables or graphs.  Any display object may be placed within a stacked container, but typical objects are graphs and tables.  An example tag is shown below:
 
-`+<stacked_container x="92" y="114" height="282" width="492" uid="0" visible_index=”0”>+`
+`+<stacked_container x="92" y="114" height="282" width="492" uid="0" visible_index="0">+`
 
 `+</stacked_container>+`
 
 * `+visible_index+` REQUIRED `+–+` Integer 0 based index of which content object to display.
 
+* `+minimized+` OPTIONAL `+–+` true/false; if true, the container is shown minimized, collapsed so that its contents are not displayed until it is opened (default: `+false+`).
+
 Descriptions of all other display attributes of a stacked container can be found in <<sec-stock-and-flow-diagram-objects>>.
 
-Stacked container objects are REQUIRED to have ONLY the five properties shown above.  Any borders, backgrounds etc. are supplied by their contents.
+Stacked container objects are REQUIRED to have ONLY the five properties shown above, plus the OPTIONAL `+minimized+`.  Any borders, backgrounds etc. are supplied by their contents.
 
 [[sec-input-objects]]
 === Input Objects
@@ -219,7 +221,7 @@ Stacked container objects are REQUIRED to have ONLY the five properties shown ab
 
 Sliders are used to change the value of a variable in the model from the interface.  Support for these tags is OPTIONAL. When controlling a stock, a slider can only change the stock’s initial value, i.e., sliders attached to stocks MUST NOT be changed in the middle of a simulation run.  Sliders are defined with the `+<slider>+` tag.  An example slider tag is shown below:
 
-`+<slider x="172" y="114" color="black" width="197" height="43" min="7" max="9" background=”white” z_index=”1” font_family=”Arial” font_size=”9pt” font_weight=”bold” font_style=”italic” text_decoration=”underline” text_align=”center” vertical_text_align=”center” text_padding=”2px” font_color=”blue” text_border_color=”black” text_border_width=”1px” text_border_style=”solid”>+`
+`+<slider x="172" y="114" color="black" width="197" height="43" min="7" max="9" background="white" z_index="1" font_family="Arial" font_size="9pt" font_weight="bold" font_style="italic" text_decoration="underline" text_align="center" vertical_text_align="center" padding="2px" font_color="blue" border_color="black" border_width="thin" border_style="solid">+`
 
 `+<entity name="Converter_1" />+`
 
@@ -247,7 +249,7 @@ Descriptions of all other display attributes of a slider can be found in <<sec-s
 
 The `+<numeric_display>+` tag is used to describe the appearance of a widget on the model canvas which shows the instantaneous value of a model entity as text. Support for this tag is OPTIONAL. An example tag is shown below:
 
-`+<numeric_display precision="0.1" delimit_000s="true" color="blue" show_name="true" retain_ending_value="true" uid="1" x="339" y="261" width=”100” height=”22” background=”white” z_index=”1” font_family=”Arial” font_size=”9pt” font_weight=”bold” font_style=”italic” text_decoration=”underline” text_align=”center” vertical_text_align=”center” text_padding=”2px” font_color=”blue” text_border_color=”black” text_border_width=”1px” text_border_style=”solid”>+`
+`+<numeric_display precision="0.1" delimit_000s="true" color="blue" show_name="true" retain_ending_value="true" uid="1" x="339" y="261" width="100" height="22" background="white" z_index="1" font_family="Arial" font_size="9pt" font_weight="bold" font_style="italic" text_decoration="underline" text_align="center" vertical_text_align="center" padding="2px" font_color="blue" border_color="black" border_width="thin" border_style="solid">+`
 
 `+<entity name="Converter_2" />+`
 
@@ -266,13 +268,15 @@ Descriptions of all other display attributes of a numeric display can be found i
 
 Support for this tags is REQUIRED if the implementation supports outputs (per the header options, <<sec-xmile-options>>). Graphs are defined within the `+<graph>+` tag, which has the following attributes and properties, beyond the applicable display attributes, e.g., `+background+`:
 
-* Graph type: REQUIRED `+type="…"+` with `+time_series+`, `+scatter+`, or `+bar+` (default: `+time_series+`)
+* Graph type: REQUIRED `+type="…"+` with `+time_series+`, `+scatter+`,  `+bar+`, `+area+`, or `+box+` (default: `+time_series+`)
 
 * Title:  OPTIONAL `+<title>+` with graph title (default: none)
 
 * Documentation:  OPTIONAL `+<doc>+` with block of text, optionally in HTML format (default: none)
 
 * Show grid: OPTIONAL `+show_grid="…"+` with true/false (default: `+true+`)
+
+* Grid color: OPTIONAL `+grid_color="…"+` with the color of the grid lines, as specified in <<sec-specification-of-color>> (default: application defined)
 
 * Number of X Grid Lines: OPTIONAL `+num_x_grid_lines="…"+` with integer (default: `+0+`)
 
@@ -290,11 +294,19 @@ Support for this tags is REQUIRED if the implementation supports outputs (per th
 
 * Right Axis Multi-scale: OPTIONAL `+right_axis_multi_scale="…"+` with true/false (default: `+true+`)
 
+* Right Axis Units: OPTIONAL `+right_include_units="…"+` with true/false; if true, the units of the variables plotted against the right axis are shown with that axis (default: `+true+`)
+
 * Left  Axis Title: OPTIONAL left`+_axis_title="…"+` with string (default: `+empty+`)
 
 * Left Axis Auto-scale: OPTIONAL `+left_axis_auto_scale="…"+` with true/false (default: `+true+`)
 
 * Left Axis Multi-scale: OPTIONAL `+left_axis_multi_scale="…"+` with true/false (default: `+true+`)
+
+* Left Axis Units: OPTIONAL `+left_include_units="…"+` with true/false; if true, the units of the variables plotted against the left axis are shown with that axis (default: `+true+`)
+
+* Legend position: OPTIONAL `+legend_position="…"+` with `+top+`, `+bottom+`, `+left+`, `+right+`, or `+none+` to hide the legend (default: `+bottom+`)
+
+* Units in Legend: OPTIONAL `+include_units_in_legend="…"+` with true/false; if true, each plot's entry in the legend includes the units of its variable (default: `+false+`)
 
 * Display numbers: OPTIONAL `+plot_numbers="…"+` with true/false (default: `+false+`)
 
@@ -310,7 +322,7 @@ Time-series graphs can OPTIONALLY include the following additional attributes:
 
 * Ending display time:  `+to="…"+` with the ending time (default: STOPTIME)
 
-Each graph includes a number of plotted variables.  Within the `+<graph>+` tag, one `+<plot>+` tag MUST appear for each variable plotted.  Each `+<plot>+` tag has the following attributes:
+Each graph includes a number of plotted variables.  Within the `+<graph>+` tag, one `+<plot>+` tag MUST appear for each variable plotted.  A graph MAY have no plots, for example when no variables have yet been added to it.  Each `+<plot>+` tag has the following attributes:
 
 * Plot index:  REQUIRED `+index="…"+` with sequential index number starting at zero for the first plot; this is important for both the legend and plotting numbers on curves (the plotted number is one greater than the index); for scatter plots, index 0 is the __x__-axis variable, index 1 is the __y__-axis variable, and (if a 3D scatter plot) index 2 is the __z__-axis variable (default: position of plot relative to other plots)
 
@@ -320,17 +332,21 @@ Each graph includes a number of plotted variables.  Within the `+<graph>+` tag, 
 
 * Display y-axis scale:  OPTIONAL `+show_y_axis="…"+` with true/false (default: `+true+`)
 
-* Plot title:  REQUIRED `+title="…"+` with String (default: `+entity display name+`)
+* Plot title:  OPTIONAL `+title="…"+` with String (default: `+entity display name+`)
 
 * Which axis the plot is plotted against: OPTIONAL `+right_axis="…"+` with true/false (default: `+false+`)
 
-Within the `+<plot>+` tag, the REQUIRED`+<entity>+` tag defines which entity to plot, and the OPTIONAL `+<scale>+` tag defines custom scaling for the entity.  The scale settings are overridden by the presence of auto-scaling or non-mutli-scaling on the axis.
+* Plot color:  OPTIONAL `+color="…"+` with the color of the plotted line, as specified in <<sec-specification-of-color>> (default: application defined)
+
+* Precision:  OPTIONAL `+precision="…"+` with the precision of numbers displayed in legends and when scrubbing the curve, as described for `+<format>+` in <<sec-ranges-scales-number-formats>> (default: the variable's own format)
+
+Within the `+<plot>+` tag, the OPTIONAL `+<entity>+` tag defines which entity to plot (a plot without one, for example one whose variable has not yet been chosen, plots nothing), the OPTIONAL `+<scale>+` tag defines custom scaling for the entity, and the OPTIONAL `+<format>+` tag, as described in <<sec-ranges-scales-number-formats>>, defines the number format for the plot, overriding the entity’s own.  The scale settings are overridden by the presence of auto-scaling or non-mutli-scaling on the axis.
 
 The default scale for entities with a globally defined scale is that global scale.  When no global scale is defined for an entity, the default scale automatically fills the range of values for the entity (for comparative graphs, this is across all runs of that entity in the graph).  The `+<scale>+` tag allows the user to override these settings.
 
 Graphs plot an entity’s data from the current run and any other loaded runs. An example tag is shown below:
 
-`+<graph background="#FFFFC9" x="132" y="36" width="492" height="282" title=”Cool Graph” comparative="true" type="time_series" show_grid="true" num_x_grid_lines="5" num_y_grid_lines="5" num_x_labels="5" num_y_labels="3" left_axis_multi_scale="true" left_axis_auto_scale="true" right_axis_multi_scale="true" right_axis_auto_scale="true" from="1" to="13">+`
+`+<graph background="#FFFFC9" x="132" y="36" width="492" height="282" title="Cool Graph" comparative="true" type="time_series" show_grid="true" num_x_grid_lines="5" num_y_grid_lines="5" num_x_labels="5" num_y_labels="3" left_axis_multi_scale="true" left_axis_auto_scale="true" right_axis_multi_scale="true" right_axis_auto_scale="true" from="1" to="13">+`
 
 `+<plot precision="1" color="blue" pen_width="1" index="0" show_y_axis="true">+`
 
@@ -338,7 +354,7 @@ Graphs plot an entity’s data from the current run and any other loaded runs. A
 
 `+</plot>+`
 
-`+<plot precision="1" color="red" pen_width="1" index="0" show_y_axis="true" right_axis=”true”>+`
+`+<plot precision="1" color="red" pen_width="1" index="1" show_y_axis="true" right_axis="true">+`
 
 `+<entity name="Converter_2" />+`
 
@@ -357,11 +373,11 @@ Support for this tags is REQUIRED if outputs are supported (per the header optio
 
 * Data orientation:  REQUIRED `+orientation="…"+` with either `+horizontal+` or `+vertical+` (default: `+vertical+`)
 
-* Default column width:  REQUIRED `+column_width="…"+` with width in model coordinates
+* Default column width:  OPTIONAL `+column_width="…"+` with width in model coordinates (default: application defined)
 
 * Default blank column width: OPTIONAL `+blank_column_width="…"+` with width in model coordinates
 
-* Report interval:  REQUIRED `+interval="…"+` specifying how often, in model time, to report values during the simulation; use `+DT+` to export every DT (default: 1)
+* Report interval:  OPTIONAL `+interval="…"+` specifying how often, in model time, to report values during the simulation; use `+DT+` to export every DT (default: 1)
 
 * Report ending/beginning balances: OPTIONAL  `+report_balances="…"+` with either `+beginning+` or `+ending+` (default: `+beginning+`)
 
@@ -403,7 +419,7 @@ Just as with the graph Tables plot an entity’s data from the current run and a
 
 The `+<text_box>+` tag is used to describe the appearance of a static label on the model canvas. Support for this tag is OPTIONAL.  An example tag is shown below:
 
-`+<text_box x="274" y="119" uid="0" color=”black” background=”white” z_index=”1” font_family=”Arial” font_size=”9pt” font_weight=”bold” font_style=”italic” text_decoration=”underline” text_align=”center” vertical_text_align=”center” text_padding=”2px” font_color=”black” text_border_color=”black” text_border_width=”1px” text_border_style=”solid” width="260" height="58" appearance="transparent">+`
+`+<text_box x="274" y="119" uid="0" color="black" background="white" z_index="1" font_family="Arial" font_size="9pt" font_weight="bold" font_style="italic" text_decoration="underline" text_align="center" vertical_text_align="center" padding="2px" font_color="black" border_color="black" border_width="thin" border_style="solid" width="260" height="58" appearance="transparent">+`
 
 `+Some text+`
 
@@ -451,7 +467,7 @@ When an image is embedded directly within the XMILE file, the data is started by
 
 The `+<sound>+` tag gives a sound to play:
 
-* Sound:  `+<sound>+` with URL-format pathname (default protocol is file://)
+* Sound:  `+<sound>+` with URL-format pathname (default protocol is `+file://+`)
 
 An object that navigates includes a `+<link>+`.  The OPTIONAL `+<link>+` tag has several attributes:
 

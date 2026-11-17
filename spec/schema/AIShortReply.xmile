@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xmile version="1.2" xmlns="http://docs.oasis-open.org/xmile/ns/XMILE/v1.0" xmlns:isee="http://iseesystems.com/XMILE">
+	<header>
+		<options namespace="std, isee"/>
+		<name>AIShortReply.xmile</name>
+		<uuid>c6d77974-6faa-41b1-a99e-09b9dc41ac3b</uuid>
+		<vendor>isee systems, inc.</vendor>
+		<product version="4.5" isee:build_number="development" isee:saved_by_v1="true" lang="en">Stella Architect</product>
+	</header>
+	<ai_information>
+		<status verified="true" mixed="false" trusted="true" tampered="false" uses="false" analyzed="true" log_truncated="true" agent_log_truncated="false" base_log_truncated="false" log_pasted="false" timestamp="1794841378" algorithm="ed25519" keyurl="https://iseesystems.com/keys/stella01.txt" want_var_info="true" want_var_status="false" want_log="false" sampling="1" signature="ixXDGUaw5HF23hzYfMZu98dCPd9Do194zH5RS1vZmqCKQCX8PWWRqnN5lGjtdGk4PWL36c8vwSJ/HptsnUl3CA=="/>
+		<testing signed_message_body="agentlogtruncated=false algorithm=ed25519 analyzed=true baselogtruncated=false keyurl=https://iseesystems.com/keys/stella01.txt logpasted=false logtruncated=true mixed=false sampling=1 tampered=false timestamp=1794841378 trusted=true uses=false verified=true wantlog=false wantvarinfo=true wantvarstatus=false"/>
+		<agent_log signature="MnTEQdy8CBqwSjjbLkC/2K7E/9jc9DbfHV6Xi41i3E92iUJDNMMriegu5m/xjTjhxwDh0v2PrskFncsYg6+LAw==">
+			<message type="user_text" is_thinking="false">Is population a stock. Be very terse in your reply.</message>
+			<message type="agent_text" is_thinking="false" agent_name="Merlin">Yes. Population is a stock: it accumulates over time, changed by births and in-migration flowing in and deaths and out-migration flowing out. If every flow stopped, the population would still exist, which is the test for a stock.
+&lt;p style=&quot; margin-top:6px; margin-bottom:6px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Your current model is empty, so it doesn&apos;t contain a population stock yet.&lt;/p&gt;</message>
+			<message type="agent_complete" is_thinking="false" agent_name="Merlin"/>
+		</agent_log>
+	</ai_information>
+	<sim_specs isee:sim_duration="1.5" isee:run_prefix="Run" isee:simulation_delay="0.125" isee:restore_on_start="false" method="Euler" time_units="Months" isee:instantaneous_flows="false" isee:ignore_module_errors="false" isee:strict_units="true" isee:loop_scores="true" isee:loop_exhaustive_allowed="1000">
+		<start>0</start>
+		<stop>12</stop>
+		<dt reciprocal="true">4</dt>
+	</sim_specs>
+	<isee:prefs saved_runs="5" keep="false" show_module_prefix="true" live_update_on_drag="true" show_restore_buttons="false" layer="model" isee:design="Deluxe Prev-Next Blue Green Pastel" isee:design_custom="false" interface_scale_ui="true" interface_max_page_width="10000" interface_max_page_height="10000" interface_min_page_width="0" interface_min_page_height="0" rifp="true"/>
+	<isee:multiplayer_settings include_chat="true" allow_observers="false" advance_time_increment="1" max_advance_time_in_ms="0" model_stops_when_players_drop="false" observer_start_page="home_page" enabled="false"/>
+	<isee:time_formats default_format="Builtin">
+		<isee:time_format name="Builtin" type="adaptive"/>
+	</isee:time_formats>
+	<isee:number_format_extenders/>
+	<isee:default_format/>
+	<model_units/>
+	<model>
+		<variables/>
+		<views>
+			<view isee:show_pages="false" background="white" page_width="1122" page_height="793" isee:popup_graphs_are_comparative="true" isee:enable_non_negative_highlights="false" type="stock_flow">
+				<style/>
+			</view>
+		</views>
+	</model>
+</xmile>
+

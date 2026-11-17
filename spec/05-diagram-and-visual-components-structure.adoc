@@ -7,16 +7,19 @@ Simple XMILE display tag hierarchy example:
 
 [source,xml]
 ----
-<xmile>
+<xmile version="1.2" xmlns="http://docs.oasis-open.org/xmile/ns/XMILE/v1.0">
+<header>
+...
+</header>
 <model>
 <variables>
 <aux name="Input"/>
 </variables>
 <views>
-<view type="stock_flow".../>
+<view type="stock_flow">
 <aux name="Input"/>
 </view>
-<view type="interface" .../>
+<view type="interface">
 ...
 </view>
 </views>
@@ -37,7 +40,7 @@ Views which have the optional type “interface” are assumed to contain displa
 
 XMILE views also contain an OPTIONAL `+order+` attribute which represents the order that views should be presented within the application. The `+order+` pass:c[attribute is an integer starting from 0 and counting up. The lower the order number the earlier it appears in the list. Views with the type “stock_flow” are ordered separately from views with the type “interface”. If any view does not contain an order number it is RECOMMENDED that one is be assigned based on its position within the] `+<views>+` tag.
 
-XMILE views are also REQUIRED to have a `+width+` and a `+height+` measured in pixels.  These properties describe the size of a view.  Views are REQUIRED to be rectangular.   Views may also have an OPTIONAL `+zoom+` specified as a double where 100 is default, 200 is 2x bigger by a factor of 2 and 50 is smaller by a factor of 2. In addition views can also have OPTIONAL attributes for storing the scroll position called `+scroll_x+` and `+scroll_y+`.  The scroll position is the origin (top left corner) of the screen in model coordinates (that is, when zoom has not been applied).  Also, views may contain an OPTIONAL `+background+` attribute that may be specified either as a color or as an external image resource using a file://url.
+XMILE views are also REQUIRED to have a `+width+` and a `+height+` measured in pixels.  These properties describe the size of a view.  Views are REQUIRED to be rectangular.   Views may also have an OPTIONAL `+zoom+` specified as a double where 100 is default, 200 is 2x bigger by a factor of 2 and 50 is smaller by a factor of 2. In addition views can also have OPTIONAL attributes for storing the scroll position called `+scroll_x+` and `+scroll_y+`.  The scroll position is the origin (top left corner) of the screen in model coordinates (that is, when zoom has not been applied).  Also, views may contain an OPTIONAL `+background+` attribute that may be specified either as a color or as an external image resource using a `+file://url+`.
 
 In order for XMILE views to be printed each view is REQUIRED to specify its paging.  Therefore the following attributes are REQUIRED:
 
@@ -95,6 +98,8 @@ Display objects do not have names or any other way to specifically refer to indi
 === Common styles associated with all XMILE display objects
 
 All XMILE display objects provide attributes which describe their look and feel or style. Styles applied to visual XMILE objects are composed of attributes of the following core style objects plus any specific attributes available to that specific type of object.
+
+Because some objects, for example graphs, may have a number of different components each requiring its own styling, these basic tags may be prefixed by the context in which they are used - for example axis_title_text_padding would indicate the padding that should be used for axis title text. The full list of acceptable prefixes is shown in <<sec-style-prefix-additions>>.
 
 Border
 
@@ -219,42 +224,72 @@ List of predefined colors:
 
 |===
 
-[[sec-the-cascading-style-system]]
-=== The cascading style system
+[[sec-style-prefix-additions]]
+=== Style Prefix Additions
 
-A `+<style>+` tag contains display information and defaults separated into children tags by object type.  The style system controls the look and feel of all visual XMILE objects.  Attributes on the `+<style>+` tag itself affect all contained styles of that tag which then go on to affect specific XMILE objects (<<sec-stock-and-flow-diagram-objects>>).
+All of the style tags MAY be prefixed to indicate which element in an object they should apply to. Implementations MAY choose to treat these prefixed tags in a manner similar to the cascade described in <<sec-the-object-style-system>>. In this case, for example, `+padding+` would apply to every element in an object, `+text_padding+` to all text elements, and `+axis_title_text_padding+` to the axis title, each level superseding the value from the more general one.
+
+The valid prefixes are:
+
+* `+text_+` - styles specific to text elements
+
+* `+header_+` - specific to the header as a whole
+
+* `+header_font_+` - specific to the font of the header
+
+* `+header_text_+` - specific to the text of the header
+
+* `+axis_title_+` - specific to the axis title as a whole
+
+* `+axis_title_font_+` - specific to the font of the axis title
+
+* `+axis_title_text_+` - specific to the text of the axis title
+
+* `+axis_label_+` - specific to the axis label as a whole
+
+* `+axis_label_font_+` - specific to the font of the axis label
+
+* `+axis_label_text_+` - specific to the text of the axis label
+
+Each of these, followed by the style tag it qualifies, is a valid OPTIONAL attribute and appears as one in the schema. This opens up a large number of attribute names that form valid XMILE, of which the contextually meaningful ones are a much smaller set: a reader is not expected to honor a prefix on an object that has no such element.
+
+[[sec-the-object-style-system]]
+=== The object style system
+
+A `+<style>+` tag contains display information about object types. The style system determines the look and feel of all visual XMILE objects. When no information about an attribute is given for a specific object, the value for the style will be used. When no information is given in either the style or the object the application defaults will be used. There are no attributes on the `+<style>+` tag itself. Each object type has self contained attributes, which cascade to individual objects unless overridden. When a display attribute is checked for an individual object, it is first checked on the object. If it is not on the object, the value for that object type is checked in the `+<style>+` tags of the owning model, in the order given below. If it is still not found, the same check is made in the model containing the owning module, continuing until the root model is reached. This is true for all XMILE objects (<<sec-stock-and-flow-diagram-objects>>).
 
 Simple XMILE style tag example:
 
 [source,xml]
 ----
-<style font_color=”blue” font_size=”10”>
-<stock font_weight="bold" font_color="black"/>
-<flow font_size="12"/>
+<style>
+<stock  font_size="10" font_weight="bold" font_color="black"/>
+<flow  font_color="blue" font_size="12"/>
 </style>
 ----
 
-In this example, any related stock objects would have a bold, black, size 10 font and any related flow objects would have a normal weight, blue, size 10 font.
+In this example, stock objects would have a bold, black, size 10 font and any flow objects would have a normal weight, blue, size 12 font.
 
-A `+<style>+` tag may be placed in any of the following locations which changes the display objects it affects:
+A `+<style>+` tag MAY be placed in a `+<view>+` tag. It determines the default style for all objects contained in that view.
 
-* As a child of the root (`+<xmile>+`) tag
-
-* As a child of a `+<views>+` tag
-
-* As a child of a `+<view>+` tag
+A `+<style>+` tag MAY also be placed in a `+<views>+` tag. All contained `+<view>+` entries MAY reference any object styles contained therein, though by convention stock and flow `+<view>+` entries do not.
 
 Simple XMILE style tag hierarchy example:
 
 [source,xml]
 ----
-<xmile>
-<style/>
+<xmile version="1.2" xmlns="http://docs.oasis-open.org/xmile/ns/XMILE/v1.0">
+<header>
+...
+</header>
 <model>
 <variables/>
 <views>
 <style/>
-<view>
+<view type="stock_flow">
+<style/>
+</view>
+<view type="interface">
 <style/>
 </view>
 </views>
@@ -262,6 +297,6 @@ Simple XMILE style tag hierarchy example:
 </xmile>
 ----
 
-As a child of a `+<xmile>+` tag, the `+<style>+` tag contains all of the default and highest level styles which apply across all models in the XMILE file.  The `+<style>+` tag contained within the `+<views>+` tag applies to all XMILE views within it.  Finally, the `+<style>+` tags which are children of the `+<view>+` tags override any specifications of the `+<style>+` tag associated with the model.
+The `+<style>+` tag contained within the `+<views>+` tag MAY apply to both of the `+<view>+` entries, though by convention it would only apply to the second. In this example, for objects in the interface `+<view>+`, the `+<style>+` tag in the `+<views>+` tag would be used to derive any styles not specified by the object or by the `+<style>+` tag in that `+<view>+`.
 
-When reading in any XMILE object, any attribute present on that object takes ultimate precedence. For any attribute which is missing, the cascading style system is used; first looking to the nearest `+<view>+` tag’s child `+<style>+` tag then up to the containing <views> tag’s child `+<style>, and finally up to the root <style>+` tag for that XMILE file.  The same principal holds true when writing out style attributes. If the object’s attribute contains no difference from the specified cascading style, there is no reason to write out that attribute.
+When reading in any XMILE object, any attribute present on that object takes ultimate precedence. For any attribute which is missing, the style is found by looking first to the containing `+<view>+` tag’s child `+<style>+` tag. If that does not resolve it, the containing `+<views>+` tag’s child `+<style>+` tag MAY be referenced. For models containing modules, the module hierarchy is then used in turn to find the correct style, as described above. The same principle holds true when writing out style attributes. If the object’s attribute contains no difference from the specified containing style, there is no reason to write out that attribute.

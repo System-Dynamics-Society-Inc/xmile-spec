@@ -1,0 +1,76 @@
+Version 1.1 is the first release under the stewardship of the System Dynamics
+Society, following the close of the OASIS XMILE Technical Committee. It adds one
+capability and withdraws the optional display and interface devices that no
+implementation had adopted.
+
+== Added
+
+* *Array sub-ranges.* A named sub-range may now select a contiguous span of an
+existing dimension's elements, so a subscript can address part of an array
+without duplicating the dimension.
+
+== Withdrawn
+
+Seven subsections of Chapter 6 were removed. Each was optional, and the working
+group found no interoperable implementations to preserve:
+
+[cols="1,4",options="header"]
+|===
+|Section |Withdrawn
+
+|6.3.1
+|Knobs. Sliders become the sole slider-style input, and the section is renamed _Sliders_
+
+|6.3.2
+|Switches and radio buttons (option groups)
+
+|6.3.3
+|Numeric inputs and list input devices
+
+|6.3.4
+|Graphical inputs
+
+|6.4.2
+|Lamps and gauges
+
+|6.5.2
+|Graphics frames
+
+|6.5.3
+|Buttons
+|===
+
+== Changed
+
+* Rebranded from OASIS to the System Dynamics Society, and the specification
+version raised to 1.1 throughout.
+
+== Known issues, to read before implementing
+
+*The withdrawals left the surrounding text unrevised.* Nineteen references now
+point at sections that no longer exist, and thirteen more still resolve but name
+different content than the author meant, because removing a section renumbered
+its siblings. The second class is the more dangerous: those references read as
+correct.
+
+Most are normative conformance clauses that still require support for the very
+features 1.1 removed, so they are contradictions in the specification, not
+merely broken links.
+
+This is recorded, not corrected. *This release reproduces the approved
+document*; correcting it is a separate editorial decision for the Technical
+Committee. The full inventory is in the errata below.
+
+== Why it will not recur
+
+In the Word original, a reference such as "Section 6.4.2" was ordinary typed
+text. Nothing linked it to the section it named, so deleting a section broke its
+inbound references silently. In the source repository every reference is a real
+cross-reference that Asciidoctor validates and renumbers, the lint rejects a
+reference typed as literal text, and the build treats every warning as an error.
+Deleting a section now fails the build instead of shipping a dead pointer.
+
+== Change history
+
+Each 1.1 change is a separate commit, so it can be read, reviewed or reverted on
+its own.
