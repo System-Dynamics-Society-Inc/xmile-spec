@@ -17,8 +17,9 @@ What counts as a finding:
 * An example that is not well-formed XML, including one written with
   typographic quotation marks, which no XML parser accepts.
 * Any schema error, except that an example containing a line of "..." is
-  allowed to be incomplete. It is an outline, and "content is not complete" is
-  what an outline is.
+  allowed to be incomplete. It is an outline: a required element left out, or
+  a shown element arriving before the omitted one it should follow, is what an
+  outline is.
 
 Known disagreements between the text and the schema, which need a decision
 rather than an edit, are listed in tools/known-example-exceptions.tsv so that
@@ -217,7 +218,11 @@ def validate(schema, body: str, elided: bool):
     try:
         for err in schema.iter_errors(body):
             reason = str(err.reason or err.message)
-            if elided and "is not complete" in reason:
+            # "..." stands for content left out. The schema reports that as
+            # an incomplete element, or, when what was left out precedes a
+            # sibling that is shown, as that sibling arriving too early.
+            if elided and ("is not complete" in reason
+                           or ("Unexpected child" in reason and "expected" in reason)):
                 continue
             errors.add(f"{err.path or ''}: {reason}".replace("{" + NS + "}", ""))
     except ET.ParseError as e:

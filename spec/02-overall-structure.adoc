@@ -724,7 +724,7 @@ The included resource can be specified in multiple ways. Specifically, the resou
 <include resource="http://systemdynamics.org/xmile/macros/standard-1.0.xml" />
 ----
 
-* *Relative file paths.* Search relative to the location of the XMILE file. This allows modelers to distribute their whole-models as a folder of related files. This is a machine-independent path specification using `+"/"+` to separate directories. The `+"*"+` indicates a wildcard. Files are not cached.
+* *Relative file paths.* Search relative to the location of the XMILE file. This allows modelers to distribute their whole-models as a folder of related files. This is a machine-independent path specification using `+"/"+` to separate directories. The `+"*"+` indicates a wildcard. Files are not cached. Starting a path with `+"r../"+` is used to indicate a relative path that should be resolved as if the directory `+"r"+` existed even if it does not.
 +
 [source,xml]
 ----
@@ -754,7 +754,7 @@ As a contrast, files specified with a file path (particularly a relative file pa
 [[sec-format-of-included-files]]
 ==== Format of Included Files
 
-The format of the included files is a simplified version of the format of the full XMILE file.  The `+<header>+` tag is OPTIONAL, and if included can omit required header attributes. The `+<options>+` tag is optional.
+The format of the included files is a simplified version of the format of the full XMILE file.  The `+<header>+` tag is REQUIRED, but may be empty. The `+<options>+` tag is optional. For example a macro definitions, a full model with diagram information and a model with only equations would appear as:
 
 [source,xml]
 ----
@@ -762,21 +762,30 @@ The format of the included files is a simplified version of the format of the fu
  xmlns="http://docs.oasis-open.org/xmile/ns/XMILE/v1.0">
 <header>
 </header>
-<macro name="LOG">
+<macro name="MYLOG">
 ...
 </macro>
-<macro name="LOG10">
+<macro name="MYLOG10">
 ...
 </macro>
 </xmile>
 
 <xmile version="1.2" xmlns="http://docs.oasis-open.org/xmile/ns/XMILE/v1.0">
+<header/>
+<model>
+...
+<views>
+<view>
 <style>
 ...
 </style>
+</view>
+</views>
+</model>
 </xmile>
 
 <xmile version="1.2" xmlns="http://docs.oasis-open.org/xmile/ns/XMILE/v1.0">
+<header/>
 <model>
 ...
 </model>

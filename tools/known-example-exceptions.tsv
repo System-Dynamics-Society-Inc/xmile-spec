@@ -10,5 +10,3 @@
 #   reason       why it is excused
 #
 # file	first line	finding	reason
-02-overall-structure.adoc	<style>	Tag 'header' expected	Included files: Chapter 2 says <header> is OPTIONAL in an included file, but the schema requires it. This example also places <style> directly under <xmile>, which 1.2 no longer allows anywhere but in views.
-02-overall-structure.adoc	<model>	Tag 'header' expected	Included files: Chapter 2 says <header> is OPTIONAL in an included file, but the schema requires it.
