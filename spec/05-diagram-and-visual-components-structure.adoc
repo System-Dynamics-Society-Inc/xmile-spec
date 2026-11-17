@@ -7,16 +7,19 @@ Simple XMILE display tag hierarchy example:
 
 [source,xml]
 ----
-<xmile>
+<xmile version="1.2" xmlns="http://docs.oasis-open.org/xmile/ns/XMILE/v1.0">
+<header>
+...
+</header>
 <model>
 <variables>
 <aux name="Input"/>
 </variables>
 <views>
-<view type="stock_flow".../>
+<view type="stock_flow">
 <aux name="Input"/>
 </view>
-<view type="interface" .../>
+<view type="interface">
 ...
 </view>
 </views>
@@ -275,7 +278,10 @@ Simple XMILE style tag hierarchy example:
 
 [source,xml]
 ----
-<xmile>
+<xmile version="1.2" xmlns="http://docs.oasis-open.org/xmile/ns/XMILE/v1.0">
+<header>
+...
+</header>
 <model>
 <variables/>
 <views>

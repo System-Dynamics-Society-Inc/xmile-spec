@@ -145,6 +145,21 @@ may carry `width` and `height`.
 
 * A macro `<parm>` may carry a `default`.
 
+* `<uses_macros>` requires `recursive_macros`, not `references_macros`, as the
+text names it.
+
+* `<non_negative>false</non_negative>` and a `<leak>` holding the leakage
+fraction are accepted, as Chapter 4 shows. A `<behavior>` block need not
+contain a `<flow>`.
+
+* `<gf name="…"/>` with no points of its own is accepted as a reference to a
+named graphical function.
+
+* A slider's `<reset_to after="…">` takes `one_time_unit`, as the text and its
+example write, rather than `one_time`.
+
+* Graphs and tables may carry `x` and `y`, as the Chapter 6 examples show.
+
 == Editorial
 
 * The front matter names the System Dynamics Society as steward, with links to
@@ -152,6 +167,12 @@ this site in place of the OASIS addresses.
 
 * Examples damaged by the conversion from Word are repaired: typographic dashes
 and quotation marks that had replaced `-` and `"` in equations and XML.
+
+* Every XML example in the specification has been checked against the schema.
+Equations containing `<` are now in CDATA sections, the Chapter 6 element
+examples use plain quotation marks and valid attribute values, and the
+whole-file examples carry the XMILE namespace and version 1.2. The examples
+that remain incomplete do so deliberately, with `...` standing in for content.
 
 * *One spelling for four style attributes.* Chapter 6 listed `text_padding`,
 `text_border_color`, `text_border_width` and `text_border_style` as second names

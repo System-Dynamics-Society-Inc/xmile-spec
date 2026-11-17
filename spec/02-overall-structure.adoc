@@ -126,9 +126,9 @@ The XMILE options appear under the tag `+<options>+`. This is a list of function
 ----
 <uses_conveyors/>
 <uses_queues/>
-<uses_arrays/>
+<uses_arrays maximum_dimensions="2"/>
 <uses_submodels/>
-<uses_macros/>
+<uses_macros recursive_macros="false" option_filters="false"/>
 <uses_event_posters/>
 <has_model_views/>
 <uses_outputs/>
@@ -758,8 +758,8 @@ The format of the included files is a simplified version of the format of the fu
 
 [source,xml]
 ----
-<xmile version="1.0" 
- xmlns=" http://docs.oasis-open.org/xmile/ns/XMILE/v1.0">
+<xmile version="1.2"
+ xmlns="http://docs.oasis-open.org/xmile/ns/XMILE/v1.0">
 <header>
 </header>
 <macro name="LOG">
@@ -770,13 +770,13 @@ The format of the included files is a simplified version of the format of the fu
 </macro>
 </xmile>
 
-<xmile version="1.0" level="2"  xmlns="http://www.systemdynamics.org/XMILE">
+<xmile version="1.2" xmlns="http://docs.oasis-open.org/xmile/ns/XMILE/v1.0">
 <style>
 ...
 </style>
 </xmile>
 
-<xmile version="1.0" level="2"  xmlns="http://www.systemdynamics.org/XMILE">
+<xmile version="1.2" xmlns="http://docs.oasis-open.org/xmile/ns/XMILE/v1.0">
 <model>
 ...
 </model>

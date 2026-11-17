@@ -199,7 +199,7 @@ The following example shows a poster that puts up a text message when 10 is exce
 <threshold value="19">
 <event>
 <sound>bicycle_bell.wav</sound>
-<link target="view" view_type="interface" x="0" y="0"/>
+<link target="interface:0" x="0" y="0"/>
 <video>c:/Movies/uh-oh.mov</video>
 </event>
 </threshold>
@@ -880,7 +880,7 @@ Recursion MAY be used to implement simple functions, for example, to calculate t
 ----
 <macro name="FACT">
 <parm>x</parm>
-<eqn>IF x <= 1 THEN 1 ELSE FACT(x - 1)</eqn>
+<eqn><![CDATA[IF x <= 1 THEN 1 ELSE FACT(x - 1)]]></eqn>
 </macro>
 ----
 
@@ -890,7 +890,7 @@ Nested loops – or nested recursion – can be implemented by calling another r
 ----
 <macro name="FACTSUM">
 <parm>x</parm>
-<eqn>IF x <= 1 THEN 1 ELSE FACT(x) + FACTSUM(x - 1)</eqn>
+<eqn><![CDATA[IF x <= 1 THEN 1 ELSE FACT(x) + FACTSUM(x - 1)]]></eqn>
 </macro>
 ----
 
@@ -904,7 +904,7 @@ By using default parameter values to implement optional parameters, more complex
 <parm default="1">i</parm>
 <eqn>IF i > SIZE(A) THEN 0 ELSE
 IF A[i] = value THEN i ELSE FIND(A, value, i + 1)</eqn>
-<format>FIND(<array>, <value>[, <starting index>])</format>
+<format><![CDATA[FIND(<array>, <value>[, <starting index>])]]></format>
 </macro>
 ----
 

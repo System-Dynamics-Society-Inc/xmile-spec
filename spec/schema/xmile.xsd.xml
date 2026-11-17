@@ -233,7 +233,7 @@
         <xs:element name="uses_submodels" type="empty_type" minOccurs="0"/>
         <xs:element name="uses_macros" minOccurs="0">
           <xs:complexType>
-            <xs:attribute name="references_macros" type="xs:boolean" use="required"/>
+            <xs:attribute name="recursive_macros" type="xs:boolean" use="required"/>
             <xs:attribute name="option_filters" type="xs:boolean" use="required"/>
           </xs:complexType>
         </xs:element>
@@ -608,7 +608,7 @@
         <xs:element name="multiplier" type="string_element_type" minOccurs="0" maxOccurs="1"/>
         <xs:element name="non_negative" type="boolean_or_empty_type" minOccurs="0" maxOccurs="1"/>
         <xs:element name="overflow" type="empty_type"/>
-        <xs:element name="leak" type="empty_type"/>
+        <xs:element name="leak" type="string_element_type"/>
         <xs:element name="leak_integers" type="empty_type"/>
 
         <!-- for arrays.  necessarily repeats some of the above elements which may vary per subscript -->
@@ -624,7 +624,7 @@
               <xs:element name="multiplier" type="string_element_type" minOccurs="0" maxOccurs="1"/>
               <xs:element name="non_negative" type="boolean_or_empty_type" minOccurs="0" maxOccurs="1"/>
               <xs:element name="overflow" type="empty_type"/>
-              <xs:element name="leak" type="empty_type"/>
+              <xs:element name="leak" type="string_element_type"/>
               <xs:element name="leak_integers" type="empty_type"/>
             </xs:choice>
             <xs:attribute name="subscript" type="xs:string" use="required"/>
@@ -782,7 +782,8 @@
         <xs:element name="xscale" type="min_max_type" minOccurs="0"/>
         <xs:element name="yscale" type="min_max_type" minOccurs="0"/>
         <xs:element name="xpts" type="points_type" minOccurs="0"/>
-        <xs:element name="ypts" type="points_type" minOccurs="1"/>
+        <!-- Optional: <gf name="rising"/> refers to a named gf (Chapter 4). -->
+        <xs:element name="ypts" type="points_type" minOccurs="0"/>
       </xs:all>
       <xs:attribute name="name" type="xs:string" use="optional"/>
       <xs:attribute name="type" use="optional" default="continuous">
@@ -1222,6 +1223,8 @@
             Optional, including inside a stacked_container, where the graph
             normally takes the container's size and these repeat it.
           -->
+          <xs:attribute name="x" type="xs:double" use="optional"/>
+          <xs:attribute name="y" type="xs:double" use="optional"/>
           <xs:attribute name="width" type="xs:double" use="optional"/>
           <xs:attribute name="height" type="xs:double" use="optional"/>
 
@@ -1272,6 +1275,8 @@
             Optional, including inside a stacked_container, where the table
             normally takes the container's size and these repeat it.
           -->
+          <xs:attribute name="x" type="xs:double" use="optional"/>
+          <xs:attribute name="y" type="xs:double" use="optional"/>
           <xs:attribute name="width" type="xs:double" use="optional"/>
           <xs:attribute name="height" type="xs:double" use="optional"/>
 
@@ -1480,7 +1485,7 @@
   <!-- input device type definitions -->
   <xs:simpleType name="after_choices">
     <xs:restriction base="xs:string">
-      <xs:enumeration value="one_time"/>
+      <xs:enumeration value="one_time_unit"/>
       <xs:enumeration value="one_dt"/>
     </xs:restriction>
   </xs:simpleType>
@@ -1537,7 +1542,7 @@
             </xs:all>
           </xs:complexType>
         </xs:element>
-        <xs:element name="flow">
+        <xs:element name="flow" minOccurs="0">
           <xs:complexType>
             <xs:all>
               <xs:element name="non_negative" type="boolean_or_empty_type" minOccurs="0"/>
@@ -2258,7 +2263,25 @@
 
   <xs:complexType name="empty_type"/>
 
-  <xs:complexType name="boolean_or_empty_type"/>
+  <!--
+    Chapter 4: <non_negative/> turns the behavior on, and
+    <non_negative>false</non_negative> turns an inherited default off.
+  -->
+  <xs:simpleType name="boolean_or_empty">
+    <xs:union memberTypes="xs:boolean">
+      <xs:simpleType>
+        <xs:restriction base="xs:string">
+          <xs:length value="0"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:union>
+  </xs:simpleType>
+
+  <xs:complexType name="boolean_or_empty_type">
+    <xs:simpleContent>
+      <xs:extension base="boolean_or_empty"/>
+    </xs:simpleContent>
+  </xs:complexType>
 
   <!--
     AI information, new in v1.1's successor. See Chapter 2, AI Information

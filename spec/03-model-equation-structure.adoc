@@ -807,7 +807,7 @@ LN(x)/LN(y)
 
 Macros can be recursive, so a slightly more complicate macro would call itself:
 
-[source,xml]
+[source,text]
 ----
 FACT(x):
 IF x <= 1 THEN 1 ELSE x*FACT(x - 1)
