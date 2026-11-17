@@ -95,8 +95,8 @@
           "file": "xmile-v1.2-errata.html",
           "source": "errata",
           "sourcePath": "ERRATA-v1.2.adoc",
-          "label": "Errata",
-          "note": "Four style attributes with two documented spellings each, where the schema recognises one and every Chapter 6 example writes the other. Records what should be cleaned up."
+          "label": "Errata, with what was done",
+          "note": "Four style attributes had two spellings, and every Chapter 6 example used the one the schema rejects. Records the inconsistency, the correction made in this release, and how the text_ spellings now read."
         }
       ]
     },

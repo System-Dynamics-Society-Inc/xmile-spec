@@ -153,18 +153,23 @@ this site in place of the OASIS addresses.
 * Examples damaged by the conversion from Word are repaired: typographic dashes
 and quotation marks that had replaced `-` and `"` in equations and XML.
 
-== Open questions for the Technical Committee
+* *One spelling for four style attributes.* Chapter 6 listed `text_padding`,
+`text_border_color`, `text_border_width` and `text_border_style` as second names
+for `padding`, `border_color`, `border_width` and `border_style`, and every
+element example used them, so no example validated against the schema. Chapter 6
+now uses the short names that Chapter 5 and the schema define. Under the new
+style prefixes, a `text_` form now applies only to an object's text. The errata
+linked below records the details.
 
-* *Two spellings for four style attributes.* `padding`, `border_color`,
-`border_width` and `border_style` each have a `text_` spelling that Chapter 6
-allows and its examples use, while Chapter 5 and the schema recognize only the
-short one. Which survives is for the Committee to decide; the errata linked
-below sets out the evidence.
+== Settled since the working draft
 
-The question raised in the previous draft, whether an agent log message should
-be an attribute or element content, is settled: it is element content, for the
-reason the earlier draft gave. Two producers that escaped identical markup
-differently would otherwise produce different signatures.
+* *Agent log messages are element content.* The previous draft asked whether a
+message should stay an attribute. It is element content, for the reason that
+draft gave: two producers that escaped identical markup differently would
+otherwise produce different signatures.
+
+* *Style attribute spellings.* The errata's question, which of the two spellings
+should survive, is answered as described under Editorial above.
 
 == Review
 

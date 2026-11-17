@@ -34,15 +34,15 @@ Attributes common to objects described in <<sec-stock>> through <<sec-alias>>:
 
 * `+vertical_text_align –+` defined in <<sec-common-styles-associated-with-all-xmile-display-objects>>
 
-* `+text_padding -+` same as `+padding+` as defined in <<sec-common-styles-associated-with-all-xmile-display-objects>>
+* `+padding -+` defined in <<sec-common-styles-associated-with-all-xmile-display-objects>>
 
 * `+font_color -+` defined in <<sec-common-styles-associated-with-all-xmile-display-objects>>
 
-* `+text_border_color -+` same as `+border_color+` as defined in <<sec-common-styles-associated-with-all-xmile-display-objects>>
+* `+border_color -+` defined in <<sec-common-styles-associated-with-all-xmile-display-objects>>
 
-* `+text_border_width -+` same as `+border_width+` as defined in <<sec-common-styles-associated-with-all-xmile-display-objects>>
+* `+border_width -+` defined in <<sec-common-styles-associated-with-all-xmile-display-objects>>
 
-* `+text_border_style –+` same as `+border_style+` as defined in <<sec-common-styles-associated-with-all-xmile-display-objects>>
+* `+border_style -+` defined in <<sec-common-styles-associated-with-all-xmile-display-objects>>
 
 Additional attributes common to objects described in <<sec-stock>> through <<sec-group>>:
 
@@ -67,7 +67,7 @@ All other common attributes listed above are OPTIONAL for all display objects.
 
 The `+<stock>+` tag in the context of a `+<view>+` tag is used to describe the appearance of an XMILE stock equation object.  Support is REQUIRED for any implementation supporting views.  An example tag is shown below:
 
-`+<stock name=”Bathtub” x=”50” y=”100” width=”45” height=”35” label_side=”top” color=”blue” background=”white” z_index=”1” font_family=”Arial” font_size=”9pt” font_weight=”bold” font_style=”italic” text_decoration=”underline” text_align=”center” vertical_text_align=”center” text_padding=”2px” font_color=”blue” text_border_color=”black” text_border_width=”1px” text_border_style=”solid”/>+`
+`+<stock name=”Bathtub” x=”50” y=”100” width=”45” height=”35” label_side=”top” color=”blue” background=”white” z_index=”1” font_family=”Arial” font_size=”9pt” font_weight=”bold” font_style=”italic” text_decoration=”underline” text_align=”center” vertical_text_align=”center” padding=”2px” font_color=”blue” border_color=”black” border_width=”1px” border_style=”solid”/>+`
 
 Descriptions of all the display attributes of a stock can be found in <<sec-stock-and-flow-diagram-objects>>.
 
@@ -76,7 +76,7 @@ Descriptions of all the display attributes of a stock can be found in <<sec-stoc
 
 The `+<flow>+` tag in the context of a `+<view>+` tag is used to describe the appearance of an XMILE flow equation object. Support is REQUIRED for any implementation supporting views.  An example tag is shown below:
 
-`+<flow name=”faucet” x=”50” y=”100” width=”18” height=”18” label_side=”top” color=”blue” background=”white” z_index=”1” font_family=”Arial” font_size=”9pt” font_weight=”bold” font_style=”italic” text_decoration=”underline” text_align=”center” vertical_text_align=”center” text_padding=”2px” font_color=”blue” text_border_color=”black” text_border_width=”1px” text_border_style=”solid”>+`
+`+<flow name=”faucet” x=”50” y=”100” width=”18” height=”18” label_side=”top” color=”blue” background=”white” z_index=”1” font_family=”Arial” font_size=”9pt” font_weight=”bold” font_style=”italic” text_decoration=”underline” text_align=”center” vertical_text_align=”center” padding=”2px” font_color=”blue” border_color=”black” border_width=”1px” border_style=”solid”>+`
 
 `+<pts>+`
 
@@ -97,7 +97,7 @@ Descriptions of all other display attributes of a flow can be found in <<sec-sto
 
 The `+<aux>+` tag in the context of a `+<view>+` tag is used to describe the appearance of an XMILE aux equation object.  Support is REQUIRED for any implementation supporting views.  An example tag is shown below:
 
-`+<aux name=”water flow rate” x=”50” y=”100” width=”45” height=”35” label_side=”top” color=”blue” background=”white” z_index=”1” font_family=”Arial” font_size=”9pt” font_weight=”bold” font_style=”italic” text_decoration=”underline” text_align=”center” vertical_text_align=”center” text_padding=”2px” font_color=”blue” text_border_color=”black” text_border_width=”1px” text_border_style=”solid”/>+`
+`+<aux name=”water flow rate” x=”50” y=”100” width=”45” height=”35” label_side=”top” color=”blue” background=”white” z_index=”1” font_family=”Arial” font_size=”9pt” font_weight=”bold” font_style=”italic” text_decoration=”underline” text_align=”center” vertical_text_align=”center” padding=”2px” font_color=”blue” border_color=”black” border_width=”1px” border_style=”solid”/>+`
 
 Descriptions of all the display attributes of an aux can be found in <<sec-stock-and-flow-diagram-objects>>.
 
@@ -106,7 +106,7 @@ Descriptions of all the display attributes of an aux can be found in <<sec-stock
 
 The `+<module>+` tag in the context of a `+<view>+` tag is used to describe the appearance of an XMILE module equation object.  Support is OPTIONAL for any implementation supporting views and modules.   An example tag is shown below:
 
-`+<module name=”Important_Module” x=”50” y=”100” width=”45” height=”35” label_side=”top” color=”blue” background=”white” z_index=”1” font_family=”Arial” font_size=”9pt” font_weight=”bold” font_style=”italic” text_decoration=”underline” text_align=”center” vertical_text_align=”center” text_padding=”2px” font_color=”blue” text_border_color=”black” text_border_width=”1px” text_border_style=”solid”/>+`
+`+<module name=”Important_Module” x=”50” y=”100” width=”45” height=”35” label_side=”top” color=”blue” background=”white” z_index=”1” font_family=”Arial” font_size=”9pt” font_weight=”bold” font_style=”italic” text_decoration=”underline” text_align=”center” vertical_text_align=”center” padding=”2px” font_color=”blue” border_color=”black” border_width=”1px” border_style=”solid”/>+`
 
 Descriptions of all the display attributes of a module can be found in <<sec-stock-and-flow-diagram-objects>>.
 
@@ -115,7 +115,7 @@ Descriptions of all the display attributes of a module can be found in <<sec-sto
 
 The `+<group>+` tag in the context of a `+<view>+` tag is used to describe the appearance of an XMILE group object. Support in the view is RECOMMENDED. A `+<group>+` display object differs from all other display objects used to represent model section objects in that there is a one-to-one relationship between group objects in the model section and group objects in the display section. This means that you can only have one `+<group>+` tag in the `+<views>+` tag that represents the `+<group>+` tag in the `+<variables>+` tag. All XMILE model objects which appear in the group within the model section are implicitly contained within the group object in the display section, but groups can also contain objects which are not present within the model section. Those objects are included within the group using an `+<item>+` tag. An example is shown below:
 
-`+<group name=”Major_Group” x=”50” y=”100” color=”blue” background=”white” z_index=”1” font_family=”Arial” font_size=”9pt” font_weight=”bold” font_style=”italic” text_decoration=”underline” text_align=”center” vertical_text_align=”center” text_padding=”2px” font_color=”blue” text_border_color=”black” text_border_width=”1px” text_border_style=”solid” locked=”true”>+`
+`+<group name=”Major_Group” x=”50” y=”100” color=”blue” background=”white” z_index=”1” font_family=”Arial” font_size=”9pt” font_weight=”bold” font_style=”italic” text_decoration=”underline” text_align=”center” vertical_text_align=”center” padding=”2px” font_color=”blue” border_color=”black” border_width=”1px” border_style=”solid” locked=”true”>+`
 
 `+<item uid=”1”/>+`
 
@@ -132,7 +132,7 @@ Descriptions of all other display attributes of a group can be found in <<sec-st
 
 The `+<connector>+` tag is used to describe the visual appearance of the relationships between XMILE model objects.  Support is REQUIRED for any implementation supporting views.  A connector is an arrow which only appears between two display objects.  An example tag is shown below:
 
-`+<connector uid=”1” x=”50” y=”100” angle=”32” line_style=”solid” delay_mark=”false” color=”blue” background=”white” z_index=”1” font_family=”Arial” font_size=”9pt” font_weight=”bold” font_style=”italic” text_decoration=”underline” text_align=”center” vertical_text_align=”center” text_padding=”2px” font_color=”blue” text_border_color=”black” text_border_width=”1px” text_border_style=”solid” polarity=””>+`
+`+<connector uid=”1” x=”50” y=”100” angle=”32” line_style=”solid” delay_mark=”false” color=”blue” background=”white” z_index=”1” font_family=”Arial” font_size=”9pt” font_weight=”bold” font_style=”italic” text_decoration=”underline” text_align=”center” vertical_text_align=”center” padding=”2px” font_color=”blue” border_color=”black” border_width=”1px” border_style=”solid” polarity=””>+`
 
 `+<from>+`
 
@@ -221,7 +221,7 @@ Stacked container objects are REQUIRED to have ONLY the five properties shown ab
 
 Sliders are used to change the value of a variable in the model from the interface.  Support for these tags is OPTIONAL. When controlling a stock, a slider can only change the stock’s initial value, i.e., sliders attached to stocks MUST NOT be changed in the middle of a simulation run.  Sliders are defined with the `+<slider>+` tag.  An example slider tag is shown below:
 
-`+<slider x="172" y="114" color="black" width="197" height="43" min="7" max="9" background=”white” z_index=”1” font_family=”Arial” font_size=”9pt” font_weight=”bold” font_style=”italic” text_decoration=”underline” text_align=”center” vertical_text_align=”center” text_padding=”2px” font_color=”blue” text_border_color=”black” text_border_width=”1px” text_border_style=”solid”>+`
+`+<slider x="172" y="114" color="black" width="197" height="43" min="7" max="9" background=”white” z_index=”1” font_family=”Arial” font_size=”9pt” font_weight=”bold” font_style=”italic” text_decoration=”underline” text_align=”center” vertical_text_align=”center” padding=”2px” font_color=”blue” border_color=”black” border_width=”1px” border_style=”solid”>+`
 
 `+<entity name="Converter_1" />+`
 
@@ -249,7 +249,7 @@ Descriptions of all other display attributes of a slider can be found in <<sec-s
 
 The `+<numeric_display>+` tag is used to describe the appearance of a widget on the model canvas which shows the instantaneous value of a model entity as text. Support for this tag is OPTIONAL. An example tag is shown below:
 
-`+<numeric_display precision="0.1" delimit_000s="true" color="blue" show_name="true" retain_ending_value="true" uid="1" x="339" y="261" width=”100” height=”22” background=”white” z_index=”1” font_family=”Arial” font_size=”9pt” font_weight=”bold” font_style=”italic” text_decoration=”underline” text_align=”center” vertical_text_align=”center” text_padding=”2px” font_color=”blue” text_border_color=”black” text_border_width=”1px” text_border_style=”solid”>+`
+`+<numeric_display precision="0.1" delimit_000s="true" color="blue" show_name="true" retain_ending_value="true" uid="1" x="339" y="261" width=”100” height=”22” background=”white” z_index=”1” font_family=”Arial” font_size=”9pt” font_weight=”bold” font_style=”italic” text_decoration=”underline” text_align=”center” vertical_text_align=”center” padding=”2px” font_color=”blue” border_color=”black” border_width=”1px” border_style=”solid”>+`
 
 `+<entity name="Converter_2" />+`
 
@@ -419,7 +419,7 @@ Just as with the graph Tables plot an entity’s data from the current run and a
 
 The `+<text_box>+` tag is used to describe the appearance of a static label on the model canvas. Support for this tag is OPTIONAL.  An example tag is shown below:
 
-`+<text_box x="274" y="119" uid="0" color=”black” background=”white” z_index=”1” font_family=”Arial” font_size=”9pt” font_weight=”bold” font_style=”italic” text_decoration=”underline” text_align=”center” vertical_text_align=”center” text_padding=”2px” font_color=”black” text_border_color=”black” text_border_width=”1px” text_border_style=”solid” width="260" height="58" appearance="transparent">+`
+`+<text_box x="274" y="119" uid="0" color=”black” background=”white” z_index=”1” font_family=”Arial” font_size=”9pt” font_weight=”bold” font_style=”italic” text_decoration=”underline” text_align=”center” vertical_text_align=”center” padding=”2px” font_color=”black” border_color=”black” border_width=”1px” border_style=”solid” width="260" height="58" appearance="transparent">+`
 
 `+Some text+`
 
