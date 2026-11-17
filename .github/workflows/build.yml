@@ -40,6 +40,11 @@ jobs:
       - name: Validate schema
         run: npm run validate
 
+      # Every XML example in the specification, placed in a minimal document
+      # and validated, so the text and the schema cannot drift apart unseen.
+      - name: Check examples
+        run: npm run examples
+
       - uses: actions/upload-artifact@v4
         with:
           name: xmile-spec-html

@@ -1,0 +1,14 @@
+# Examples in the specification that the schema rejects because the text and
+# the schema disagree, not because the example is wrong. Each needs a decision
+# from the Technical Committee rather than an edit, so it is listed here and
+# the check still fails on any new finding.
+#
+# Columns, tab separated:
+#   file         the chapter file
+#   first line   text that appears in the offending document, to identify it
+#   finding      text that appears in the finding being excused
+#   reason       why it is excused
+#
+# file	first line	finding	reason
+02-overall-structure.adoc	<style>	Tag 'header' expected	Included files: Chapter 2 says <header> is OPTIONAL in an included file, but the schema requires it. This example also places <style> directly under <xmile>, which 1.2 no longer allows anywhere but in views.
+02-overall-structure.adoc	<model>	Tag 'header' expected	Included files: Chapter 2 says <header> is OPTIONAL in an included file, but the schema requires it.

@@ -22,7 +22,7 @@ released the way code is.
 
 ```sh
 npm install
-npm run check          # lint, build, compile the schema, verify signatures
+npm run check          # lint, build, compile the schema, check examples, verify signatures
 npm run build:release  # single self-contained file, figures embedded
 ```
 
@@ -67,6 +67,31 @@ them works.
 Note that **xmllint and the .NET `XmlSchemaSet` implement XSD 1.0 only**. They
 reject this schema rather than skip it, despite the `vc:minVersion="1.1"` that
 asks them to. Xerces-J and Saxon-EE read it correctly.
+
+## Checking the examples
+
+`tools/check_examples.py` checks that every XML example in the specification
+conforms to the schema published with it.
+
+```sh
+npm run examples                # check every example in spec/
+npm run examples -- --verbose   # list each example and each known exception
+```
+
+It reads every `[source,xml]` block, and every run of lines that are each a
+single `+<...>+` code span, which is how Chapter 6 writes its element examples.
+Most examples are fragments, a `<stock>` or an `<options>` block, so each is
+placed where it belongs inside a minimal XMILE document before it is validated.
+An example that contains a line of `...` is an outline and may be incomplete;
+any other schema error, any example that is not well-formed XML, and any example
+written with typographic quotation marks is a finding.
+
+This exists because the text and the schema drifted apart unnoticed: every
+Chapter 6 example once used style attribute spellings the schema rejects, and
+several examples were not XML at all (see `ERRATA-v1.2.adoc`). Disagreements
+that need a Technical Committee decision rather than an edit are listed in
+`tools/known-example-exceptions.tsv`, so the check still fails on any new one.
+It needs the same Python environment as validation, and `npm run check` runs it.
 
 ## Verifying signatures
 
